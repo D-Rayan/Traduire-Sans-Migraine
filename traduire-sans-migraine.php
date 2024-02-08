@@ -17,18 +17,11 @@ use TraduireSansMigraine\SeoSansMigraine\Hooks;
 if (!defined("ABSPATH")) {
     exit;
 }
-ini_set( 'display_errors', 1 );
-define("TSM__PHP_REQUIREMENT", "7.0");
-define("TSM__VERSION", "0.0.6");
-define("TSM__WORDPRESS_REQUIREMENT", "5.8");
-define("TSM__NAME", "TraduireSansMigraine");
-define("TSM__SLUG", "traduire-sans-migraine");
-define("TSM__TEXT_DOMAIN", "traduire-sans-migraine");
+
+include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
-define("TSM__URL_DOMAIN", "https://www.seo-sans-migraine.fr");
-define("TSM__API_DOMAIN", "https://traduire-sans-migraine.seo-sans-migraine.fr/api");
 
 require_once TSM__ABSOLUTE_PATH . "/includes/autoload.php";
 class TraduireSansMigraine {
