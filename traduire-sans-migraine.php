@@ -5,6 +5,7 @@
  * Plugin URI: https://www.seo-sans-migraine.fr/traduire-sans-migraine
  * Description: TraduireSansMigraine is a plugin to help you improve your multilingual SEO.
  * Version: 0.0.1
+ * Download URL: https://www.seo-sans-migraine.fr/wp-content/uploads/traduire-sans-migraine/traduire-sans-migraine.zip
  * Author: Seo Sans Migraine
  * Author URI: https://www.seo-sans-migraine.fr
  * License: GPL2
@@ -25,6 +26,7 @@ define("TSM__SLUG", "traduire-sans-migraine");
 define("TSM__TEXT_DOMAIN", "traduire-sans-migraine");
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
+define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
 define("TSM__URL_DOMAIN", "https://www.seo-sans-migraine.fr");
 define("TSM__API_DOMAIN", "https://traduire-sans-migraine.seo-sans-migraine.fr/api");
 
@@ -61,6 +63,7 @@ class TraduireSansMigraine {
     }
 
     public function init() {
+        $this->updater->init();
         $this->loadTextDomain();
         $this->loadComponents();
         $this->loadPages();

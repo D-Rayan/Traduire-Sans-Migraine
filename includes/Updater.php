@@ -5,115 +5,155 @@ namespace TraduireSansMigraine;
 use stdClass;
 
 class Updater {
+
+    public $plugin_slug;
+    public $version;
+    public $cache_key;
+    public $cache_allowed;
+
     public function __construct() {
-        add_filter( 'plugins_api', [$this, "getInfoUpdate"], 20, 3);
-        add_filter( 'site_transient_update_plugins', [$this, "update"] );
+
+        $this->plugin_slug = plugin_basename( TSM__ABSOLUTE_PATH );
+        $this->version = TSM__VERSION;
+        $this->cache_key = TSM__SLUG . '_update';
+        $this->cache_allowed = false;
+
     }
 
-    public function getInfoUpdate($res, $action, $args) {
+    public function init() {
+        add_filter( 'plugins_api', array( $this, 'info' ), 10, 3 );
+        add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
+        add_action( 'upgrader_process_complete', array( $this, 'purge' ), 10, 2 );
+    }
+
+    public function request(){
+
+        $remote = get_transient( $this->cache_key );
+
+        if( false === $remote || ! $this->cache_allowed ) {
+
+            $remote = wp_remote_get(
+                TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php',
+                array(
+                    'timeout' => 10,
+                    'headers' => array(
+                        'Accept' => 'application/json'
+                    )
+                )
+            );
+
+            if(
+                is_wp_error( $remote )
+                || 200 !== wp_remote_retrieve_response_code( $remote )
+                || empty( wp_remote_retrieve_body( $remote ) )
+            ) {
+                return false;
+            }
+
+            set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
+
+        }
+
+        $remote = json_decode( wp_remote_retrieve_body( $remote ) );
+
+        return $remote;
+
+    }
+
+
+    function info( $res, $action, $args ) {
+        die();
+
+        print_r( $action );
+        print_r( $args );
+
+        // do nothing if you're not getting plugin information right now
         if( 'plugin_information' !== $action ) {
             return $res;
         }
 
-        if( plugin_basename( __DIR__ ) !== $args->slug ) {
+        // do nothing if it is not our plugin
+        if( $this->plugin_slug !== $args->slug ) {
             return $res;
         }
 
-        $remote = wp_remote_get(
-            TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php',
-            array(
-                'timeout' => 10,
-                'headers' => array(
-                    'Accept' => 'application/json'
-                )
-            )
-        );
+        // get updates
+        $remote = $this->request();
 
-        if(
-            is_wp_error( $remote )
-            || 200 !== wp_remote_retrieve_response_code( $remote )
-            || empty( wp_remote_retrieve_body( $remote ) )
-            ) {
+        if( ! $remote ) {
             return $res;
         }
-
-        $remote = json_decode( wp_remote_retrieve_body( $remote ) );
 
         $res = new stdClass();
+
         $res->name = $remote->name;
         $res->slug = $remote->slug;
-        $res->author = $remote->author;
-        $res->author_profile = $remote->author_profile;
         $res->version = $remote->version;
         $res->tested = $remote->tested;
         $res->requires = $remote->requires;
-        $res->requires_php = $remote->requires_php;
+        $res->author = $remote->author;
+        $res->author_profile = $remote->author_profile;
         $res->download_link = $remote->download_url;
         $res->trunk = $remote->download_url;
+        $res->requires_php = $remote->requires_php;
         $res->last_updated = $remote->last_updated;
+
         $res->sections = array(
             'description' => $remote->sections->description,
             'installation' => $remote->sections->installation,
             'changelog' => $remote->sections->changelog
-            // you can add your custom sections (tabs) here
         );
-        // in case you want the screenshots tab, use the following HTML format for its content:
-        // <ol><li><a href="IMG_URL" target="_blank"><img src="IMG_URL" alt="CAPTION" /></a><p>CAPTION</p></li></ol>
-        if( ! empty( $remote->sections->screenshots ) ) {
-            $res->sections[ 'screenshots' ] = $remote->sections->screenshots;
-        }
 
-        $res->banners = array(
-            'low' => $remote->banners->low,
-            'high' => $remote->banners->high
-        );
+        if( ! empty( $remote->banners ) ) {
+            $res->banners = array(
+                'low' => $remote->banners->low,
+                'high' => $remote->banners->high
+            );
+        }
 
         return $res;
+
     }
 
-    public function update($transient) {
-        if ( empty( $transient->checked ) ) {
+    public function update( $transient ) {
+
+        if ( empty($transient->checked ) ) {
             return $transient;
         }
 
-        $remote = wp_remote_get(
-            TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php',
-            array(
-                'timeout' => 10,
-                'headers' => array(
-                    'Accept' => 'application/json'
-                )
-            )
-        );
+        $remote = $this->request();
 
-        if(
-            is_wp_error( $remote )
-            || 200 !== wp_remote_retrieve_response_code( $remote )
-            || empty( wp_remote_retrieve_body( $remote ))
-            ) {
-            return $transient;
-        }
-
-        $remote = json_decode( wp_remote_retrieve_body( $remote ) );
 
         if(
             $remote
-            && version_compare( TSM__VERSION, $remote->version, '<' )
-            && version_compare( TSM__WORDPRESS_REQUIREMENT, get_bloginfo( 'version' ), '<' )
-            && version_compare( TSM__PHP_REQUIREMENT, PHP_VERSION, '<' )
+            && version_compare( $this->version, $remote->version, '<' )
+            && version_compare( $remote->requires, get_bloginfo( 'version' ), '<=' )
+            && version_compare( $remote->requires_php, PHP_VERSION, '<' )
         ) {
-
             $res = new stdClass();
-            $res->slug = $remote->slug;
-            $res->plugin = plugin_basename( __FILE__ );
+            $res->slug = $this->plugin_slug;
+            $res->plugin = TSM__PLUGIN_BASENAME;
             $res->new_version = $remote->version;
             $res->tested = $remote->tested;
             $res->package = $remote->download_url;
-            $transient->response[ $res->plugin ] = $res;
 
-            //$transient->checked[$res->plugin] = $remote->version;
+            $transient->response[ $res->plugin ] = $res;
         }
 
         return $transient;
+
+    }
+
+    public function purge( $upgrader, $options ){
+
+        if (
+            $this->cache_allowed
+            && 'update' === $options['action']
+            && 'plugin' === $options[ 'type' ]
+        ) {
+            // just clean the cache when new plugin version is installed
+            delete_transient( $this->cache_key );
+        }
+
     }
 }
