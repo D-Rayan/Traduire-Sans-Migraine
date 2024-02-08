@@ -1,0 +1,48 @@
+.traduire-sans-migraine-button {
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    color: white;
+
+    background-color: var(--traduire-sans-migraine-primary-background);
+    border: 1px solid var(--traduire-sans-migraine-primary-border);
+}
+
+.traduire-sans-migraine-button--success {
+    background-color: var(--traduire-sans-migraine-success-background);
+    border: 1px solid var(--traduire-sans-migraine-success-border);
+}
+
+.traduire-sans-migraine-button--warning {
+    background-color: var(--traduire-sans-migraine-warning-background);
+    border: 1px solid var(--traduire-sans-migraine-warning-border);
+}
+
+.traduire-sans-migraine-button--danger {
+    background-color: var(--traduire-sans-migraine-danger-background);
+    border: 1px solid var(--traduire-sans-migraine-danger-border);
+}
+
+
+.traduire-sans-migraine-button--success:hover {
+    background-color: white;
+    color: var(--traduire-sans-migraine-success-color);
+
+}
+.traduire-sans-migraine-button--warning:hover {
+    background-color: white;
+    color: var(--traduire-sans-migraine-warning-color);
+
+}
+.traduire-sans-migraine-button--danger:hover {
+    background-color: white;
+    color: var(--traduire-sans-migraine-danger-color);
+}
+
+.traduire-sans-migraine-button:disabled {
+    background-color: var(--traduire-sans-migraine-disabled-background);
+    border: 1px solid var(--traduire-sans-migraine-disabled-border);
+    color: var(--traduire-sans-migraine-disabled-color);
+    cursor: not-allowed;
+}

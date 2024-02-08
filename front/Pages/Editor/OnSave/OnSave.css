@@ -1,0 +1,26 @@
+.traduire-sans-migraine-list-languages {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    margin-top: 0.7rem;
+}
+
+.traduire-sans-migraine-list-languages .language {
+    display: flex;
+    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    padding: 2rem;
+}
+
+.traduire-sans-migraine-list-languages .language .left-column {
+    width: 20%;
+}
+
+.traduire-sans-migraine-list-languages .language .right-column {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}

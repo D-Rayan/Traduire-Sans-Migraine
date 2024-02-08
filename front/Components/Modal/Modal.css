@@ -1,0 +1,65 @@
+.traduire-sans-migraine-modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.traduire-sans-migraine-modal__content {
+    width: 50vw;
+    height: 75vh;
+    position: relative;
+    z-index: 1002;
+    overflow: scroll;
+
+
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+
+    backdrop-filter: blur(15px);
+    padding: 35px;
+}
+
+.traduire-sans-migraine-modal__content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.traduire-sans-migraine-modal__content-header-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.traduire-sans-migraine-modal__content-header-close {
+    cursor: pointer;
+}
+
+.traduire-sans-migraine-modal__content-header-close:hover {
+    color: #ff0000;
+}
+
+.traduire-sans-migraine-modal__content-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.traduire-sans-migraine-modal__content-body-text {
+    width: 100%;
+}
+
+.traduire-sans-migraine-modal__header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

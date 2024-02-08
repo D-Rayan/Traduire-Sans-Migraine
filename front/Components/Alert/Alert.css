@@ -1,0 +1,68 @@
+.traduire-sans-migraine-alert {
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    width: 100%;
+}
+
+.traduire-sans-migraine-alert__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.traduire-sans-migraine-alert__title-text {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.traduire-sans-migraine-alert__title-close {
+    cursor: pointer;
+}
+
+.traduire-sans-migraine-alert__body {
+    margin-top: 0.5rem;
+}
+
+.traduire-sans-migraine-alert-primary {
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #b8daff;
+}
+.traduire-sans-migraine-alert-secondary {
+    color: #383d41;
+    background-color: #e2e3e5;
+    border-color: #d6d8db;
+}
+.traduire-sans-migraine-alert-success {
+    color: var(--traduire-sans-migraine-success-color);
+    background-color: var(--traduire-sans-migraine-success-background);
+    border-color: var(--traduire-sans-migraine-success-border);
+}
+.traduire-sans-migraine-alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.traduire-sans-migraine-alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+.traduire-sans-migraine-alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+.traduire-sans-migraine-alert-light {
+    color: #818182;
+    background-color: #FCFCFD;
+    border-color: #DEE1E6;
+}
+.traduire-sans-migraine-alert-dark {
+    color: #1b1e21;
+    background-color: #d6d8d9;
+    border-color: #c6c8ca;
+}

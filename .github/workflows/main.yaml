@@ -1,0 +1,61 @@
+name: Deploy Plugin to Production
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -p ${{ secrets.SSH_PORT_PRODUCTION }} -H ${{ secrets.SSH_HOST_PRODUCTION }} >> ~/.ssh/known_hosts
+
+      - name: Upload Plugin
+        run: |
+          # Replace these with your own values
+          SOURCE_PATH="./"
+          DESTINATION_SERVER="${{ secrets.SSH_USER_PRODUCTION }}@${{ secrets.SSH_HOST_PRODUCTION }}:~/www/wp-content/uploads/products/traduire-sans-migraine"
+          
+          rsync -arvp --rsh='ssh -p${{ secrets.SSH_PORT_PRODUCTION }}' $SOURCE_PATH $DESTINATION_SERVER
+
+      - name: Zip and Clear directory
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_PRODUCTION }}
+          username: ${{ secrets.SSH_USER_PRODUCTION }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}
+          port: ${{ secrets.SSH_PORT_PRODUCTION }}
+          script: |
+            cd ~/www/wp-content/uploads/products/traduire-sans-migraine
+            mkdir traduire-sans-migraine
+            mv front includes languages doctor.php index.php traduire-sans-migraine
+            rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore
+            zip -rm traduire-sans-migraine.zip traduire-sans-migraine
+            rm -rf traduire-sans-migraine
+
+      # Notify Slack on success
+      - name: Notify Slack on Success
+        if: success()
+        uses: someimportantcompany/github-actions-slack-message@v1
+        with:
+          color: success
+          text: "Deployment Plugin files into production succeeded !\n${{ github.event.head_commit.message }}"
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+
+      # Notify Slack on failure
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: someimportantcompany/github-actions-slack-message@v1
+        with:
+          color: failure
+          text: "Deployment API to production failed. Please check the build logs.\n${{ github.event.head_commit.message }}"
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}

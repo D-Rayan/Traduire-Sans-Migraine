@@ -1,0 +1,57 @@
+.traduire-sans-migraine-step {
+    width: 100%;
+}
+
+.traduire-sans-migraine-step .icon {
+    border-radius: 4px;
+    border: 1px solid;
+    background-color: #F9FAFB;
+}
+
+.traduire-sans-migraine-step ol {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: start;
+    width: 100%;
+    font-weight: 500;
+}
+
+.traduire-sans-migraine-step ol > li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6B7280;
+}
+
+.traduire-sans-migraine-step li.success .icon {
+    background-color: var(--traduire-sans-migraine-success-background);
+    border-color: var(--traduire-sans-migraine-success-border);
+}
+
+.traduire-sans-migraine-step li.error .icon {
+    background-color: var(--traduire-sans-migraine-danger-background);
+    border-color: var(--traduire-sans-migraine-danger-border);
+}
+
+.traduire-sans-migraine-step li.success {
+
+}
+
+.traduire-sans-migraine-step li.current {
+    color: #3B82F6;
+}
+
+.traduire-sans-migraine-step li.current .icon {
+    background-color: rgb(239 246 255);
+}
+
+.traduire-sans-migraine-step ol > li span {
+    padding: .375rem;
+    height: fit-content;
+}
+
+.traduire-sans-migraine-step svg {
+    width: .75rem;
+    height: .75rem;
+}
