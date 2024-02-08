@@ -4,7 +4,7 @@
  * Plugin Name: Traduire Sans Migraine
  * Plugin URI: https://www.seo-sans-migraine.fr/traduire-sans-migraine
  * Description: Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.
- * Version: 0.0.6
+ * Version: 0.2.0
  * Author: Seo Sans Migraine
  * Author URI: https://www.seo-sans-migraine.fr
  * License: GPL2
