@@ -1,29 +1,21 @@
 <?php
-function get_environment()
-{
-    $dirname = dirname(__FILE__);
-
-    if (strpos($dirname, 'staging') !== false) {
-        return 'staging';
-    }
-    return "www";
-}
+include 'env.php';
 
 $update = array(
-    "name" => "traduire-sans-migraine",
-    "slug" => "traduire-sans-migraine",
+    "name" => TSM__NAME,
+    "slug" => TSM__SLUG,
     "author" => "<a href='https://www.seo-sans-migraine.fr/'>SEO Sans Migraine</a>",
     "author_profile" => "https://profiles.wordpress.org/seo-sans-migraine",
-    "version" => "0.10.0",
-    "download_url" => "https://". get_environment() .".seo-sans-migraine.fr/wp-content/uploads/products/traduire-sans-migraine/traduire-sans-migraine.zip",
-    "requires" => "3.0",
-    "tested" => "5.8",
-    "requires_php" => "7.0",
-    "last_updated" => "2024-02-08 02:10:00",
+    "version" => TSM__VERSION,
+    "download_url" => TSM__URL_DOMAIN . "/wp-content/uploads/products/traduire-sans-migraine/traduire-sans-migraine.zip",
+    "requires" => TSM__WORDPRESS_REQUIREMENT,
+    "tested" => TSM__WORDPRESS_TESTED,
+    "requires_php" => TSM__PHP_REQUIREMENT,
+    "last_updated" => date("Y-m-d H:i:s", filemtime( __FILE__ )),
     "sections" => [
-        "description" => "TraduireSansMigraine is a plugin to help you improve your multilingual SEO. It will help you to translate your content without headache.",
-        "installation" => "Just install it and active your account by following the steps.",
-        "changelog" => "<h4>1.0 –  1 august 2021</h4><ul><li>Bug fixes.</li><li>Initital release.</li></ul>"
+        "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
+        "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
+        "changelog" => "Un peu de HTML pour décrire ce qu'il y a eu."
     ]
 );
 

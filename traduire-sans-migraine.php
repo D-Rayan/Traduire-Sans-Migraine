@@ -18,17 +18,9 @@ if (!defined("ABSPATH")) {
 }
 
 include "env.php";
-
-define("TSM__PHP_REQUIREMENT", "7.0");
-define("TSM__VERSION", "0.0.6");
-define("TSM__WORDPRESS_REQUIREMENT", "5.8");
-
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
-define("TSM__NAME", "Traduire Sans Migraine");
-define("TSM__SLUG", "traduire-sans-migraine");
-define("TSM__TEXT_DOMAIN", "traduire-sans-migraine");
 
 require_once TSM__ABSOLUTE_PATH . "/includes/autoload.php";
 class TraduireSansMigraine {
