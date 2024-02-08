@@ -37,8 +37,9 @@ jobs:
           script: |
             cd ~/www/wp-content/uploads/products/traduire-sans-migraine
             mkdir traduire-sans-migraine
-            mv front includes languages traduire-sans-migraine.php index.php env.global.php traduire-sans-migraine
+            mv front includes languages traduire-sans-migraine.php index.php traduire-sans-migraine
             cp env.production.php traduire-sans-migraine/env.php
+            cp env.global.php traduire-sans-migraine/env.global.php
             rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore && rm -rf env.staging.php && rm -rf env.php
             zip -rm traduire-sans-migraine.zip traduire-sans-migraine
             mv env.production.php env.php
