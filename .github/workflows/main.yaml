@@ -39,7 +39,7 @@ jobs:
             mkdir traduire-sans-migraine
             mv front includes languages traduire-sans-migraine.php index.php traduire-sans-migraine
             mv env.production.php traduire-sans-migraine/env.php
-            rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore
+            rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore && rm -rf env.staging.php
             zip -rm traduire-sans-migraine.zip traduire-sans-migraine
             rm -rf traduire-sans-migraine
 
