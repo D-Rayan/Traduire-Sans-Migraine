@@ -1,6 +1,7 @@
 <?php
 
 require_once TSM__ABSOLUTE_PATH . "/includes/Settings.php";
+require_once TSM__ABSOLUTE_PATH . "/includes/Updater.php";
 // Will autoload all Components
 spl_autoload_register(function ($class) {
     $parameters = [
