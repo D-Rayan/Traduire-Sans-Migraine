@@ -1,23 +1,23 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.3.0\n"
+"Project-Id-Version: Traduire Sans Migraine 0.3.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
-"Language-Team: FR\n"
+"Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-09T14:00:110\n"
+"POT-Creation-Date: 2024-02-09T14:21:580\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
-# /front/Pages/Editor/Editor.php
+# Editor.php
 msgid "Display %s After Save"
 msgstr ""
 
 msgid "Show %s"
 msgstr ""
 
-# /front/Pages/Editor/OnSave/OnSave.php
+# OnSave.php
 msgid "Post ID missing"
 msgstr ""
 
@@ -57,18 +57,18 @@ msgstr ""
 msgid "Translate"
 msgstr ""
 
-# /includes/Languages/Polylang.php
+# Polylang.php
 msgid "%s not existing."
 msgstr ""
 
-# /includes/SeoSansMigraine/Client.php
+# Client.php
 msgid "Activate your plugin"
 msgstr ""
 
 msgid "You need to activate the licence of your plugin"
 msgstr ""
 
-# /includes/Settings.php
+# Settings.php
 msgid "PHP version is too low"
 msgstr ""
 
@@ -91,10 +91,6 @@ msgstr ""
 
 # Description
 msgid "Translate Without Headache will help you translate your content within keeping good SEO practices."
-msgstr ""
-
-# Version
-msgid "0.3.1"
 msgstr ""
 
 # Author

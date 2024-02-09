@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-09T14:00:110\n"
+"POT-Creation-Date: 2024-02-09T14:21:580\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -103,10 +103,6 @@ msgstr ""
 "Traduire Sans Migraine va vous aider à traduire votre contenu tout en "
 "gardant les bonnes pratiques SEO."
 
-# Version
-msgid "0.3.1"
-msgstr "0.3.1"
-
 # Author
 msgid "Seo Sans Migraine"
 msgstr "Seo Sans Migraine"
@@ -122,6 +118,10 @@ msgstr "traduire-sans-migraine"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+# Version
+#~ msgid "0.3.1"
+#~ msgstr "0.3.1"
 
 # Plugin Name
 #~ msgid "Traduire Sans Migraine"

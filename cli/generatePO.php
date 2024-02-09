@@ -1,5 +1,5 @@
 <?php
-include "env.global.php";
+include "../env.global.php";
 $file = fopen(__DIR__ . "/../languages/traduire-sans-migraine.pot", "w");
 if (!$file) {
     die("Could not open file");
@@ -9,7 +9,7 @@ fwrite($file, "msgstr \"\"\n");
 fwrite($file, "\"Project-Id-Version: ".TSM__NAME." ".TSM__VERSION."\\n\"\n");
 fwrite($file, "\"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\\n\"\n");
 fwrite($file, "\"Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\\n\"\n");
-fwrite($file, "\"Language-Team: FR\\n\"\n");
+fwrite($file, "\"Language-Team: EN\\n\"\n");
 fwrite($file, "\"MIME-Version: 1.0\\n\"\n");
 fwrite($file, "\"Content-Type: text/plain; charset=UTF-8\\n\"\n");
 fwrite($file, "\"Content-Transfer-Encoding: 8bit\\n\"\n");
@@ -61,5 +61,5 @@ function readFilesThroughDir($dir, $msgIds = ["PLACEHOLDER_VERSION" => true]) {
     return $msgIds;
 }
 
-readFilesThroughDir(__DIR__);
+readFilesThroughDir(__DIR__ . "/..");
 fclose($file);
