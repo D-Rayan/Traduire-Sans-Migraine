@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine;
+namespace TraduireSansMigraine\Wordpress;
 
 use stdClass;
 
@@ -33,7 +33,7 @@ class Updater {
         if( false === $remote || ! $this->cache_allowed ) {
 
             $remote = wp_remote_get(
-                TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php',
+                TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php?locale=' . get_locale() . '&version=' . $this->version . '&php=' . PHP_VERSION . '&wp=' . get_bloginfo( 'version' ),
                 array(
                     'timeout' => 10,
                     'headers' => array(

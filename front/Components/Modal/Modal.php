@@ -33,7 +33,7 @@ class Modal {
         }
     }
 
-    public static function render($title = "TraduireSansMigraine", $message = "TraduireSansMigraine is a plugin to help you improve your multilingual SEO.", $buttons = []) {
+    public static function render($title, $message, $buttons = []) {
         ?>
         <div class="traduire-sans-migraine-modal">
             <div class="traduire-sans-migraine-modal__content">

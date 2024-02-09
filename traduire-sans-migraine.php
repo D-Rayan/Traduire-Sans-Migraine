@@ -7,11 +7,16 @@
  * Version: 0.2.0
  * Author: Seo Sans Migraine
  * Author URI: https://www.seo-sans-migraine.fr
+ * Text Domain: traduire-sans-migraine
  * License: GPL2
  */
 
+namespace TraduireSansMigraine;
+
 
 use TraduireSansMigraine\SeoSansMigraine\Hooks;
+use TraduireSansMigraine\Wordpress\TextDomain;
+use TraduireSansMigraine\Wordpress\Updater;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -21,15 +26,17 @@ include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
-
 require_once TSM__ABSOLUTE_PATH . "/includes/autoload.php";
 class TraduireSansMigraine {
 
     private $settings;
     private $updater;
+
+    private $textDomain;
     public function __construct() {
-        $this->settings = new TraduireSansMigraine\Settings();
-        $this->updater = new TraduireSansMigraine\Updater();
+        $this->settings = new Settings();
+        $this->updater = new Updater();
+        $this->textDomain = new TextDomain();
         $this->init();
     }
 
@@ -50,13 +57,9 @@ class TraduireSansMigraine {
         require_once TSM__ABSOLUTE_PATH . "/front/Pages/autoload.php";
     }
 
-    public function loadTextDomain() {
-        load_plugin_textdomain(TSM__TEXT_DOMAIN, false, TSM__RELATIVE_PATH . "/languages");
-    }
-
     public function init() {
         $this->updater->init();
-        $this->loadTextDomain();
+        $this->textDomain->loadTextDomain();
         $this->loadComponents();
         $this->loadPages();
         add_action("admin_init", [$this, "checkRequirements"]);

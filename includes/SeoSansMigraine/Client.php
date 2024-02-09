@@ -4,6 +4,7 @@ namespace TraduireSansMigraine\SeoSansMigraine;
 
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Settings;
+use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -27,7 +28,7 @@ class Client
         if (($response["success"] === false || !isset($response["data"]["slug"]) || !isset($response["data"]["quota"])) &&
             !((defined('DOING_CRON') && DOING_CRON) || (defined('DOING_AJAX') && DOING_AJAX))) {
             add_action( 'admin_notices', function () {
-                Step::render("Activate your plugin", "You need to activate the licence of your plugin", "error");
+                Step::render(TextDomain::__("Activate your plugin"), TextDomain::__("You need to activate the licence of your plugin"));
             });
         }
         return $response["success"];

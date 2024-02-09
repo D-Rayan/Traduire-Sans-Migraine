@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Languages;
 
+use TraduireSansMigraine\Wordpress\TextDomain;
+
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -10,7 +12,7 @@ class Polylang implements LanguageInterface
     public function getLanguages(): array
     {
         if (!function_exists("pll_languages_list")) {
-            throw new \Exception("pll_languages_list not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_languages_list"));
         }
 
         $languages = pll_languages_list(['fields' => []]);
@@ -29,7 +31,7 @@ class Polylang implements LanguageInterface
     public function getLanguageForPost(string $postId): string
     {
         if (!function_exists("pll_get_post_language")) {
-            throw new \Exception("pll_get_post_language not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post_language"));
         }
 
         return pll_get_post_language($postId, "slug");
@@ -38,7 +40,7 @@ class Polylang implements LanguageInterface
     public function getTranslationPost(string $postId, string $codeLanguage)
     {
         if (!function_exists("pll_get_post")) {
-            throw new \Exception("pll_get_post not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post"));
         }
 
         return pll_get_post($postId, $codeLanguage);
@@ -64,7 +66,7 @@ class Polylang implements LanguageInterface
     public function saveAllTranslationsPost(array $translationsMap)
     {
         if (!function_exists("pll_save_post_translations")) {
-            throw new \Exception("pll_save_post_translations not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
         }
 
         $languages = $this->getLanguages();
@@ -81,7 +83,7 @@ class Polylang implements LanguageInterface
     function getTranslationCategories(array $categories, string $codeLanguage): array
     {
         if (!function_exists("pll_get_term")) {
-            throw new \Exception("pll_get_term not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_term"));
         }
 
         $results = [];
@@ -98,7 +100,7 @@ class Polylang implements LanguageInterface
     public function getCurrentLanguage(): string
     {
         if (!function_exists("pll_current_language")) {
-            throw new \Exception("pll_current_language not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_current_language"));
         }
 
         return pll_current_language("slug");
@@ -107,10 +109,10 @@ class Polylang implements LanguageInterface
     public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId)
     {
         if (!function_exists("pll_get_post_translations")) {
-            throw new \Exception("pll_get_post_translations not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post_translations"));
         }
         if (!function_exists("pll_save_post_translations")) {
-            throw new \Exception("pll_save_post_translations not existing.");
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
         }
         $translatedPosts = pll_get_post_translations($postId);
         $translatedPosts[$codeLanguage] = $translatedPostId;

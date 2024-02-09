@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
+"Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
+"Language-Team: FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-02-09T13:21:150\n"
+"X-Generator: Seo Sans Migraine\n"
+"X-Domain: traduire-sans-migraine\n"
+# /front/Pages/Editor/Editor.php
+msgid "Display %s After Save"
+msgstr ""
+
+msgid "Show %s"
+msgstr ""
+
+# /front/Pages/Editor/OnSave/OnSave.php
+msgid "Post ID missing"
+msgstr ""
+
+msgid "Token invalid"
+msgstr ""
+
+msgid "Post not found"
+msgstr ""
+
+msgid "Token ID missing"
+msgstr ""
+
+msgid "Token not found"
+msgstr ""
+
+msgid "Post ID is not set"
+msgstr ""
+
+msgid "%s will use this language as reference."
+msgstr ""
+
+msgid "Sending content"
+msgstr ""
+
+msgid "Translation"
+msgstr ""
+
+msgid "Retrieve translation"
+msgstr ""
+
+msgid "Saving translation"
+msgstr ""
+
+msgid "Use the checkbox on the left to add this language to the list of translations"
+msgstr ""
+
+msgid "Translate"
+msgstr ""
+
+# /includes/Languages/Polylang.php
+msgid "%s not existing."
+msgstr ""
+
+# /includes/SeoSansMigraine/Client.php
+msgid "Activate your plugin"
+msgstr ""
+
+msgid "You need to activate the licence of your plugin"
+msgstr ""
+
+# /includes/Settings.php
+msgid "PHP version is too low"
+msgstr ""
+
+msgid "%s required at least PHP %s"
+msgstr ""
+
+msgid "%s required at least one of the following plugins %s"
+msgstr ""
+
+msgid "Missing required plugins"
+msgstr ""
+

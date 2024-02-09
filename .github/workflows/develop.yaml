@@ -40,7 +40,7 @@ jobs:
             mv front includes languages traduire-sans-migraine.php index.php traduire-sans-migraine
             cp env.staging.php traduire-sans-migraine/env.php
             cp env.global.php traduire-sans-migraine/env.global.php
-            rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore && rm -rf env.production.php && rm -rf env.php
+            rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore && rm -rf env.production.php && rm -rf env.php && rm -rf generatePO.php
             zip -rm traduire-sans-migraine.zip traduire-sans-migraine
             mv env.staging.php env.php
             rm -rf traduire-sans-migraine

@@ -5,6 +5,7 @@ namespace TraduireSansMigraine\Front\Pages\Editor;
 use TraduireSansMigraine\Front\Components\Button;
 use TraduireSansMigraine\Front\Components\Checkbox;
 use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Wordpress\TextDomain;
 
 include "OnSave/OnSave.php";
 class Editor {
@@ -45,12 +46,12 @@ class Editor {
         } catch (\Exception $e) {
             return;
         }
-        $isDefaultChecked = !isset($_GET["tsmShow"]) ? strpos(get_option('WPLANG'), $currentLanguage) === 0 : $_GET["traduire-sans-migraineShow"] === "on";
+        $isDefaultChecked = !isset($_GET["tsmShow"]) ? strpos(get_option('WPLANG'), $currentLanguage) === 0 : $_GET["tsmShow"] === "on";
         ?>
         <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
         <?php
-            Checkbox::render("Display TraduireSansMigraine After Save", "traduire-sans-migraine–is-enable", $isDefaultChecked, false);
-            Button::render("Show TraduireSansMigraine", "primary", "display-traduire-sans-migraine-button");
+            Checkbox::render(TextDomain::__("Display %s After Save", TSM__NAME), "traduire-sans-migraine–is-enable", $isDefaultChecked, false);
+            Button::render(TextDomain::__("Show %s", TSM__NAME), "primary", "display-traduire-sans-migraine-button");
         ?>
         </div>
         <?php
@@ -69,7 +70,7 @@ class Editor {
 
         if ( isset( $_POST['save'] ) || isset( $_POST['publish'] ) ) {
             $tsmShow = isset($_POST["traduire-sans-migraine–is-enable"]) ? $_POST["traduire-sans-migraine–is-enable"] : "off";
-            return $location . "&traduire-sans-migraineShow=" . $tsmShow;
+            return $location . "&tsmShow=" . $tsmShow;
         }
 
         return $location;

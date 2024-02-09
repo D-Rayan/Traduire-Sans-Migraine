@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine;
 
 use TraduireSansMigraine\Front\Components\Step;
+use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -27,7 +28,7 @@ class Settings
     }
 
     public function noticePhp() {
-        Step::render("PHP version is too low", "TraduireSansMigraine required at least PHP " . TSM__PHP_REQUIREMENT, "error");
+        Step::render(TextDomain::__("PHP version is too low"), TextDomain::__("%s required at least PHP %s",  TSM__NAME, TSM__PHP_REQUIREMENT));
     }
 
     private function checkPlugins($printNotice = false)
@@ -59,9 +60,9 @@ class Settings
 
         if (!$result && $printNotice) {
             foreach ($pluginsListsMissing as $listMissing) {
-                $notice = "TraduireSansMigraine required at least one of the following plugins " . join(", ", $listMissing);
+                $notice = TextDomain::__("%s required at least one of the following plugins %s", TSM__NAME, join(", ", $listMissing));
                 add_action( 'admin_notices', function () use ($notice) {
-                    Step::render("Missings required plugins", $notice, "error");
+                    Step::render(TextDomain::__("Missing required plugins"), $notice, "error");
                 });
             }
         }

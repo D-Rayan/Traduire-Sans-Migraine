@@ -9,6 +9,7 @@ use TraduireSansMigraine\Front\Components\Checkbox;
 use TraduireSansMigraine\Front\Components\Modal;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Wordpress\TextDomain;
 
 class OnSave {
 
@@ -53,19 +54,19 @@ class OnSave {
 
     public function startTranslate() {
         if (!isset($_GET["post_id"]) || !isset($_GET["language"])) {
-            echo json_encode(["success" => false, "error" => "Post ID missing"]);
+            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
             wp_die();
         }
         $result = $this->clientSeoSansMigraine->checkCredential("BFAZIOEZ29828ED128");
         if (!$result) {
-            echo json_encode(["success" => false, "error" => "Token invalid"]);
+            echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
             wp_die();
         }
         $postId = $_GET["post_id"];
         $codeTo = $_GET["language"];
         $post = get_post($postId);
         if (!$post) {
-            echo json_encode(["success" => false, "error" => "Post not found"]);
+            echo json_encode(["success" => false, "error" => TextDomain::__("Post not found")]);
             wp_die();
         }
         $languageManager = new LanguageManager();
@@ -94,13 +95,13 @@ class OnSave {
 
     public function getTranslateState() {
         if (!isset($_GET["tokenId"])) {
-            echo json_encode(["success" => false, "error" => "Token ID missing"]);
+            echo json_encode(["success" => false, "error" => TextDomain::__("Token ID missing")]);
             wp_die();
         }
         $tokenId = $_GET["tokenId"];
         $state = get_option("_seo_sans_migraine_state_" . $tokenId, [1 => "pending"]);
         if (!$state) {
-            echo json_encode(["success" => false, "error" => "Token not found"]);
+            echo json_encode(["success" => false, "error" => TextDomain::__("Token not found")]);
             wp_die();
         }
         if (isset($state[4]) && $state[4] === "success") {
@@ -113,7 +114,7 @@ class OnSave {
 
     public function render() {
         if (!isset($_GET["post_id"])) {
-            Modal::render("TraduireSansMigraine", Alert::getHTML("TraduireSansMigraine", "Post ID is not set", "danger"));
+            Modal::render(TSM__NAME, Alert::getHTML(TSM__NAME, TextDomain::__("Post ID is not set"), "danger"));
             return;
         }
         $localPostId = $_GET["post_id"];
@@ -146,19 +147,19 @@ class OnSave {
                         <div class="right-column">
                             <?php
                             if ($postId == $localPostId) {
-                                Alert::render(false, "TraduireSansMigraine will use this language as reference.", "success", [
+                                Alert::render(false, TextDomain::__("%s will use this language as reference.", TSM__NAME), "success", [
                                         "isDismissible" => false
                                 ]);
                             } else {
                                 Step::render([
-                                    "Sending content",
-                                    "Translation",
-                                    "Retrieve translation",
-                                    "Saving translation"
+                                    TextDomain::__("Sending content"),
+                                    TextDomain::__("Translation"),
+                                    TextDomain::__("Retrieve translation"),
+                                    TextDomain::__("Saving translation")
                                 ], [
                                     "classname" => $checked ? "":  "hidden"
                                 ]);
-                                Alert::render(false, "Use the checkbox on the left to add this language to the list of translations", "primary", [
+                                Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations"), "primary", [
                                     "isDismissible" => false,
                                     "classname" => $checked ? "hidden" : ""
                                 ]);
@@ -176,8 +177,8 @@ class OnSave {
         </div>
         <?php
         $htmlContent = ob_get_clean();
-        Modal::render("TraduireSansMigraine", $htmlContent, [
-            Button::getHTML("Translate", "warning", "translate-button")
+        Modal::render(TSM__NAME, $htmlContent, [
+            Button::getHTML(TextDomain::__("Translate"), "warning", "translate-button")
         ]);
         wp_die();
     }

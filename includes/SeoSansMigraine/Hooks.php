@@ -5,7 +5,7 @@ namespace TraduireSansMigraine\SeoSansMigraine;
 
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\Wordpress\LinkManager;
-use WP_REST_Response;
+use \WP_REST_Response;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -25,27 +25,27 @@ class Hooks
         global $wpdb;
         try {
             if (!isset($data["id"]) || !isset($data["dataToTranslate"]) || !isset($data["codeTo"])) {
-                return new WP_REST_Response(["success" => false, "error" => "Missing parameters"], 400);
+                return new \WP_REST_Response(["success" => false, "error" => "Missing parameters"], 400);
             }
             $tokenId = $data["id"];
             $dataToTranslate = $data["dataToTranslate"];
             $codeTo = $data["codeTo"];
             if ($dataToTranslate === false) {
                 update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "error"]);
-                return new WP_REST_Response(["success" => false, "error" => "Data to translate not found"], 400);
+                return new \WP_REST_Response(["success" => false, "error" => "Data to translate not found"], 400);
             }
             $postId = get_option("_seo_sans_migraine_postId_" . $tokenId);
             update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "pending"]);
             if (!$postId) {
                 update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "error"]);
                 delete_option("_seo_sans_migraine_postId_" . $tokenId);
-                return new WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
+                return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
             }
             $originalPost = get_post($postId);
             if (!$originalPost) {
                 update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "error"]);
                 delete_option("_seo_sans_migraine_postId_" . $tokenId);
-                return new WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
+                return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
             }
             $languageManager = new LanguageManager();
             $translatedPostId = $languageManager->getLanguageManager()->getTranslationPost($postId, $codeTo);
@@ -74,7 +74,7 @@ class Hooks
 
                 if (!$translatedPostId) {
                     update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "error"]);
-                    return new WP_REST_Response(["success" => false, "error" => "Could not create post"], 500);
+                    return new \WP_REST_Response(["success" => false, "error" => "Could not create post"], 500);
                 }
                 $thumbnailId = get_post_meta($originalPost->ID, '_thumbnail_id', true);
                 if (!empty($thumbnailId)) {
@@ -115,9 +115,9 @@ class Hooks
             update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "success"]);
 
 
-            return new WP_REST_Response($data, 200);
+            return new \WP_REST_Response($data, 200);
         } catch (\Exception $e) {
-            return new WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
+            return new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
         }
     }
 
