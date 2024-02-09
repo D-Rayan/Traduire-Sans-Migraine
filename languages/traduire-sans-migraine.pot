@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
+"Project-Id-Version: Traduire Sans Migraine 0.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-09T13:21:150\n"
+"POT-Creation-Date: 2024-02-09T14:00:110\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # /front/Pages/Editor/Editor.php
@@ -79,5 +79,37 @@ msgid "%s required at least one of the following plugins %s"
 msgstr ""
 
 msgid "Missing required plugins"
+msgstr ""
+
+# Plugin Name
+msgid "Translate Without Headache"
+msgstr ""
+
+# Plugin URI
+msgid "https://www.seo-sans-migraine.com/translate-without-headache"
+msgstr ""
+
+# Description
+msgid "Translate Without Headache will help you translate your content within keeping good SEO practices."
+msgstr ""
+
+# Version
+msgid "0.3.1"
+msgstr ""
+
+# Author
+msgid "Seo Sans Migraine"
+msgstr ""
+
+# Author URI
+msgid "https://www.seo-sans-migraine.com"
+msgstr ""
+
+# Text Domain
+msgid "traduire-sans-migraine"
+msgstr ""
+
+# License
+msgid "GPL2"
 msgstr ""
 

@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Plugin Name: Traduire Sans Migraine
- * Plugin URI: https://www.seo-sans-migraine.fr/traduire-sans-migraine
- * Description: Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.
- * Version: 0.2.0
+ * Plugin Name: Translate Without Headache
+ * Plugin URI: https://www.seo-sans-migraine.com/translate-without-headache
+ * Description: Translate Without Headache will help you translate your content within keeping good SEO practices.
+ * Version: PLACEHOLDER_VERSION
  * Author: Seo Sans Migraine
- * Author URI: https://www.seo-sans-migraine.fr
+ * Author URI: https://www.seo-sans-migraine.com
  * Text Domain: traduire-sans-migraine
  * License: GPL2
  */

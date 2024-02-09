@@ -1,6 +1,6 @@
 <?php
 include "env.global.php";
-$file = fopen(__DIR__ . "/languages/traduire-sans-migraine.pot", "w");
+$file = fopen(__DIR__ . "/../languages/traduire-sans-migraine.pot", "w");
 if (!$file) {
     die("Could not open file");
 }
@@ -17,7 +17,7 @@ fwrite($file, "\"POT-Creation-Date: ".date("Y-m-d") . "T". date("H:i:sZ")."\\n\"
 fwrite($file, "\"X-Generator: Seo Sans Migraine\\n\"\n");
 fwrite($file, "\"X-Domain: ".TSM__TEXT_DOMAIN."\\n\"\n");
 
-function readFilesThroughtDir($dir, $msgIds = []) {
+function readFilesThroughDir($dir, $msgIds = ["PLACEHOLDER_VERSION" => true]) {
     global $file;
     $includes = scandir($dir);
     foreach ($includes as $include) {
@@ -26,14 +26,14 @@ function readFilesThroughtDir($dir, $msgIds = []) {
         }
         $path = $dir . "/" . $include;
         if (is_dir($path)) {
-            $msgIds = readFilesThroughtDir($path, $msgIds);
+            $msgIds = readFilesThroughDir($path, $msgIds);
             continue;
         }
         $content = file_get_contents($path);
         $regex = '/TextDomain::__\(\"([^"]*)\"/';
         preg_match_all($regex, $content, $matches);
         if (count($matches[1]) > 0) {
-            fwrite($file, "# " . str_replace(__DIR__, "", $path) . "\n");
+            fwrite($file, "# " . $include . "\n");
             foreach ($matches[1] as $match) {
                 if (isset($msgIds[$match])) {
                     continue;
@@ -43,9 +43,23 @@ function readFilesThroughtDir($dir, $msgIds = []) {
                 $msgIds[$match] = true;
             }
         }
+
+        $regex = '/^ \* ([^:]+): (.+)/m';
+        preg_match_all($regex, $content, $matches);
+        if (count($matches[2]) > 0) {
+            foreach ($matches[2] as $index => $match) {
+                if (isset($msgIds[$match])) {
+                    continue;
+                }
+                fwrite($file, "# " . $matches[1][$index] . "\n");
+                fwrite($file, "msgid \"" . $match . "\"\n");
+                fwrite($file, "msgstr \"\"\n\n");
+                $msgIds[$match] = true;
+            }
+        }
     }
     return $msgIds;
 }
 
-readFilesThroughtDir(__DIR__);
+readFilesThroughDir(__DIR__);
 fclose($file);
