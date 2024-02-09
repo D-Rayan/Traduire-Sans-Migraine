@@ -26,8 +26,8 @@ if (!defined("ABSPATH")) {
 include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
-define("TSM__PLUGIN_NAME", dirname(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
+define("TSM__PLUGIN_NAME", "traduire-sans-migraine");
 require_once TSM__ABSOLUTE_PATH . "/includes/autoload.php";
 class TraduireSansMigraine {
 

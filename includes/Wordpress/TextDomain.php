@@ -4,16 +4,18 @@ namespace TraduireSansMigraine\Wordpress;
 
 class TextDomain
 {
+    private $determineLocale;
     public function loadTextDomain()
     {
-        load_plugin_textdomain("traduire-sans-migraine", false, TSM__ABSOLUTE_PATH . '/languages');
+        $this->determineLocale = determine_locale();
+        load_plugin_textdomain("traduire-sans-migraine", false, TSM__PLUGIN_NAME . '/languages');
         add_filter( 'load_textdomain_mofile', [$this, "loadMOFile"], 10, 2 );
     }
 
     function loadMOFile( $mofile, $domain ) {
         if ( "traduire-sans-migraine" === $domain && false !== strpos( $mofile, WP_LANG_DIR . '/plugins/' ) ) {
-            $locale = apply_filters( 'plugin_locale', determine_locale(), $domain );
-            $mofile = WP_PLUGIN_DIR . '/' . TSM__PLUGIN_NAME . '/languages/' . $domain . '-' . $locale . '.mo';
+            $locale = apply_filters( 'plugin_locale', $this->determineLocale, $domain );
+            $mofile = TSM__ABSOLUTE_PATH . '/languages/' . $domain . '-' . $locale . '.mo';
         }
         return $mofile;
     }
