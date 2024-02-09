@@ -1,13 +1,14 @@
 <?php
 
 /**
- * Plugin Name: Translate Without Headache
+ * Plugin Name: Traduire Sans Migraine
  * Plugin URI: https://www.seo-sans-migraine.com/translate-without-headache
  * Description: Translate Without Headache will help you translate your content within keeping good SEO practices.
  * Version: PLACEHOLDER_VERSION
  * Author: Seo Sans Migraine
  * Author URI: https://www.seo-sans-migraine.com
  * Text Domain: traduire-sans-migraine
+ * Domain Path: /languages
  * License: GPL2
  */
 
@@ -25,6 +26,7 @@ if (!defined("ABSPATH")) {
 include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
+define("TSM__PLUGIN_NAME", dirname(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
 require_once TSM__ABSOLUTE_PATH . "/includes/autoload.php";
 class TraduireSansMigraine {
