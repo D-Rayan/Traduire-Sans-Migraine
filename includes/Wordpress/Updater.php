@@ -62,10 +62,7 @@ class Updater {
 
 
     function info( $res, $action, $args ) {
-        die();
 
-        print_r( $action );
-        print_r( $args );
 
         // do nothing if you're not getting plugin information right now
         if( 'plugin_information' !== $action ) {
