@@ -72,11 +72,14 @@ function sendRequest(modal, languages) {
                     return resolve();
                 }
                 const status = data.data;
-                console.log(status);
                 const maxStep = Object.keys(status).reduce((acc, key) => {
-                    if (+key > acc) return key;
+                    if (+key > acc) return +key;
                     return acc;
                 }, 1);
+                console.log({
+                    maxStep,
+                    status
+                });
                 switch (status[maxStep]) {
                     case "error":
                         setStepProgress(stepList, maxStep, "error");

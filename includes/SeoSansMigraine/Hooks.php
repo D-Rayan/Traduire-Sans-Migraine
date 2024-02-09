@@ -84,7 +84,7 @@ class Hooks
                 $languageManager->getLanguageManager()->setTranslationPost($postId, $codeTo, $translatedPostId);
             } else {
                 $updatePostData = [
-                    'ID' => $postId,
+                    'ID' => $translatedPostId,
                     'post_category' => $dataToTranslate["categories"]
                 ];
                 if (isset($dataToTranslate["content"])) {
