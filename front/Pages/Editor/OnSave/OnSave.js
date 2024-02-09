@@ -65,7 +65,7 @@ function sendRequest(modal, languages) {
             goNextStep(stepList);
             const tokenId = data.data.tokenId;
             const process = async () => {
-                const fetchResponse = await fetch(`${traduire-sans-migraine.url}editor_get_state_translate&tokenId=${tokenId}`);
+                const fetchResponse = await fetch(`${tsm.url}editor_get_state_translate&tokenId=${tokenId}`);
                 const data = await fetchResponse.json();
                 if (!data.success || !("data" in data)) {
                     setStepAsError(stepList);
