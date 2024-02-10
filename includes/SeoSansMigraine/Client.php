@@ -2,6 +2,7 @@
 
 namespace TraduireSansMigraine\SeoSansMigraine;
 
+use TraduireSansMigraine\Front\Components\Alert;
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\TextDomain;
@@ -28,7 +29,7 @@ class Client
         if (($response["success"] === false || !isset($response["data"]["slug"]) || !isset($response["data"]["quota"])) &&
             !((defined('DOING_CRON') && DOING_CRON) || (defined('DOING_AJAX') && DOING_AJAX))) {
             add_action( 'admin_notices', function () {
-                Step::render(TextDomain::__("Activate your plugin"), TextDomain::__("You need to activate the licence of your plugin"));
+                Alert::render(TextDomain::__("Activate your plugin"), TextDomain::__("You need to activate the licence of your plugin"), "error");
             });
         }
         return $response["success"];

@@ -20,6 +20,7 @@ class Editor {
         wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Editor.js", [], TSM__VERSION, true);
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsm", [
             "url" => admin_url("admin-ajax.php") . "?action=traduire-sans-migraine_",
+            "postUrl" => admin_url("post.php"),
         ]);
     }
 
@@ -50,8 +51,8 @@ class Editor {
         ?>
         <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
         <?php
-            Checkbox::render(TextDomain::__("Display %s After Save", TSM__NAME), "traduire-sans-migraine–is-enable", $isDefaultChecked, false);
-            Button::render(TextDomain::__("Show %s", TSM__NAME), "primary", "display-traduire-sans-migraine-button");
+            Checkbox::render(TextDomain::__("Translate without headache 💊"), "traduire-sans-migraine–is-enable", $isDefaultChecked, false);
+            Button::render(TextDomain::__("Open my translate tab"), "primary", "display-traduire-sans-migraine-button");
         ?>
         </div>
         <?php

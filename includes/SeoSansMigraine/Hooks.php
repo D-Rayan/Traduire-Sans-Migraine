@@ -3,8 +3,10 @@
 namespace TraduireSansMigraine\SeoSansMigraine;
 
 
+use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\Wordpress\LinkManager;
+use TraduireSansMigraine\Wordpress\TextDomain;
 use \WP_REST_Response;
 
 if (!defined("ABSPATH")) {
@@ -31,19 +33,35 @@ class Hooks
             $dataToTranslate = $data["dataToTranslate"];
             $codeTo = $data["codeTo"];
             if ($dataToTranslate === false) {
-                update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "error"]);
+                update_option("_seo_sans_migraine_state_" . $tokenId, [
+                    "percentage" => 100,
+                    "status" => Step::$STEP_STATE["ERROR"],
+                    "html" => TextDomain::__("Oops! The otters have lost the translation in the river. Please try again 🦦"),
+                ]);
                 return new \WP_REST_Response(["success" => false, "error" => "Data to translate not found"], 400);
             }
             $postId = get_option("_seo_sans_migraine_postId_" . $tokenId);
-            update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "pending"]);
+            update_option("_seo_sans_migraine_state_" . $tokenId, [
+                "percentage" => 75,
+                "status" => Step::$STEP_STATE["PROGRESS"],
+                "html" => TextDomain::__("The otters works on your SEO optimization 🦦"),
+            ]);
             if (!$postId) {
-                update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "error"]);
+                update_option("_seo_sans_migraine_state_" . $tokenId, [
+                    "percentage" => 100,
+                    "status" => Step::$STEP_STATE["ERROR"],
+                    "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                ]);
                 delete_option("_seo_sans_migraine_postId_" . $tokenId);
                 return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
             }
             $originalPost = get_post($postId);
             if (!$originalPost) {
-                update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "error"]);
+                update_option("_seo_sans_migraine_state_" . $tokenId, [
+                    "percentage" => 100,
+                    "status" => Step::$STEP_STATE["ERROR"],
+                    "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                ]);
                 delete_option("_seo_sans_migraine_postId_" . $tokenId);
                 return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
             }
@@ -73,7 +91,11 @@ class Hooks
                 ], true);
 
                 if (!$translatedPostId) {
-                    update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "error"]);
+                    update_option("_seo_sans_migraine_state_" . $tokenId, [
+                        "percentage" => 100,
+                        "status" => Step::$STEP_STATE["ERROR"],
+                        "html" => TextDomain::__("Oops! The otters couldn't create the new post. Please try again 🦦"),
+                    ]);
                     return new \WP_REST_Response(["success" => false, "error" => "Could not create post"], 500);
                 }
                 $thumbnailId = get_post_meta($originalPost->ID, '_thumbnail_id', true);
@@ -112,8 +134,12 @@ class Hooks
                     update_post_meta($translatedPostId, "_yoast_wpseo_metakeywords", $dataToTranslate["metaKeywords"]);
                 }
             }
-            update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "success", 3 => "success", 4 => "success"]);
-
+            $urlPost = get_edit_post_link($translatedPostId);
+            update_option("_seo_sans_migraine_state_" . $tokenId, [
+                "percentage" => 100,
+                "status" => Step::$STEP_STATE["DONE"],
+                "html" => TextDomain::__("The otters have finished the translation 🦦, Check it right here <a href='%s' target='_blank'>%s</a>", $urlPost, $urlPost),
+            ]);
 
             return new \WP_REST_Response($data, 200);
         } catch (\Exception $e) {

@@ -7,7 +7,7 @@ function initModalEvents() {
         modal.dataset.initiliazed = "true";
         const closeBtn = modal.querySelector('.traduire-sans-migraine-modal__content-header-close');
         closeBtn.addEventListener('click', () => {
-            modal.remove();
+            removeModal(modal.parentElement);
         });
     });
 }
@@ -20,4 +20,8 @@ function addModalToBody(modal) {
     initModalEvents();
 
     return document.querySelector(`#${div.id}`);
+}
+
+function removeModal(modal) {
+    modal.remove();
 }

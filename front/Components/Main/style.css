@@ -18,4 +18,21 @@
     --traduire-sans-migraine-disabled-background: rgb(233, 236, 239);
     --traduire-sans-migraine-disabled-border: rgb(233, 236, 239);
     --traduire-sans-migraine-disabled-color: rgb(158, 158, 158);
+
+    --traduire-sans-migraine-success-button-background: #41D036;
+    --traduire-sans-migraine-success-button-color: #3EC497;
+    --traduire-sans-migraine-success-button-border: #c3e6cb;
+
+    --traduire-sans-migraine-ghost-background: rgb(255, 255, 255);
+    --traduire-sans-migraine-ghost-border: #e1e1e1;
+    --traduire-sans-migraine-ghost-color: black;
+
+    --traduire-sans-migraine-primary-step-background: rgb(0,122,175);
+    --traduire-sans-migraine-primary-step-background-gradient: linear-gradient(90deg, rgb(1, 154, 221) 0%, rgb(6, 178, 213) 50%, rgb(142, 234, 255) 100%);
+
+    --traduire-sans-migraine-danger-step-background: rgb(185,30,30);
+    --traduire-sans-migraine-danger-step-background-gradient: linear-gradient(90deg, rgba(185,30,30,1) 0%, rgba(212,20,20,1) 50%, rgba(255,139,139,1) 100%);
+
+    --traduire-sans-migraine-success-step-background: rgb(60,215,184);
+    --traduire-sans-migraine-success-step-background-gradient: linear-gradient(90deg, rgba(60,215,184,1) 0%, rgba(108,242,184,1) 50%, rgba(158,255,201,1) 100%);
 }

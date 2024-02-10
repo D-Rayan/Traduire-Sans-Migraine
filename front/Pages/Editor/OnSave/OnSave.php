@@ -50,6 +50,7 @@ class OnSave {
         add_action("wp_ajax_traduire-sans-migraine_editor_onSave_render", [$this, "render"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_start_translate", [$this, "startTranslate"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_get_state_translate", [$this, "getTranslateState"]);
+        add_action("wp_ajax_traduire-sans-migraine_editor_get_post_translated", [$this, "getTranslatedPostId"]);
     }
 
     public function startTranslate() {
@@ -86,7 +87,11 @@ class OnSave {
         $result = $this->clientSeoSansMigraine->startTranslation($dataToTranslate, $codeFrom, $codeTo);
         if ($result["success"]) {
             $tokenId = $result["data"]["tokenId"];
-            update_option("_seo_sans_migraine_state_" . $tokenId, [1 => "success", 2 => "pending"]);
+            update_option("_seo_sans_migraine_state_" . $tokenId, [
+                "percentage" => 50,
+                "status" => Step::$STEP_STATE["PROGRESS"],
+                "html" => TextDomain::__("The otters works on your SEO optimization 🦦"),
+            ]);
             update_option("_seo_sans_migraine_postId_" . $tokenId, $postId);
         }
         echo json_encode($result);
@@ -99,7 +104,11 @@ class OnSave {
             wp_die();
         }
         $tokenId = $_GET["tokenId"];
-        $state = get_option("_seo_sans_migraine_state_" . $tokenId, [1 => "pending"]);
+        $state = get_option("_seo_sans_migraine_state_" . $tokenId, [
+            "percentage" => 25,
+            "status" => Step::$STEP_STATE["PROGRESS"],
+            "html" => TextDomain::__("We will create and translate your post 💡"),
+        ]);
         if (!$state) {
             echo json_encode(["success" => false, "error" => TextDomain::__("Token not found")]);
             wp_die();
@@ -112,6 +121,23 @@ class OnSave {
         wp_die();
     }
 
+    public function getTranslatedPostId() {
+        if (!isset($_GET["post_id"])) {
+            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
+            wp_die();
+        }
+        if (!isset($_GET["language"])) {
+            echo json_encode(["success" => false, "error" => TextDomain::__("Language missing")]);
+            wp_die();
+        }
+        $languageManager = new LanguageManager();
+        $postId = $_GET["post_id"];
+        $language = $_GET["language"];
+        $translatedPostId = $languageManager->getLanguageManager()->getTranslationPost($postId, $language);
+        echo json_encode(["success" => true, "data" => $translatedPostId]);
+        wp_die();
+    }
+
     public function render() {
         if (!isset($_GET["post_id"])) {
             Modal::render(TSM__NAME, Alert::getHTML(TSM__NAME, TextDomain::__("Post ID is not set"), "danger"));
@@ -121,6 +147,9 @@ class OnSave {
         $languageManager = new LanguageManager();
         ob_start();
         ?>
+        <p>
+            <?php echo TextDomain::__("You don't see the language you're looking for?") ?>
+        </p>
         <div class="traduire-sans-migraine-list-languages">
         <?php
             try {
@@ -152,11 +181,6 @@ class OnSave {
                                 ]);
                             } else {
                                 Step::render([
-                                    TextDomain::__("Sending content"),
-                                    TextDomain::__("Translation"),
-                                    TextDomain::__("Retrieve translation"),
-                                    TextDomain::__("Saving translation")
-                                ], [
                                     "classname" => $checked ? "":  "hidden"
                                 ]);
                                 Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations"), "primary", [
@@ -178,7 +202,8 @@ class OnSave {
         <?php
         $htmlContent = ob_get_clean();
         Modal::render(TSM__NAME, $htmlContent, [
-            Button::getHTML(TextDomain::__("Translate"), "warning", "translate-button")
+            Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button"),
+            Button::getHTML(TextDomain::__("Translate later"), "ghost", "closing-button"),
         ]);
         wp_die();
     }

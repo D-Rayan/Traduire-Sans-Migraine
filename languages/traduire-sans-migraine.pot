@@ -1,20 +1,24 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.3.4\n"
+"Project-Id-Version: Traduire Sans Migraine 0.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-09T14:21:580\n"
+"POT-Creation-Date: 2024-02-10T15:19:020\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
-# Editor.php
-msgid "Display %s After Save"
+# Step.php
+msgid "We are impatient to help you with your translations! Just click the translate button."
 msgstr ""
 
-msgid "Show %s"
+# Editor.php
+msgid "Translate without headache 💊"
+msgstr ""
+
+msgid "Open my translate tab"
 msgstr ""
 
 # OnSave.php
@@ -27,34 +31,37 @@ msgstr ""
 msgid "Post not found"
 msgstr ""
 
+msgid "The otters works on your SEO optimization 🦦"
+msgstr ""
+
 msgid "Token ID missing"
+msgstr ""
+
+msgid "We will create and translate your post 💡"
 msgstr ""
 
 msgid "Token not found"
 msgstr ""
 
+msgid "Language missing"
+msgstr ""
+
 msgid "Post ID is not set"
+msgstr ""
+
+msgid "You don't see the language you're looking for?"
 msgstr ""
 
 msgid "%s will use this language as reference."
 msgstr ""
 
-msgid "Sending content"
-msgstr ""
-
-msgid "Translation"
-msgstr ""
-
-msgid "Retrieve translation"
-msgstr ""
-
-msgid "Saving translation"
-msgstr ""
-
 msgid "Use the checkbox on the left to add this language to the list of translations"
 msgstr ""
 
-msgid "Translate"
+msgid "Translate now"
+msgstr ""
+
+msgid "Translate later"
 msgstr ""
 
 # Polylang.php
@@ -66,6 +73,19 @@ msgid "Activate your plugin"
 msgstr ""
 
 msgid "You need to activate the licence of your plugin"
+msgstr ""
+
+# Hooks.php
+msgid "Oops! The otters have lost the translation in the river. Please try again 🦦"
+msgstr ""
+
+msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
+msgstr ""
+
+msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
+msgstr ""
+
+msgid "The otters have finished the translation 🦦, Check it right here <a href='%s' target='_blank'>%s</a>"
 msgstr ""
 
 # Settings.php
@@ -82,7 +102,7 @@ msgid "Missing required plugins"
 msgstr ""
 
 # Plugin Name
-msgid "Translate Without Headache"
+msgid "Traduire Sans Migraine"
 msgstr ""
 
 # Plugin URI
@@ -103,6 +123,10 @@ msgstr ""
 
 # Text Domain
 msgid "traduire-sans-migraine"
+msgstr ""
+
+# Domain Path
+msgid "/languages"
 msgstr ""
 
 # License

@@ -2,56 +2,40 @@
     width: 100%;
 }
 
-.traduire-sans-migraine-step .icon {
-    border-radius: 4px;
-    border: 1px solid;
-    background-color: #F9FAFB;
-}
-
-.traduire-sans-migraine-step ol {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    justify-content: start;
+.traduire-sans-migraine-step .progress-bar {
     width: 100%;
-    font-weight: 500;
+    height: 10px;
+    overflow: hidden;
+    background: #d9eaff54;
 }
 
-.traduire-sans-migraine-step ol > li {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6B7280;
+.traduire-sans-migraine-step .progress-bar .progress-bar-fill {
+    height: 100%;
+    transition: all 0.3s ease-in-out;
 }
 
-.traduire-sans-migraine-step li.success .icon {
-    background-color: var(--traduire-sans-migraine-success-background);
-    border-color: var(--traduire-sans-migraine-success-border);
+.traduire-sans-migraine-step .indicator-percentage {
+    margin-bottom: 0.2rem;
+    font-size: 14px;
+    font-weight: 400;
 }
 
-.traduire-sans-migraine-step li.error .icon {
-    background-color: var(--traduire-sans-migraine-danger-background);
-    border-color: var(--traduire-sans-migraine-danger-border);
+.traduire-sans-migraine-step .indicator-text {
+    margin-top: 0.2rem;
+    font-weight: lighter;
 }
 
-.traduire-sans-migraine-step li.success {
-
+.progress-bar-fill--success {
+    background: var(--traduire-sans-migraine-success-step-background);
+    background: var(--traduire-sans-migraine-success-step-background-gradient);
 }
 
-.traduire-sans-migraine-step li.current {
-    color: #3B82F6;
+.progress-bar-fill--error {
+    background: var(--traduire-sans-migraine-danger-step-background);
+    background: var(--traduire-sans-migraine-danger-step-background-gradient);
 }
 
-.traduire-sans-migraine-step li.current .icon {
-    background-color: rgb(239 246 255);
-}
-
-.traduire-sans-migraine-step ol > li span {
-    padding: .375rem;
-    height: fit-content;
-}
-
-.traduire-sans-migraine-step svg {
-    width: .75rem;
-    height: .75rem;
+.progress-bar-fill--progress {
+    background: var(--traduire-sans-migraine-primary-step-background);
+    background: var(--traduire-sans-migraine-primary-step-background-gradient);
 }

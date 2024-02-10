@@ -2,8 +2,15 @@
 
 namespace TraduireSansMigraine\Front\Components;
 
+use TraduireSansMigraine\Wordpress\TextDomain;
+
 class Step
 {
+    static $STEP_STATE = [
+        "PROGRESS" => "progress",
+        "DONE" => "done",
+        "ERROR" => "error"
+    ];
     private $path;
 
     public function __construct()
@@ -41,29 +48,16 @@ class Step
         }
     }
 
-    public static function getHTML($steps, $options = [])
+    public static function getHTML($options = [])
     {
         ob_start();
         ?>
         <div class="traduire-sans-migraine-step <?php echo $options["classname"]; ?>">
-            <div>
-                <ol>
-                    <?php
-                    foreach ($steps as $index => $step) {
-                        ?>
-                        <li>
-                            <span class="icon">
-                                <?php echo $index + 1; ?>
-                            </span>
-                            <span>
-                                <?php echo $step; ?>
-                            </span>
-                        </li>
-                        <?php
-                    }
-                    ?>
-                </ol>
+            <div class="indicator-percentage"></div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill progress-bar-fill--progress" style="width: 0;"></div>
             </div>
+            <div class="indicator-text"><?php echo TextDomain::__("We are impatient to help you with your translations! Just click the translate button."); ?></div>
         </div>
         <?php
         $content = ob_get_contents();
@@ -71,9 +65,9 @@ class Step
         return $content;
     }
 
-    public static function render($steps, $options = [])
+    public static function render($options = [])
     {
-        echo self::getHTML($steps, $options);
+        echo self::getHTML($options);
     }
 }
 
