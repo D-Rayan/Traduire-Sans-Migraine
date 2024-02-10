@@ -90,7 +90,7 @@ class OnSave {
             update_option("_seo_sans_migraine_state_" . $tokenId, [
                 "percentage" => 50,
                 "status" => Step::$STEP_STATE["PROGRESS"],
-                "html" => TextDomain::__("The otters works on your SEO optimization 🦦"),
+                "html" => TextDomain::__("The otters are translating your post 🦦"),
             ]);
             update_option("_seo_sans_migraine_postId_" . $tokenId, $postId);
         }
