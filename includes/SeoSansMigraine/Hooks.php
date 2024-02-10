@@ -134,11 +134,11 @@ class Hooks
                     update_post_meta($translatedPostId, "_yoast_wpseo_metakeywords", $dataToTranslate["metaKeywords"]);
                 }
             }
-            $urlPost = get_edit_post_link($translatedPostId);
+            $urlPost = "<a href='".get_edit_post_link($translatedPostId)."' target='_blank'>(".$translatedPostId.") ".get_edit_post_link($translatedPostId)."</a>";
             update_option("_seo_sans_migraine_state_" . $tokenId, [
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["DONE"],
-                "html" => TextDomain::__("The otters have finished the translation 🦦, Check it right here <a href='%s' target='_blank'>%s</a>", $urlPost, $urlPost),
+                "html" => TextDomain::__("The otters have finished the translation 🦦, Check it right here %s", $urlPost),
             ]);
 
             return new \WP_REST_Response($data, 200);
