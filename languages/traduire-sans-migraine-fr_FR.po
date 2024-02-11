@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-11T14:05:240\n"
+"POT-Creation-Date: 2024-02-11T14:11:350\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -66,6 +66,12 @@ msgstr ""
 
 msgid "%s is already the language of your post."
 msgstr "%s est la langue actuelle de votre article."
+
+msgid "The followings articles are not translated : "
+msgstr "Les articles suivants ne sont pas traduit : "
+
+msgid "The followings articles are not published : "
+msgstr "Les articles suivant ne sont pas encore publiés : "
 
 msgid ""
 "However if you still want to translate this article use the checkbox on the "

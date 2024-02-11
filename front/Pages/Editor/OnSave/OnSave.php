@@ -243,14 +243,14 @@ class OnSave {
                                 if ($haveWarnings) {
                                     $listHTML = "";
                                     if (count($notTranslated) > 0) {
-                                        $listHTML = "<div>The followings articles are not translated : <ul>";
+                                        $listHTML = "<div>" . TextDomain::__("The followings articles are not translated : ") . "<ul>";
                                         foreach ($notTranslated as $url => $postId) {
                                             $listHTML .= "<li>" . $url . "</li>";
                                         }
                                         $listHTML .= "</ul></div>";
                                     }
                                     if (count($notPublished) > 0) {
-                                        $listHTML .= "<div>The followings articles are not published : <ul>";
+                                        $listHTML .= "<div>" . TextDomain::__("The followings articles are not published : ") . "<ul>";
                                         foreach ($notPublished as $url => $postId) {
                                             $listHTML .= "<li>" . $url . "</li>";
                                         }
