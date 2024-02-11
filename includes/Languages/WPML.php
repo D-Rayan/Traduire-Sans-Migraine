@@ -47,4 +47,9 @@ class WPML implements LanguageInterface
     {
         // TODO: Implement setTranslationPost() method.
     }
+
+    public function getLanguageManagerName(): string
+    {
+        return "WPML";
+    }
 }

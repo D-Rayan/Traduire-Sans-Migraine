@@ -1,0 +1,27 @@
+.traduire-sans-migraine-tooltip-content {
+    display: none;
+}
+
+.traduire-sans-migraine-tooltip-content--visible {
+    display: block;
+    position: absolute;
+    z-index: 1000000;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    max-width: 300px;
+    min-width: 200px;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}

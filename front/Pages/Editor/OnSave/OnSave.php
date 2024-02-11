@@ -7,8 +7,10 @@ use TraduireSansMigraine\Front\Components\Alert;
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Front\Components\Checkbox;
 use TraduireSansMigraine\Front\Components\Modal;
+use TraduireSansMigraine\Front\Components\Suggestions;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 class OnSave {
@@ -145,29 +147,73 @@ class OnSave {
         }
         $localPostId = $_GET["post_id"];
         $languageManager = new LanguageManager();
+        $linkManager = new LinkManager();
+        $postContent = get_post($localPostId)->post_content;
+        $codeFrom = $languageManager->getLanguageManager()->getLanguageForPost($localPostId);
+        $listsUrlsIssues = $linkManager->extractAndRetrieveInternalLinks($postContent, $codeFrom, true);
         ob_start();
         ?>
-        <p>
-            <?php echo TextDomain::__("You don't see the language you're looking for?") ?>
-        </p>
         <div class="traduire-sans-migraine-list-languages">
         <?php
             try {
                 $translationsPosts = $languageManager->getLanguageManager()->getAllTranslationsPost($localPostId);
-                usort($translationsPosts, function ($a, $b) use ($localPostId) {
-                    if ($a["postId"] == $localPostId)
-                        return -1;
-                    if ($b["postId"] == $localPostId)
-                        return 1;
-
-                   return $a["name"] > $b["name"] ? 1 : -1;
-                });
+                $enrichedTranslationsPosts = [];
                 foreach ($translationsPosts as $codeSlug => $translationPost) {
                     $name = $translationPost["name"];
                     $flag = $translationPost["flag"];
                     $code = $translationPost["code"];
                     $postId = $translationPost["postId"];
                     $checked = !$postId && $postId != $localPostId;
+
+                    $issuesTranslatedUrls = $linkManager->getIssuedInternalLinks($postContent, $codeFrom, $code);
+                    $notTranslated = $issuesTranslatedUrls["notTranslated"];
+                    $notPublished = $issuesTranslatedUrls["notPublished"];
+                    $haveWarnings = count($notTranslated) + count($notPublished) > 0;
+                    if ($haveWarnings) {
+                        $checked = false;
+                    }
+
+                    $enrichedTranslationsPosts[$codeSlug] = [
+                        "name" => $name,
+                        "flag" => $flag,
+                        "code" => $code,
+                        "postId" => $postId,
+                        "checked" => $checked,
+                        "haveWarnings" => $haveWarnings,
+                        "notTranslated" => $notTranslated,
+                        "notPublished" => $notPublished
+                    ];
+                }
+
+                usort($enrichedTranslationsPosts, function ($a, $b) use ($localPostId) {
+                    if ($a["postId"] == $localPostId)
+                        return -1;
+                    if ($b["postId"] == $localPostId)
+                        return 1;
+
+                    if ($a["haveWarnings"] && !$b["haveWarnings"])
+                        return 1;
+
+                    if (!$a["haveWarnings"] && $b["haveWarnings"])
+                        return -1;
+
+                    if ($a["checked"] && !$b["checked"])
+                        return 1;
+
+                    if (!$a["checked"] && $b["checked"])
+                        return -1;
+
+                    return $a["name"] > $b["name"] ? 1 : -1;
+                });
+                foreach ($enrichedTranslationsPosts as $codeSlug => $enrichedTranslationPost) {
+                    $name = $enrichedTranslationPost["name"];
+                    $flag = $enrichedTranslationPost["flag"];
+                    $code = $enrichedTranslationPost["code"];
+                    $postId = $enrichedTranslationPost["postId"];
+                    $checked = $enrichedTranslationPost["checked"];
+                    $notTranslated = $enrichedTranslationPost["notTranslated"];
+                    $notPublished = $enrichedTranslationPost["notPublished"];
+                    $haveWarnings = $enrichedTranslationPost["haveWarnings"];
                     ?>
                     <div class="language" data-language="<?php echo $code; ?>">
                         <div class="left-column">
@@ -176,17 +222,50 @@ class OnSave {
                         <div class="right-column">
                             <?php
                             if ($postId == $localPostId) {
-                                Alert::render(false, TextDomain::__("%s will use this language as reference.", TSM__NAME), "success", [
+                                if (count($listsUrlsIssues) > 0) {
+                                    $listHTML = "<ul>";
+                                    foreach ($listsUrlsIssues as $url => $state) {
+                                        $listHTML .= "<li>".$url."</li>";
+                                    }
+                                    $listHTML .= "</ul>";
+                                    Alert::render(false, TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
                                         "isDismissible" => false
-                                ]);
+                                    ]);
+                                } else {
+                                    Alert::render(false, TextDomain::__("%s is already the language of your post.", $name), "success", [
+                                        "isDismissible" => false
+                                    ]);
+                                }
                             } else {
                                 Step::render([
                                     "classname" => $checked ? "":  "hidden"
                                 ]);
-                                Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations"), "primary", [
-                                    "isDismissible" => false,
-                                    "classname" => $checked ? "hidden" : ""
-                                ]);
+                                if ($haveWarnings) {
+                                    $listHTML = "";
+                                    if (count($notTranslated) > 0) {
+                                        $listHTML = "<div>The followings articles are not translated : <ul>";
+                                        foreach ($notTranslated as $url => $postId) {
+                                            $listHTML .= "<li>" . $url . "</li>";
+                                        }
+                                        $listHTML .= "</ul></div>";
+                                    }
+                                    if (count($notPublished) > 0) {
+                                        $listHTML .= "<div>The followings articles are not published : <ul>";
+                                        foreach ($notPublished as $url => $postId) {
+                                            $listHTML .= "<li>" . $url . "</li>";
+                                        }
+                                        $listHTML .= "</ul></div>";
+                                    }
+                                    Alert::render(false,  $listHTML . TextDomain::__("However if you still want to translate this article use the checkbox on the left to add this language to the list of translations"), "warning", [
+                                        "isDismissible" => false,
+                                        "classname" => $checked ? "hidden" : ""
+                                    ]);
+                                } else {
+                                    Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations"), "primary", [
+                                        "isDismissible" => false,
+                                        "classname" => $checked ? "hidden" : ""
+                                    ]);
+                                }
                             }
                             ?>
                         </div>
@@ -200,6 +279,14 @@ class OnSave {
         ?>
         </div>
         <?php
+        Suggestions::render(
+                TextDomain::__("You're not finding a specific language?"),
+                TextDomain::__("To translate you first need to add the language to your website.")
+                . "<br/>"
+                . TextDomain::__("Go to %s to add a new language.", $languageManager->getLanguageManager()->getLanguageManagerName())
+                . "<br/>"
+                . TextDomain::__("Then come back here to translate your post."),
+                "<img width='72' src='https://www.seo-sans-migraine.fr/wp-content/uploads/2024/01/loutre_ampoule.png' alt='loutre_ampoule' />");
         $htmlContent = ob_get_clean();
         Modal::render(TSM__NAME, $htmlContent, [
             Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button"),

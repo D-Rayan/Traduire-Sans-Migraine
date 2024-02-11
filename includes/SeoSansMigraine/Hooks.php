@@ -71,7 +71,7 @@ class Hooks
             $dataToTranslate["categories"] = $languageManager->getLanguageManager()->getTranslationCategories($originalPost->post_category, $codeTo);
             if (isset($dataToTranslate["content"])) {
                 $linkManager = new LinkManager();
-                $dataToTranslate["content"] = $linkManager->translateInternalLinks($dataToTranslate["content"], $codeFrom, $codeTo);
+                $dataToTranslate["content"] = $linkManager->translateInternalLinks($dataToTranslate["content"], $codeFrom, $codeTo, $postId);
             }
             if (!$translatedPostId) {
                 $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $dataToTranslate["slug"]);

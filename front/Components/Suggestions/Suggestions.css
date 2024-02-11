@@ -1,0 +1,25 @@
+.traduire-sans-migraine-suggestion {
+    border-radius: 24px;
+    padding: 2rem 2rem 0 2rem;
+    background: var(--traduire-sans-migraine-primary-suggestions-background);
+    width: fit-content;
+}
+
+.traduire-sans-migraine-suggestion-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.traduire-sans-migraine-suggestion-content {
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+}
+
+.traduire-sans-migraine-suggestion-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+

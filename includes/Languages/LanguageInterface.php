@@ -63,5 +63,7 @@ interface LanguageInterface
      * @param string $codeLanguage
      * @throws Exception
      */
-    function getTranslationCategories(array $categories, string $codeLanguage): array;
+    public function getTranslationCategories(array $categories, string $codeLanguage): array;
+
+    public function getLanguageManagerName(): string;
 }

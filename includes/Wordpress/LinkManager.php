@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
+use TraduireSansMigraine\Languages\LanguageManager;
+
 class LinkManager {
     public function splitAllQueryAndAnchor($url) {
         $urlParts = explode("#", $url, 2);
@@ -37,7 +39,7 @@ class LinkManager {
     public function formatUrlToAbsolute($url, $withSlash = true) {
         $result = $this->splitAllQueryAndAnchor($url);
         $url = $result["url"];
-        if (!str_contains($url, 'http://') && !str_contains($url, 'https://')) {
+        if (false === strrpos($url, 'http://') && false === strrpos($url, 'https://')) {
             $resultUrl = get_home_url();
             if ($url[0] === "/") {
                 $resultUrl .= $url;
@@ -77,15 +79,31 @@ class LinkManager {
         }
         return $this->combineQueryAndAnchor($resultUrl, $result["query"], $result["anchor"]);
     }
-    public function extractAndRetrieveInternalLinks($postContent, $translateFrom) {
+    public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $getErrors = false) {
         $homeUrl = str_replace("/", "\/", home_url());
-        preg_match_all('/"'.$homeUrl.'/('.$translateFrom.'\/)?([a-z0-9-_\\=\?#]+)(\/)*(#[a-z0-9-_\\=\%]+)?"/i', $postContent, $matches);
+        $regexAbsoluteUrl = '/'.$homeUrl.'\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
+        $regexRelativeUrl = '/"\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
+        return array_merge(
+            $this->regexOnContent($regexAbsoluteUrl, $postContent, $getErrors),
+            $this->regexOnContent($regexRelativeUrl, $postContent, $getErrors)
+        );
+    }
+
+    private function regexOnContent($regex, $postContent, $getErrors = false)  {
+        preg_match_all($regex, $postContent, $matches);
         $extractedUrls = $matches[0];
         $internalsPostsId = [];
         foreach ($extractedUrls as $extractedUrl) {
             $internalUrl = str_replace('"', '', $extractedUrl);
-            $internalPostId = url_to_postid($this->formatUrlToAbsolute($internalUrl));
+            $completeInternalUrl = $this->formatUrlToAbsolute($internalUrl);
+            $internalPostId = url_to_postid($completeInternalUrl);
             if (!$internalPostId) {
+                if ($getErrors) {
+                    $internalsPostsId[$internalUrl] = "notFound";
+                }
+                continue;
+            }
+            if ($getErrors) {
                 continue;
             }
             $internalsPostsId[$internalUrl] = $internalPostId;
@@ -94,26 +112,47 @@ class LinkManager {
         return $internalsPostsId;
     }
 
-    public function translateInternalLinks($postsContent, $translateFrom, $translateTo) {
-        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postsContent, $translateFrom);
-        $newContent = $postsContent;
-        $languageManager = new \TraduireSansMigraine\Languages\LanguageManager();
+    public function translateInternalLinks($postContent, $translateFrom, $translateTo, $postId) {
+        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $postId);
+        $newContent = $postContent;
+        $languageManager = new LanguageManager();
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
             $internalPostIdTranslated = $languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
             if ($internalPostIdTranslated) {
-                $titleInternalPostIdTranslated = $this->formatUrlToAbsolute(get_permalink($internalPostIdTranslated));
-
-                if (strstr($titleInternalPostIdTranslated, "p=")) {
-                    $postObject = get_post($internalPostIdTranslated);
-                    if (!$postObject || !is_object($postObject)) {
-                        continue;
-                    }
-                    $titleInternalPostIdTranslated = preg_replace("/\?p=[0-9]+/", $postObject->post_name, $titleInternalPostIdTranslated);
+                $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
+                if ($titleInternalPostIdTranslated) {
+                    $newContent = str_replace($urlToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $newContent);
                 }
-                $newContent = str_replace($urlToReplace, $titleInternalPostIdTranslated, $newContent);
             }
         }
 
         return $newContent;
+    }
+
+    public function getIssuedInternalLinks($postContent, $translateFrom, $translateTo) {
+        if ($translateFrom === $translateTo) {
+            return [
+                "notTranslated" => [],
+                "notPublished" => []
+            ];
+        }
+        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom);
+        $languageManager = new LanguageManager();
+        $notTranslatedInternalLinks = $notPublishedInternalLinks = [];
+        foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
+            $internalPostIdTranslated = $languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
+            if (!$internalPostIdTranslated) {
+                $notTranslatedInternalLinks[$urlToReplace] = $postIdRelated;
+                continue;
+            }
+            $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
+            if (false !== strpos($titleInternalPostIdTranslated, "p=")) {
+                $notPublishedInternalLinks[$urlToReplace] = $postIdRelated;
+            }
+        }
+        return [
+            "notTranslated" => $notTranslatedInternalLinks,
+            "notPublished" => $notPublishedInternalLinks
+        ];
     }
 }

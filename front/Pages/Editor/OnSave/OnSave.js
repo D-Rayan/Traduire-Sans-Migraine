@@ -53,7 +53,7 @@ async function fetchStateTranslateUntilOver(modal, tokenId, language) {
     if (status === "error" || +percentage === 100) {
         return;
     }
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     return fetchStateTranslateUntilOver(modal, tokenId, language);
 }
 

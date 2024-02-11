@@ -20,9 +20,6 @@
     color: var(--traduire-sans-migraine-ghost-color);
 }
 
-.traduire-sans-migraine-button--ghost:hover {
-    color: var(--traduire-sans-migraine-ghost-border);
-}
 
 .traduire-sans-migraine-button--warning {
     background-color: var(--traduire-sans-migraine-warning-background);
@@ -34,6 +31,10 @@
     border: 1px solid var(--traduire-sans-migraine-danger-border);
 }
 
+.traduire-sans-migraine-button:hover {
+    background-color: white;
+    color: var(--traduire-sans-migraine-primary-color);
+}
 
 .traduire-sans-migraine-button--success:hover {
     background-color: white;
@@ -48,6 +49,10 @@
 .traduire-sans-migraine-button--danger:hover {
     background-color: white;
     color: var(--traduire-sans-migraine-danger-color);
+}
+
+.traduire-sans-migraine-button--ghost:hover {
+    color: var(--traduire-sans-migraine-ghost-border);
 }
 
 .traduire-sans-migraine-button:disabled {

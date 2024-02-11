@@ -118,4 +118,9 @@ class Polylang implements LanguageInterface
         $translatedPosts[$codeLanguage] = $translatedPostId;
         pll_save_post_translations($translatedPosts);
     }
+
+    public function getLanguageManagerName(): string
+    {
+        return "Polylang";
+    }
 }

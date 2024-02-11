@@ -4,7 +4,6 @@
     margin-bottom: 1rem;
     border: 1px solid transparent;
     border-radius: 0.25rem;
-    width: 100%;
 }
 
 .traduire-sans-migraine-alert__title {
@@ -27,9 +26,9 @@
 }
 
 .traduire-sans-migraine-alert-primary {
-    color: #004085;
-    background-color: #cce5ff;
-    border-color: #b8daff;
+    color: white;
+    background-color: var(--traduire-sans-migraine-primary-background);
+    border-color: var(--traduire-sans-migraine-primary-border);
 }
 .traduire-sans-migraine-alert-secondary {
     color: #383d41;

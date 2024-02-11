@@ -3,9 +3,9 @@
     --traduire-sans-migraine-success-color: #3EC497;
     --traduire-sans-migraine-success-border: #c3e6cb;
 
-    --traduire-sans-migraine-primary-background: rgb(6, 146, 236);
-    --traduire-sans-migraine-primary-color: #0672ec;
-    --traduire-sans-migraine-primary-border: #117bf5;
+    --traduire-sans-migraine-primary-background: #7795ee;
+    --traduire-sans-migraine-primary-color: #7795ee;
+    --traduire-sans-migraine-primary-border: #7795ee;
 
     --traduire-sans-migraine-warning-background: rgb(248, 151, 38);
     --traduire-sans-migraine-warning-color: #f8970b;
@@ -35,4 +35,7 @@
 
     --traduire-sans-migraine-success-step-background: rgb(60,215,184);
     --traduire-sans-migraine-success-step-background-gradient: linear-gradient(90deg, rgba(60,215,184,1) 0%, rgba(108,242,184,1) 50%, rgba(158,255,201,1) 100%);
+
+
+    --traduire-sans-migraine-primary-suggestions-background: #7795ee57;
 }

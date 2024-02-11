@@ -49,5 +49,8 @@ class MultilingualPress implements LanguageInterface
         // TODO: Implement setTranslationPost() method.
     }
 
-
+    public function getLanguageManagerName(): string
+    {
+        return "MultiLingualPress";
+    }
 }

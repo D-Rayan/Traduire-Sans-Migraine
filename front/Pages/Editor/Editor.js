@@ -33,6 +33,7 @@ if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/edito
     }
 }
 
+
 const buttonDisplayTraduireSansMigraine = document.querySelector('#display-traduire-sans-migraine-button');
 if (buttonDisplayTraduireSansMigraine) {
     buttonDisplayTraduireSansMigraine.addEventListener('click', (e) => {

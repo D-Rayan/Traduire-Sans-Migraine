@@ -6,6 +6,7 @@ include __DIR__ . "/Modal/Modal.php";
 include __DIR__ . "/Checkbox/Checkbox.php";
 include __DIR__ . "/Step/Step.php";
 include __DIR__ . "/Button/Button.php";
+include __DIR__ . "/Suggestions/Suggestions.php";
 
 
 /*

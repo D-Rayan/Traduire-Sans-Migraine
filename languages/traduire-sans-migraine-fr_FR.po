@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-10T15:32:450\n"
+"POT-Creation-Date: 2024-02-11T14:05:240\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -57,16 +57,40 @@ msgstr "Le langage est manquant"
 msgid "Post ID is not set"
 msgstr "L’ID du post est manquant"
 
-msgid "You don't see the language you're looking for?"
-msgstr "Vous n’avez pas la langue que vous souhaitez ?"
+msgid ""
+"The followings articles will not be translated cause we could not find "
+"them : %s"
+msgstr ""
+"Les articles suivant ne seront pas traduit car nous n’avons pas réussi à les "
+"trouver : %s"
 
-msgid "%s will use this language as reference."
-msgstr "%s utilisera cette langue comme référence."
+msgid "%s is already the language of your post."
+msgstr "%s est la langue actuelle de votre article."
+
+msgid ""
+"However if you still want to translate this article use the checkbox on the "
+"left to add this language to the list of translations"
+msgstr ""
+"Cependant vous pouvez toujours traduire votre article en utilisant la case à "
+"cocher sur la gauche pour l’ajouter à la liste des traductions"
 
 msgid ""
 "Use the checkbox on the left to add this language to the list of translations"
 msgstr ""
 "Utilisez la case à cocher sur la gauche pour ajouter cette langue à traduire"
+
+msgid "You're not finding a specific language?"
+msgstr "Vous ne trouvez pas la langue que vous souhaitez ?"
+
+msgid "To translate you first need to add the language to your website."
+msgstr ""
+"Pour traduire vous devez en premier lieu ajouter la langue à votre site."
+
+msgid "Go to %s to add a new language."
+msgstr "Utilisez %s pour ajouter une nouvelle langue."
+
+msgid "Then come back here to translate your post."
+msgstr "Puis revenez ici pour traduire votre article."
 
 msgid "Translate now"
 msgstr "Traduire"
@@ -153,6 +177,12 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid "You don't see the language you're looking for?"
+#~ msgstr "Vous n’avez pas la langue que vous souhaitez ?"
+
+#~ msgid "%s will use this language as reference."
+#~ msgstr "%s utilisera cette langue comme référence."
 
 # /front/Pages/Editor/Editor.php
 #~ msgid "Display %s After Save"
