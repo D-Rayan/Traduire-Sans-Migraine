@@ -89,6 +89,10 @@ class LinkManager {
         );
     }
 
+    private function isRestrictedURL($absoluteURI) {
+        return false !== strpos($absoluteURI, "/wp-content/") || false !== strpos($absoluteURI, "/wp-includes/");
+    }
+
     private function regexOnContent($regex, $postContent, $getErrors = false)  {
         preg_match_all($regex, $postContent, $matches);
         $extractedUrls = $matches[0];
@@ -96,6 +100,9 @@ class LinkManager {
         foreach ($extractedUrls as $extractedUrl) {
             $internalUrl = str_replace('"', '', $extractedUrl);
             $completeInternalUrl = $this->formatUrlToAbsolute($internalUrl);
+            if ($this->isRestrictedURL($completeInternalUrl)) {
+                continue;
+            }
             $internalPostId = url_to_postid($completeInternalUrl);
             if (!$internalPostId) {
                 if ($getErrors) {
