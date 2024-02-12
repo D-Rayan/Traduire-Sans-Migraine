@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.4.4\n"
+"Project-Id-Version: Traduire Sans Migraine 0.4.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-11T14:11:350\n"
+"POT-Creation-Date: 2024-02-12T15:17:190\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Step.php
@@ -49,22 +49,19 @@ msgstr ""
 msgid "Post ID is not set"
 msgstr ""
 
+msgid "%s is already the language of your post. It will be use as the source to translate in others language."
+msgstr ""
+
 msgid "The followings articles will not be translated cause we could not find them : %s"
 msgstr ""
 
-msgid "%s is already the language of your post."
+msgid "Use the checkbox on the left to add this language to the list of translations. However some of the links will not be translated cause they are either not published or not available in %s : "
 msgstr ""
 
-msgid "The followings articles are not translated : "
+msgid "Use the checkbox on the left to add this language to the list of translations, it will create a new article in %s"
 msgstr ""
 
-msgid "The followings articles are not published : "
-msgstr ""
-
-msgid "However if you still want to translate this article use the checkbox on the left to add this language to the list of translations"
-msgstr ""
-
-msgid "Use the checkbox on the left to add this language to the list of translations"
+msgid "Use the checkbox on the left to add this language to the list of translations. It will overwrite the current translation in %s"
 msgstr ""
 
 msgid "You're not finding a specific language?"

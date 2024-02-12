@@ -222,6 +222,9 @@ class OnSave {
                         <div class="right-column">
                             <?php
                             if ($postId == $localPostId) {
+                                Alert::render(false, TextDomain::__("%s is already the language of your post. It will be use as the source to translate in others language.", $name), "success", [
+                                    "isDismissible" => false
+                                ]);
                                 if (count($listsUrlsIssues) > 0) {
                                     $listHTML = "<ul>";
                                     foreach ($listsUrlsIssues as $url => $state) {
@@ -231,40 +234,40 @@ class OnSave {
                                     Alert::render(false, TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
                                         "isDismissible" => false
                                     ]);
-                                } else {
-                                    Alert::render(false, TextDomain::__("%s is already the language of your post.", $name), "success", [
-                                        "isDismissible" => false
-                                    ]);
                                 }
                             } else {
                                 Step::render([
                                     "classname" => $checked ? "":  "hidden"
                                 ]);
                                 if ($haveWarnings) {
-                                    $listHTML = "";
+                                    $listHTML = "<ul>";
                                     if (count($notTranslated) > 0) {
-                                        $listHTML = "<div>" . TextDomain::__("The followings articles are not translated : ") . "<ul>";
                                         foreach ($notTranslated as $url => $postId) {
                                             $listHTML .= "<li>" . $url . "</li>";
                                         }
-                                        $listHTML .= "</ul></div>";
                                     }
                                     if (count($notPublished) > 0) {
-                                        $listHTML .= "<div>" . TextDomain::__("The followings articles are not published : ") . "<ul>";
                                         foreach ($notPublished as $url => $postId) {
                                             $listHTML .= "<li>" . $url . "</li>";
                                         }
-                                        $listHTML .= "</ul></div>";
                                     }
-                                    Alert::render(false,  $listHTML . TextDomain::__("However if you still want to translate this article use the checkbox on the left to add this language to the list of translations"), "warning", [
+                                    $listHTML .= "</ul>";
+                                    Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations. However some of the links will not be translated cause they are either not published or not available in %s : ", $name) . $listHTML, "warning", [
                                         "isDismissible" => false,
                                         "classname" => $checked ? "hidden" : ""
                                     ]);
                                 } else {
-                                    Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations"), "primary", [
-                                        "isDismissible" => false,
-                                        "classname" => $checked ? "hidden" : ""
-                                    ]);
+                                    if ($checked) {
+                                        Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations, it will create a new article in %s", $name), "primary", [
+                                            "isDismissible" => false,
+                                            "classname" => $checked ? "hidden" : ""
+                                        ]);
+                                    } else {
+                                        Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations. It will overwrite the current translation in %s", $name), "primary", [
+                                            "isDismissible" => false,
+                                            "classname" => $checked ? "hidden" : ""
+                                        ]);
+                                    }
                                 }
                             }
                             ?>
