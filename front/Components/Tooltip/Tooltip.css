@@ -2,6 +2,10 @@
     display: none;
 }
 
+.traduire-sans-migraine-tooltip-content .traduire-sans-migraine-alert {
+    margin: 0 !important;
+}
+
 .traduire-sans-migraine-tooltip-content--visible {
     display: block;
     position: absolute;
@@ -9,7 +13,6 @@
     background-color: #fff;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-    padding: 10px;
     border-radius: 4px;
     font-size: 14px;
     line-height: 1.5;
@@ -19,9 +22,15 @@
     text-align: left;
     white-space: normal;
     word-wrap: break-word;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
     margin-top: 10px;
     transition: all 0.3s ease;
+}
+
+.traduire-sans-migraine-tooltip-content--visible.top {
+    transform: translateY(-100%);
+    top: -100%;
+}
+
+.traduire-sans-migraine-tooltip {
+    position: relative;
 }

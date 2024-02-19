@@ -25,3 +25,19 @@ function addModalToBody(modal) {
 function removeModal(modal) {
     modal.remove();
 }
+
+async function renderModal(title = "", message = "", button = []) {
+    const fetchResponse = await fetch(`${tsm.url}render_modal`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title,
+            message,
+            button
+        })
+    });
+    const data = await fetchResponse.text();
+    return addModalToBody(data);
+}

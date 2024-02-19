@@ -7,6 +7,7 @@ include __DIR__ . "/Checkbox/Checkbox.php";
 include __DIR__ . "/Step/Step.php";
 include __DIR__ . "/Button/Button.php";
 include __DIR__ . "/Suggestions/Suggestions.php";
+include __DIR__ . "/Tooltip/Tooltip.php";
 
 
 /*

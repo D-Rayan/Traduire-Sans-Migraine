@@ -20,7 +20,7 @@ msgid ""
 "translate button."
 msgstr ""
 "On est impatient de vous aidez avec votre traduction ! Vous n’avez plus qu’à "
-"cliquer sur le bouton."
+"cliquer sur le bouton traduire."
 
 # Plugin Name
 msgid "Translate without headache 💊"
@@ -108,7 +108,7 @@ msgid "Then come back here to translate your post."
 msgstr "Puis revenez ici pour traduire votre article."
 
 msgid "Translate now"
-msgstr "Traduire"
+msgstr "Lancer la traduction"
 
 msgid "Translate later"
 msgstr "Traduire plus tard"
@@ -131,7 +131,7 @@ msgstr ""
 "Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
 
 msgid "The otters works on your SEO optimization 🦦"
-msgstr "Les loutres peaufine la mise en forme 🦦"
+msgstr "Les loutres peaufinent la mise en forme 🦦"
 
 msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
 msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"

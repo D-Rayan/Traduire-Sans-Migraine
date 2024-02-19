@@ -41,17 +41,9 @@ class Editor {
     }
     public function displayTraduireSansMigraineMetabox()
     {
-        $languageManager = new LanguageManager();
-        try {
-            $currentLanguage = $languageManager->getLanguageManager()->getCurrentLanguage();
-        } catch (\Exception $e) {
-            return;
-        }
-        $isDefaultChecked = !isset($_GET["tsmShow"]) ? strpos(get_option('WPLANG'), $currentLanguage) === 0 : $_GET["tsmShow"] === "on";
         ?>
         <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
         <?php
-            Checkbox::render(TextDomain::__("Translate without headache 💊"), "traduire-sans-migraine–is-enable", $isDefaultChecked, false);
             Button::render(TextDomain::__("Open my translate tab"), "primary", "display-traduire-sans-migraine-button");
         ?>
         </div>
@@ -67,7 +59,7 @@ class Editor {
 
     }
 
-    function redirectAfterUpdating( $location ) {
+    public function redirectAfterUpdating( $location ) {
 
         if ( isset( $_POST['save'] ) || isset( $_POST['publish'] ) ) {
             $tsmShow = isset($_POST["traduire-sans-migraine–is-enable"]) ? $_POST["traduire-sans-migraine–is-enable"] : "off";
@@ -77,6 +69,9 @@ class Editor {
         return $location;
     }
 
+    public function addButton() {
+        Button::render(TextDomain::__("Open my translate tab"), "primary", "display-traduire-sans-migraine-button");
+    }
     public function loadAdminHooks() {
         add_action( 'add_meta_boxes', [$this, 'registerMetaBox'] );
         add_action( 'add_meta_boxes_page', [$this, 'registerMetaBox'] );

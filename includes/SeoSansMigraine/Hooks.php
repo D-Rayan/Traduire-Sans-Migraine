@@ -102,7 +102,6 @@ class Hooks
                 if (!empty($thumbnailId)) {
                     update_post_meta($translatedPostId, '_thumbnail_id', $thumbnailId);
                 }
-                pll_set_post_language($translatedPostId, $codeTo);
                 $languageManager->getLanguageManager()->setTranslationPost($postId, $codeTo, $translatedPostId);
             } else {
                 $updatePostData = [

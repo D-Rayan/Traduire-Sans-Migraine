@@ -44,14 +44,6 @@ class Tooltip {
             <?php echo $innerHTML; ?>
         </span>
         <?php
-        if (self::$javascriptInjected === false) {
-            ?>
-            <script type="text/javascript">
-                initTooltips();
-            </script>
-            <?php
-            self::$javascriptInjected = true;
-        }
         return ob_get_clean();
     }
 

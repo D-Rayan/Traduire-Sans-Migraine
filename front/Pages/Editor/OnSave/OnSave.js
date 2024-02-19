@@ -3,6 +3,7 @@ function injectFunctionTranslationModal(modal) {
     displayCountCheckedToButton(modal);
     addListenerToButtonTranslate(modal);
     addListenerToButtonTranslateLater(modal);
+    initTooltips();
 }
 
 function getStepList(modal, language) {
@@ -114,6 +115,7 @@ async function sendRequest(modal, language) {
             percentage: 100,
             div: stepDiv,
             status: "error",
+            html: data.error,
         });
         return false;
     }

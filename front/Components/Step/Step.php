@@ -57,7 +57,7 @@ class Step
             <div class="progress-bar">
                 <div class="progress-bar-fill progress-bar-fill--progress" style="width: 0;"></div>
             </div>
-            <div class="indicator-text"><?php echo TextDomain::__("We are impatient to help you with your translations! Just click the translate button."); ?></div>
+            <div class="indicator-text"><?php if (isset($options["indicatorText"])) { echo $options["indicatorText"]; } ?></div>
         </div>
         <?php
         $content = ob_get_contents();

@@ -20,12 +20,23 @@ if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/edito
 
         return savePost(options)
             .then(() => {
-                if (!options.isAutosave && document.querySelector("input[name='traduire-sans-migraine–is-enable']").checked) {
+                if (!options.isAutosave) {
                     loadModalTraduireSansMigraine();
                 }
             })
     };
 
+    const moveButtonToHeader =  () => {
+        const headerElement = document.querySelector(".edit-post-header__settings");
+        if (headerElement) {
+            const button = document.querySelector('#display-traduire-sans-migraine-button');
+            headerElement.appendChild(button);
+            document.querySelector("#metaboxTraduireSansMigraine").remove();
+        } else {
+            setTimeout(moveButtonToHeader, 100);
+        }
+    };
+    moveButtonToHeader();
 } else {
     if (getQuery('tsmShow') === 'on') {
         window.history.replaceState(null, '', window.location.href.replace('&tsmShow=on', '').replace('tsmShow=on', ''));
