@@ -248,7 +248,7 @@ class OnSave {
                                         }
                                     }
                                     $listHTML .= "</ul>";
-                                    $indicatorText .= Tooltip::getHTML("<img width='48' height='48' src='https://img.icons8.com/emoji/48/warning-emoji.png' /> We found some issues",
+                                    $indicatorText .= Tooltip::getHTML(TextDomain::__("⚠ We found %s issues", $notPublished + $notTranslated),
                                         Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The links will not be translated cause they are either not published or not available : %s", $listHTML), "warning", [
                                             "isDismissible" => false
                                         ]));
