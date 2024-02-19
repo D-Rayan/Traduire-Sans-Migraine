@@ -248,7 +248,7 @@ class OnSave {
                                         }
                                     }
                                     $listHTML .= "</ul>";
-                                    $indicatorText .= Tooltip::getHTML(TextDomain::__("⚠ We found %s issues", $notPublished + $notTranslated),
+                                    $indicatorText .= "<br/>" . Tooltip::getHTML(TextDomain::__("⚠ We found %s issues", count($notPublished) + count($notTranslated)),
                                         Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The links will not be translated cause they are either not published or not available : %s", $listHTML), "warning", [
                                             "isDismissible" => false
                                         ]));
