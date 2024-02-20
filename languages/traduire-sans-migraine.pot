@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.4.105\n"
+"Project-Id-Version: Traduire Sans Migraine 0.4.108\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-20T12:52:030\n"
+"POT-Creation-Date: 2024-02-20T14:41:360\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Editor.php
@@ -85,6 +85,10 @@ msgstr ""
 msgid "🔎 We found %s issue"
 msgstr ""
 
+# OnSave.php
+msgid "🔎 We found %s issues"
+msgstr ""
+
 # Polylang.php
 msgid "%s not existing."
 msgstr ""
@@ -97,6 +101,12 @@ msgid "You need to activate the licence of your plugin"
 msgstr ""
 
 # Hooks.php
+msgid "The otters have finished the translation 🦦, Check it right here %s"
+msgstr ""
+
+msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
+msgstr ""
+
 msgid "Oops! The otters have lost the translation in the river. Please try again 🦦"
 msgstr ""
 
@@ -104,12 +114,6 @@ msgid "The otters works on your SEO optimization 🦦"
 msgstr ""
 
 msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
-msgstr ""
-
-msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
-msgstr ""
-
-msgid "The otters have finished the translation 🦦, Check it right here %s"
 msgstr ""
 
 # Settings.php

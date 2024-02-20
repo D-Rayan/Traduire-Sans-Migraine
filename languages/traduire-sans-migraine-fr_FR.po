@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-20T12:52:030\n"
+"POT-Creation-Date: 2024-02-20T14:41:360\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -113,6 +113,9 @@ msgstr "Traduire plus tard"
 msgid "🔎 We found %s issue"
 msgstr "🔎 Nous avons trouvé %s problème"
 
+msgid "🔎 We found %s issues"
+msgstr "🔎 Nous avons trouvé %s problèmes"
+
 # /includes/Languages/Polylang.php
 msgid "%s not existing."
 msgstr "%s n’existe pas."
@@ -123,6 +126,14 @@ msgstr "Activer votre plugin"
 
 msgid "You need to activate the licence of your plugin"
 msgstr "Vous devez activer la licence du plugin"
+
+msgid "The otters have finished the translation 🦦, Check it right here %s"
+msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
+
+msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
+msgstr ""
+"Oops ! Les loutres ont n’ont pas réussi à créer le nouvel article. Réessayer "
+"🦦"
 
 # Hooks.php
 msgid ""
@@ -135,14 +146,6 @@ msgstr "Les loutres peaufinent la mise en forme 🦦"
 
 msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
 msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
-
-msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
-msgstr ""
-"Oops ! Les loutres ont n’ont pas réussi à créer le nouvel article. Réessayer "
-"🦦"
-
-msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
 
 # /includes/Settings.php
 msgid "PHP version is too low"

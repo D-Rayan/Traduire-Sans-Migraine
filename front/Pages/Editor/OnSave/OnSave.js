@@ -64,11 +64,11 @@ function addListenerToCheckboxes(modal) {
             displayCountCheckedToButton(modal);
             const column = checkbox.closest(".language").querySelector(".right-column");
             if (checkbox.checked) {
-                column.querySelector(".notice").classList.add("hidden");
+                column.querySelector(":scope > .notice").classList.add("hidden");
                 column.querySelector(".traduire-sans-migraine-step").classList.remove("hidden");
             } else {
                 column.querySelector(".traduire-sans-migraine-step").classList.add("hidden");
-                column.querySelector("> .notice").classList.remove("hidden");
+                column.querySelector(":scope > .notice").classList.remove("hidden");
             }
         });
     });
