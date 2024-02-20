@@ -106,7 +106,7 @@ class Polylang implements LanguageInterface
         return pll_current_language("slug");
     }
 
-    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId)
+    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId, string $codeFrom)
     {
         if (!function_exists("pll_get_post_translations")) {
             throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post_translations"));
@@ -114,8 +114,13 @@ class Polylang implements LanguageInterface
         if (!function_exists("pll_save_post_translations")) {
             throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
         }
+        if (!function_exists("pll_set_post_language")) {
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
+        }
+        pll_set_post_language($translatedPostId, $codeLanguage);
         $translatedPosts = pll_get_post_translations($postId);
         $translatedPosts[$codeLanguage] = $translatedPostId;
+        $translatedPosts[$codeFrom] = $postId;
         pll_save_post_translations($translatedPosts);
     }
 

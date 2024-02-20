@@ -30,8 +30,8 @@ class TextDomain
 
     public static function _n($single, $plural, $number, ...$args) {
         if (empty($args)) {
-            return _n($single, $plural, $number, "traduire-sans-migraine");
+            return $number > 1 ? self::__($plural) : self::__($single);
         }
-        return sprintf(_n($single, $plural, $number, "traduire-sans-migraine"), ...$args);
+        return $number > 1 ? self::__($plural, ...$args) : self::__($single, ...$args);
     }
 }

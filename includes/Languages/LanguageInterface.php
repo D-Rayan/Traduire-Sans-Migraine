@@ -54,9 +54,10 @@ interface LanguageInterface
      * @param string $postId
      * @param string $codeLanguage
      * @param string $translatedPostId
+     * @param string $codeFrom
      * @throws Exception
      */
-    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId);
+    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId, string $codeFrom);
 
     /**
      * @param array $categories

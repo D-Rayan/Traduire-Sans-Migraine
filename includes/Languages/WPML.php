@@ -43,7 +43,7 @@ class WPML implements LanguageInterface
         // TODO: Implement getCurrentLanguage() method.
     }
 
-    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId)
+    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId, string $codeFrom)
     {
         // TODO: Implement setTranslationPost() method.
     }

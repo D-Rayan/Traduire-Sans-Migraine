@@ -99,7 +99,7 @@ class Hooks
         if (!empty($thumbnailId)) {
             update_post_meta($this->translatedPostId, '_thumbnail_id', $thumbnailId);
         }
-        $this->languageManager->getLanguageManager()->setTranslationPost($this->originalPost->ID, $this->codeTo, $this->translatedPostId);
+        $this->languageManager->getLanguageManager()->setTranslationPost($this->originalPost->ID, $this->codeTo, $this->translatedPostId, $this->codeFrom);
     }
 
     private function updatePost() {
