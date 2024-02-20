@@ -17,6 +17,10 @@ class LanguageManager
      */
     public function __construct()
     {
+
+    }
+
+    private function initManager() {
         /*
          * People can change the name of directory plugin so better check a function exists
          */
@@ -27,11 +31,14 @@ class LanguageManager
         } else if (function_exists("mlp_get_interlinked_permalinks")) {
             $this->manager = new MultilingualPress();
         } else {
-            throw new \Exception("Missing required plugins.");
+            throw new \Exception("Missing required plugin");
         }
     }
 
     public function getLanguageManager(): LanguageInterface {
+        if (!$this->manager) {
+            $this->initManager();
+        }
         return $this->manager;
     }
 }

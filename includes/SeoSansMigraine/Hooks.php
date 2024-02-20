@@ -25,6 +25,7 @@ class Hooks
     private $translatedPostId;
 
     private $linkManager;
+
     public function __construct() {
         $this->languageManager = new LanguageManager();
         $this->linkManager = new LinkManager();
