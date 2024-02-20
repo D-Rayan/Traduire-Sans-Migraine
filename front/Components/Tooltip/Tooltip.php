@@ -41,7 +41,7 @@ class Tooltip {
             <div class="traduire-sans-migraine-tooltip-content">
                 <?php echo $tooltipMessage; ?>
             </div>
-            <?php echo $innerHTML; ?>
+            <span class="traduire-sans-migraine-tooltip-hoverable"><?php echo $innerHTML; ?></span>
         </span>
         <?php
         return ob_get_clean();
