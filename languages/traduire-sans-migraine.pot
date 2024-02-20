@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.4.103\n"
+"Project-Id-Version: Traduire Sans Migraine 0.4.105\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-20T12:32:200\n"
+"POT-Creation-Date: 2024-02-20T12:52:030\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Editor.php
@@ -45,9 +45,6 @@ msgstr ""
 msgid "We will use the saved content of your post in %s as a source to translate in others language."
 msgstr ""
 
-msgid "🔎 We found %s issues"
-msgstr ""
-
 msgid "We found some issues"
 msgstr ""
 
@@ -55,9 +52,6 @@ msgid "The followings articles will not be translated cause we could not find th
 msgstr ""
 
 msgid "We are impatient to help you with your translations! Just click the translate button."
-msgstr ""
-
-msgid "⚠ We found %s issues"
 msgstr ""
 
 msgid "The links will not be translated cause they are either not published or not available : %s"
@@ -85,6 +79,10 @@ msgid "Translate now"
 msgstr ""
 
 msgid "Translate later"
+msgstr ""
+
+# OnSave.php
+msgid "🔎 We found %s issue"
 msgstr ""
 
 # Polylang.php

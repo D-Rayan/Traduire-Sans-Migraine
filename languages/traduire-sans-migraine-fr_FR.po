@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-20T12:32:200\n"
+"POT-Creation-Date: 2024-02-20T12:52:030\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -52,9 +52,6 @@ msgstr ""
 "On utilisera la dernière sauvegarde de votre article en %s en tant que "
 "source pour traduire dans les autres langues."
 
-msgid "🔎 We found %s issues"
-msgstr "🔎 Nous avons trouvé %s problèmes"
-
 msgid "We found some issues"
 msgstr "Nous avons trouvé des problèmes"
 
@@ -72,9 +69,6 @@ msgid ""
 msgstr ""
 "On est impatient de vous aidez avec votre traduction ! Vous n’avez plus qu’à "
 "cliquer sur le bouton traduire."
-
-msgid "⚠ We found %s issues"
-msgstr "⚠ Nous avons trouvé %s problèmes"
 
 msgid ""
 "The links will not be translated cause they are either not published or not "
@@ -115,6 +109,9 @@ msgstr "Lancer la traduction"
 
 msgid "Translate later"
 msgstr "Traduire plus tard"
+
+msgid "🔎 We found %s issue"
+msgstr "🔎 Nous avons trouvé %s problème"
 
 # /includes/Languages/Polylang.php
 msgid "%s not existing."
@@ -195,6 +192,9 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid "⚠ We found %s issues"
+#~ msgstr "⚠ Nous avons trouvé %s problèmes"
 
 # Plugin Name
 #~ msgid "Translate without headache 💊"

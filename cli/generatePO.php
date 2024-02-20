@@ -43,6 +43,19 @@ function readFilesThroughDir($dir, $msgIds = ["PLACEHOLDER_VERSION" => true]) {
                 $msgIds[$match] = true;
             }
         }
+        $regex = '/TextDomain::_n\(\"([^"]*)\"/';
+        preg_match_all($regex, $content, $matches);
+        if (count($matches[1]) > 0) {
+            fwrite($file, "# " . $include . "\n");
+            foreach ($matches[1] as $match) {
+                if (isset($msgIds[$match])) {
+                    continue;
+                }
+                fwrite($file, "msgid \"" . $match . "\"\n");
+                fwrite($file, "msgstr \"\"\n\n");
+                $msgIds[$match] = true;
+            }
+        }
 
         $regex = '/^ \* ([^:]+): (.+)/m';
         preg_match_all($regex, $content, $matches);

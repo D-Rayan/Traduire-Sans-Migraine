@@ -5,6 +5,12 @@ namespace TraduireSansMigraine\Wordpress;
 use TraduireSansMigraine\Languages\LanguageManager;
 
 class LinkManager {
+
+    private $languageManager;
+
+    public function __construct() {
+        $this->languageManager = new LanguageManager();
+    }
     public function splitAllQueryAndAnchor($url) {
         $urlParts = explode("#", $url, 2);
         $url = $urlParts[0];
@@ -119,12 +125,11 @@ class LinkManager {
         return $internalsPostsId;
     }
 
-    public function translateInternalLinks($postContent, $translateFrom, $translateTo, $postId) {
-        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $postId);
+    public function translateInternalLinks($postContent, $translateFrom, $translateTo) {
+        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom);
         $newContent = $postContent;
-        $languageManager = new LanguageManager();
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
-            $internalPostIdTranslated = $languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
+            $internalPostIdTranslated = $this->languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
             if ($internalPostIdTranslated) {
                 $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
                 if ($titleInternalPostIdTranslated) {
@@ -144,10 +149,9 @@ class LinkManager {
             ];
         }
         $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom);
-        $languageManager = new LanguageManager();
         $notTranslatedInternalLinks = $notPublishedInternalLinks = [];
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
-            $internalPostIdTranslated = $languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
+            $internalPostIdTranslated = $this->languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
             if (!$internalPostIdTranslated) {
                 $notTranslatedInternalLinks[$urlToReplace] = $postIdRelated;
                 continue;

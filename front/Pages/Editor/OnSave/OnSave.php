@@ -86,6 +86,13 @@ class OnSave {
             $dataToTranslate["metaDescription"] = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
             $dataToTranslate["metaKeywords"] = get_post_meta($postId, "_yoast_wpseo_metakeywords", true);
         }
+        if (is_plugin_active("seo-by-rank-math/rank-math.php")) {
+            $dataToTranslate["rankMathDescription"] = get_post_meta($postId, "rank_math_description", true);
+            $dataToTranslate["rankMathTitle"] = get_post_meta($postId, "rank_math_title", true);
+            $dataToTranslate["rankMathFocusKeyword"] = get_post_meta($postId, "rank_math_focus_keyword", true);
+        }
+
+
 
         $result = $this->clientSeoSansMigraine->startTranslation($dataToTranslate, $codeFrom, $codeTo);
         if ($result["success"]) {
@@ -230,7 +237,7 @@ class OnSave {
                                     }
                                     $listHTML .= "</ul>";
                                     Tooltip::render(
-                                    "<span class='warning-issues'>" . TextDomain::__("🔎 We found %s issues", count($listsUrlsIssues))  . "</span>",
+                                    "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issue", count($listsUrlsIssues), count($listsUrlsIssues))  . "</span>",
                                     Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
                                         "isDismissible" => false
                                     ]));
@@ -251,7 +258,7 @@ class OnSave {
                                     }
                                     $listHTML .= "</ul>";
                                     $indicatorText .= "<br/>" . Tooltip::getHTML(
-                              "<span class='warning-issues'>" . TextDomain::__("⚠ We found %s issues", count($notPublished) + count($notTranslated))  . "</span>",
+                              "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($notPublished) + count($notTranslated), count($notPublished) + count($notTranslated))  . "</span>",
                                         Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The links will not be translated cause they are either not published or not available : %s", $listHTML), "warning", [
                                             "isDismissible" => false
                                         ]));
