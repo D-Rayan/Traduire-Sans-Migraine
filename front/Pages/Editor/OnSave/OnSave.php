@@ -229,9 +229,11 @@ class OnSave {
                                         $listHTML .= "<li>".$url."</li>";
                                     }
                                     $listHTML .= "</ul>";
-                                    Alert::render(false, TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
+                                    Tooltip::render(
+                                    "<span class='warning-issues'>" . TextDomain::__("🔎 We found %s issues", count($listsUrlsIssues))  . "</span>",
+                                    Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
                                         "isDismissible" => false
-                                    ]);
+                                    ]));
                                 }
                             } else {
                                 $indicatorText = TextDomain::__("We are impatient to help you with your translations! Just click the translate button.");
@@ -248,7 +250,8 @@ class OnSave {
                                         }
                                     }
                                     $listHTML .= "</ul>";
-                                    $indicatorText .= "<br/>" . Tooltip::getHTML(TextDomain::__("⚠ We found %s issues", count($notPublished) + count($notTranslated)),
+                                    $indicatorText .= "<br/>" . Tooltip::getHTML(
+                              "<span class='warning-issues'>" . TextDomain::__("⚠ We found %s issues", count($notPublished) + count($notTranslated))  . "</span>",
                                         Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The links will not be translated cause they are either not published or not available : %s", $listHTML), "warning", [
                                             "isDismissible" => false
                                         ]));

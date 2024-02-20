@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-19T16:32:400\n"
+"POT-Creation-Date: 2024-02-20T12:32:200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -52,6 +52,12 @@ msgstr ""
 "On utilisera la dernière sauvegarde de votre article en %s en tant que "
 "source pour traduire dans les autres langues."
 
+msgid "🔎 We found %s issues"
+msgstr "🔎 Nous avons trouvé %s problèmes"
+
+msgid "We found some issues"
+msgstr "Nous avons trouvé des problèmes"
+
 msgid ""
 "The followings articles will not be translated cause we could not find "
 "them : %s"
@@ -69,9 +75,6 @@ msgstr ""
 
 msgid "⚠ We found %s issues"
 msgstr "⚠ Nous avons trouvé %s problèmes"
-
-msgid "We found some issues"
-msgstr "Nous avons trouvé des problèmes"
 
 msgid ""
 "The links will not be translated cause they are either not published or not "

@@ -17,13 +17,12 @@
     font-size: 14px;
     line-height: 1.5;
     color: #333;
-    max-width: 300px;
-    min-width: 200px;
     text-align: left;
     white-space: normal;
     word-wrap: break-word;
     margin-top: 10px;
     transition: all 0.3s ease;
+    top: 100%;
 }
 
 .traduire-sans-migraine-tooltip-content--visible.top {
@@ -33,4 +32,5 @@
 
 .traduire-sans-migraine-tooltip {
     position: relative;
+    display: block;
 }

@@ -39,3 +39,16 @@
 
     --traduire-sans-migraine-primary-suggestions-background: #7795ee57;
 }
+
+@-moz-keyframes spin-tsm {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(359deg); }
+}
+@-webkit-keyframes spin-tsm {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(359deg); }
+}
+@keyframes spin-tsm {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(359deg);}
+}

@@ -90,11 +90,9 @@ function addListenerToButtonTranslate(modal) {
                 checkbox.closest(".language").remove();
             }
         });
-        buttonTranslate.disabled = true;
-        buttonTranslate.classList.add('disabled');
+        setButtonLoading('#translate-button')
         await sendRequests(modal, languages);
-        buttonTranslate.disabled = false;
-        buttonTranslate.classList.remove('disabled');
+        stopButtonLoading('#translate-button')
     });
 }
 
@@ -115,7 +113,7 @@ async function sendRequest(modal, language) {
             percentage: 100,
             div: stepDiv,
             status: "error",
-            html: data.error,
+            html: data.error.message.join("<br>"),
         });
         return false;
     }
