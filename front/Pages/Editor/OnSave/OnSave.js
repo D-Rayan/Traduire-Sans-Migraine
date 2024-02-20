@@ -68,7 +68,7 @@ function addListenerToCheckboxes(modal) {
                 column.querySelector(".traduire-sans-migraine-step").classList.remove("hidden");
             } else {
                 column.querySelector(".traduire-sans-migraine-step").classList.add("hidden");
-                column.querySelector(".notice").classList.remove("hidden");
+                column.querySelector("> .notice").classList.remove("hidden");
             }
         });
     });
