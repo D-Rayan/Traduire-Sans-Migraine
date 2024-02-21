@@ -82,14 +82,20 @@ class OnSave {
         if (!empty($post->post_excerpt)) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
         if (!empty($post->post_name)) { $dataToTranslate["slug"] = $post->post_name; }
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
-            $dataToTranslate["metaTitle"] = get_post_meta($postId, "_yoast_wpseo_title", true);
-            $dataToTranslate["metaDescription"] = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
-            $dataToTranslate["metaKeywords"] = get_post_meta($postId, "_yoast_wpseo_metakeywords", true);
+            $metaTitle = get_post_meta($postId, "_yoast_wpseo_title", true);
+            if ($metaTitle && !empty($metaTitle)) { $dataToTranslate["metaTitle"] = $metaTitle; }
+            $metaDescription = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
+            if ($metaDescription && !empty($metaDescription)) { $dataToTranslate["metaDescription"] = $metaDescription; }
+            $metaKeywords = get_post_meta($postId, "_yoast_wpseo_metakeywords", true);
+            if ($metaKeywords && !empty($metaKeywords)) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
         }
         if (is_plugin_active("seo-by-rank-math/rank-math.php")) {
-            $dataToTranslate["rankMathDescription"] = get_post_meta($postId, "rank_math_description", true);
-            $dataToTranslate["rankMathTitle"] = get_post_meta($postId, "rank_math_title", true);
-            $dataToTranslate["rankMathFocusKeyword"] = get_post_meta($postId, "rank_math_focus_keyword", true);
+            $rankMathDescription = get_post_meta($postId, "rank_math_description", true);
+            if ($rankMathDescription && !empty($rankMathDescription)) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
+            $rankMathTitle = get_post_meta($postId, "rank_math_title", true);
+            if ($rankMathTitle && !empty($rankMathTitle)) { $dataToTranslate["rankMathTitle"] = $rankMathTitle; }
+            $rankMathFocusKeyword = get_post_meta($postId, "rank_math_focus_keyword", true);
+            if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword)) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
         }
 
 
