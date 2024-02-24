@@ -11,6 +11,7 @@ use TraduireSansMigraine\Front\Components\Suggestions;
 use TraduireSansMigraine\Front\Components\Tooltip;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
@@ -61,7 +62,8 @@ class OnSave {
             echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
             wp_die();
         }
-        $result = $this->clientSeoSansMigraine->checkCredential("BFAZIOEZ29828ED128");
+        $settings = new Settings();
+        $result = $this->clientSeoSansMigraine->checkCredential();
         if (!$result) {
             echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
             wp_die();
@@ -75,27 +77,27 @@ class OnSave {
         }
         $languageManager = new LanguageManager();
         $codeFrom = $languageManager->getLanguageManager()->getLanguageForPost($postId);
+        $willBeAnUpdate = $languageManager->getLanguageManager()->getTranslationPost($postId, $codeTo) !== null;
         $dataToTranslate = [];
-
-        if (!empty($post->post_content)) { $dataToTranslate["content"] = $post->post_content; }
-        if (!empty($post->post_title)) { $dataToTranslate["title"] = $post->post_title; }
-        if (!empty($post->post_excerpt)) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
-        if (!empty($post->post_name)) { $dataToTranslate["slug"] = $post->post_name; }
+        if (!empty($post->post_content) && (!$willBeAnUpdate || $settings->settingIsEnabled("content"))) { $dataToTranslate["content"] = $post->post_content; }
+        if (!empty($post->post_title) && (!$willBeAnUpdate || $settings->settingIsEnabled("title"))) { $dataToTranslate["title"] = $post->post_title; }
+        if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
+        if (!empty($post->post_name) && (!$willBeAnUpdate || $settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = $post->post_name; }
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
             $metaTitle = get_post_meta($postId, "_yoast_wpseo_title", true);
-            if ($metaTitle && !empty($metaTitle)) { $dataToTranslate["metaTitle"] = $metaTitle; }
+            if ($metaTitle && !empty($metaTitle) && (!$willBeAnUpdate || $settings->settingIsEnabled("_yoast_wpseo_title"))) { $dataToTranslate["metaTitle"] = $metaTitle; }
             $metaDescription = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
-            if ($metaDescription && !empty($metaDescription)) { $dataToTranslate["metaDescription"] = $metaDescription; }
+            if ($metaDescription && !empty($metaDescription) && (!$willBeAnUpdate || $settings->settingIsEnabled("_yoast_wpseo_metadesc"))) { $dataToTranslate["metaDescription"] = $metaDescription; }
             $metaKeywords = get_post_meta($postId, "_yoast_wpseo_metakeywords", true);
-            if ($metaKeywords && !empty($metaKeywords)) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
+            if ($metaKeywords && !empty($metaKeywords) && (!$willBeAnUpdate || $settings->settingIsEnabled("_yoast_wpseo_metakeywords"))) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
         }
         if (is_plugin_active("seo-by-rank-math/rank-math.php")) {
             $rankMathDescription = get_post_meta($postId, "rank_math_description", true);
-            if ($rankMathDescription && !empty($rankMathDescription)) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
+            if ($rankMathDescription && !empty($rankMathDescription) && (!$willBeAnUpdate || $settings->settingIsEnabled("rank_math_description"))) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
             $rankMathTitle = get_post_meta($postId, "rank_math_title", true);
-            if ($rankMathTitle && !empty($rankMathTitle)) { $dataToTranslate["rankMathTitle"] = $rankMathTitle; }
+            if ($rankMathTitle && !empty($rankMathTitle) && (!$willBeAnUpdate || $settings->settingIsEnabled("rank_math_title"))) { $dataToTranslate["rankMathTitle"] = $rankMathTitle; }
             $rankMathFocusKeyword = get_post_meta($postId, "rank_math_focus_keyword", true);
-            if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword)) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
+            if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword) && (!$willBeAnUpdate || $settings->settingIsEnabled("rank_math_focus_keyword"))) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
         }
 
 
@@ -304,7 +306,7 @@ class OnSave {
                 . TextDomain::__("Go to %s to add a new language.", $languageManager->getLanguageManager()->getLanguageManagerName())
                 . "<br/>"
                 . TextDomain::__("Then come back here to translate your post."),
-                "<img width='72' src='https://www.seo-sans-migraine.fr/wp-content/uploads/2024/01/loutre_ampoule.png' alt='loutre_ampoule' />");
+                "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
         $htmlContent = ob_get_clean();
         Modal::render(TSM__NAME, $htmlContent, [
             Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button"),

@@ -2,10 +2,7 @@
 
 namespace TraduireSansMigraine\SeoSansMigraine;
 
-use TraduireSansMigraine\Front\Components\Alert;
-use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -17,22 +14,30 @@ class Client
     private $client;
     private $settings;
 
+    private $account;
+
     public function __construct()
     {
         $this->client = new BaseClient();
         $this->settings = new Settings();
+        $this->account = null;
     }
 
-    public function checkCredential(string $token) {
-        $this->client->setAuthorization($token);
+    public function getAccount() {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->get("/accounts");
-        if (($response["success"] === false || !isset($response["data"]["slug"]) || !isset($response["data"]["quota"])) &&
-            !((defined('DOING_CRON') && DOING_CRON) || (defined('DOING_AJAX') && DOING_AJAX))) {
-            add_action( 'admin_notices', function () {
-                Alert::render(TextDomain::__("Activate your plugin"), TextDomain::__("You need to activate the licence of your plugin"), "error");
-            });
+
+        if ($response["success"]) {
+            $this->account = $response["data"];
         }
-        return $response["success"];
+
+        return $this->account;
+    }
+
+    public function checkCredential() {
+        $this->getAccount();
+
+        return $this->account !== null;
     }
 
     public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo): array {
@@ -42,5 +47,11 @@ class Client
             "codeTo" => $codeTo,
             "restUrl" => get_rest_url(),
         ]);
+    }
+
+    public function getProducts() {
+        return [
+            ["name" => "SEO Sans Migraine", "description" => "Un plugin pour traduire vos articles sans effort", "image" => "https://traduire-sans-migraine.com/wp-content/uploads/2021/07/seo-sans-migraine.png"],
+        ];
     }
 }

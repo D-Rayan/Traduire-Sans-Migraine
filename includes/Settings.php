@@ -12,6 +12,14 @@ if (!defined("ABSPATH")) {
 
 class Settings
 {
+    private $settings;
+
+    public function __construct() {
+        $this->settings = get_option("seo_sans_migraine_settings");
+        if (!$this->settings) {
+            $this->settings = [];
+        }
+    }
     public function checkRequirements()
     {
         return $this->checkPhp(true) && $this->checkPlugins(true);
@@ -89,11 +97,25 @@ class Settings
     }
 
     public function getToken(): string {
+        return "BFAZIOEZ29828ED128";
         $token = get_option("seo_sans_migraine_token");
         if (empty($token)) {
             $token = $this->generateAndSaveToken();
         }
 
         return $token;
+    }
+
+    public function saveSettings($settings) {
+        update_option("seo_sans_migraine_settings", $settings);
+        $this->settings = $settings;
+    }
+
+    public function getSettings() {
+        return $this->settings;
+    }
+
+    public function settingIsEnabled($name) {
+        return !isset($this->settings[$name]) || $this->settings[$name] == true;
     }
 }

@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.4.108\n"
+"Project-Id-Version: Traduire Sans Migraine 0.4.111\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-20T14:41:360\n"
+"POT-Creation-Date: 2024-02-24T13:36:120\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Editor.php
@@ -89,15 +89,78 @@ msgstr ""
 msgid "🔎 We found %s issues"
 msgstr ""
 
+# Products.php
+msgid "Our products"
+msgstr ""
+
+msgid "Sans-Migraine"
+msgstr ""
+
+msgid "Products designed to help you in your SEO, without any headache"
+msgstr ""
+
+# Settings.php
+msgid "Your settings have been saved."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "An error occurred"
+msgstr ""
+
+msgid "Could not fetch your account."
+msgstr ""
+
+msgid "Your otter 🦦"
+msgstr ""
+
+msgid "She will reset the %s"
+msgstr ""
+
+msgid "Need more?"
+msgstr ""
+
+msgid "Post's content"
+msgstr ""
+
+msgid "Post's title"
+msgstr ""
+
+msgid "Post's Excerpt"
+msgstr ""
+
+msgid "Post's slug"
+msgstr ""
+
+msgid "SEO Title"
+msgstr ""
+
+msgid "SEO Description"
+msgstr ""
+
+msgid "Keywords"
+msgstr ""
+
+msgid "What the otter should update when the post already exists?"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "You should configure traduire sans migraine to make it the perfect plugin for your need."
+msgstr ""
+
+# Settings.php
+msgid "She have translated %s words on %s"
+msgstr ""
+
+# Settings.php
+msgid "She have translated %s word on %s"
+msgstr ""
+
 # Polylang.php
 msgid "%s not existing."
-msgstr ""
-
-# Client.php
-msgid "Activate your plugin"
-msgstr ""
-
-msgid "You need to activate the licence of your plugin"
 msgstr ""
 
 # Hooks.php

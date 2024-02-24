@@ -1,0 +1,138 @@
+#wpwrap {
+    background: #F2F4FD;
+}
+
+#wpcontent {
+    padding: 0;
+    margin-left: 159px;
+}
+#wpbody {
+    min-height: calc(100vh - 32px);
+}
+#wpbody-content {
+    padding-bottom: 0;
+    background: #7795EE;
+}
+
+.wrap {
+    padding: 1rem 0 0;
+    margin-right: 0;
+}
+
+.wrap .header {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+    width: 90%;
+}
+
+.wrap .header .header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.wrap .header .header-content .left {
+    width: 100%;
+}
+
+.wrap .header .header-content .right {
+    width: 40%;
+}
+
+.wrap .header .header-content img {
+    width: 100%;
+}
+
+.wrap .header .title {
+    color: #FFFFFF;
+    font-family: "Poppins", Sans-serif;
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: -2px;
+}
+
+.wrap .header .title .second-color {
+    color: #1626B0;
+}
+
+.wrap .header .description {
+    color: #FFFFFF;
+    font-family: "Poppins", Sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.wrap .header .menu {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    align-items: center;
+    padding: 16px;
+    background: white;
+    border-radius: 18px;
+    min-width: 400px;
+}
+
+.wrap .header .menu .content {
+    color: rgb(31, 33, 36);
+    cursor: pointer;
+    display: flex;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    gap: 1rem;
+    align-items: center;
+}
+
+.wrap .header .menu .cta {
+    display: flex;
+    gap: 1rem;
+}
+
+.wrap .logo {
+    width: 206px;
+    height: 40px !important;
+    position: relative;
+}
+
+.wrap .logo a {
+    display: inline-block;
+}
+
+
+.wrap .logo img {
+    position: absolute;
+    top: -24px;
+    left: 12px;
+    height: auto;
+    max-width: 100%;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    display: inline-block;
+}
+
+.wrap .transition-dechirure {
+    position: relative;
+    top: -52px;
+    left: 0;
+    background: url('/wp-content/plugins/traduire-sans-migraine/front/assets/dechirure_bleu.png') bottom -1px center repeat-x;
+    background-size: auto;
+    height: 52px;
+}
+
+.wrap > .content {
+    padding: 0;
+    background-color: #F2F4FD;
+    height: 100%;
+    margin: -53px 0 0;
+    min-height: 30vh;
+}
+
+.dashicons-otter::before {
+    content: "🦦";
+}

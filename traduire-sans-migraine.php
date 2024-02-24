@@ -16,6 +16,7 @@ namespace TraduireSansMigraine;
 
 
 use TraduireSansMigraine\SeoSansMigraine\Hooks;
+use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\TextDomain;
 use TraduireSansMigraine\Wordpress\Updater;
 
@@ -27,18 +28,21 @@ include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename( __FILE__ ));
+define("TSM__ASSETS_PATH", TSM__RELATIVE_PATH . "/front/assets/");
 define("TSM__PLUGIN_NAME", "traduire-sans-migraine");
 require_once TSM__ABSOLUTE_PATH . "/includes/autoload.php";
 class TraduireSansMigraine {
 
     private $settings;
     private $updater;
-
     private $textDomain;
+
+    private $menu;
     public function __construct() {
         $this->settings = new Settings();
         $this->updater = new Updater();
         $this->textDomain = new TextDomain();
+        $this->menu = new Menu();
         $this->init();
     }
 
@@ -65,6 +69,7 @@ class TraduireSansMigraine {
         $this->loadComponents();
         $this->loadPages();
         add_action("admin_init", [$this, "checkRequirements"]);
+        $this->menu->init();
         $hooks = new Hooks();
         $hooks->init();
     }

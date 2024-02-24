@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-20T14:41:360\n"
+"POT-Creation-Date: 2024-02-24T13:36:120\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -116,16 +116,86 @@ msgstr "🔎 Nous avons trouvé %s problème"
 msgid "🔎 We found %s issues"
 msgstr "🔎 Nous avons trouvé %s problèmes"
 
+# Products.php
+msgid "Our products"
+msgstr "Nos produits"
+
+# Author
+msgid "Sans-Migraine"
+msgstr "Sans-Migraine"
+
+msgid "Products designed to help you in your SEO, without any headache"
+msgstr "Produits pensé pour vous aider dans votre SEO sans migraine"
+
+# Settings.php
+msgid "Your settings have been saved."
+msgstr "Vos préférences ont été sauvegardés."
+
+msgid "Settings"
+msgstr "Préférences"
+
+msgid "An error occurred"
+msgstr "Une erreur est survenue"
+
+msgid "Could not fetch your account."
+msgstr "Impossible de récupérer votre compte."
+
+msgid "Your otter 🦦"
+msgstr "Votre loutre 🦦"
+
+#, fuzzy
+#| msgid "She will reset the "
+msgid "She will reset the %s"
+msgstr "Elle se remettra à jour le %s"
+
+msgid "Need more?"
+msgstr "Besoin de plus ?"
+
+msgid "Post's content"
+msgstr "Contenu de l’article"
+
+msgid "Post's title"
+msgstr "Titre de l’article"
+
+msgid "Post's Excerpt"
+msgstr "Extrait de l’article"
+
+msgid "Post's slug"
+msgstr "Slug de l’article"
+
+msgid "SEO Title"
+msgstr "Titre SEO"
+
+msgid "SEO Description"
+msgstr "Description SEO"
+
+msgid "Keywords"
+msgstr "Mots clés"
+
+msgid "What the otter should update when the post already exists?"
+msgstr "Que devra mettre à jour la loutre lorsque l’article existe déjà ?"
+
+msgid "Save"
+msgstr "Sauvegarder"
+
+msgid ""
+"You should configure traduire sans migraine to make it the perfect plugin "
+"for your need."
+msgstr ""
+"N’hésitez pas à configurer traduire sans migraine pour qu’il corresponde à "
+"vos attentes."
+
+# Settings.php
+msgid "She have translated %s words on %s"
+msgstr "Elle a traduit %s mots sur %s"
+
+# Settings.php
+msgid "She have translated %s word on %s"
+msgstr "Elle a traduit %s mot sur %s"
+
 # /includes/Languages/Polylang.php
 msgid "%s not existing."
 msgstr "%s n’existe pas."
-
-# /includes/SeoSansMigraine/Client.php
-msgid "Activate your plugin"
-msgstr "Activer votre plugin"
-
-msgid "You need to activate the licence of your plugin"
-msgstr "Vous devez activer la licence du plugin"
 
 msgid "The otters have finished the translation 🦦, Check it right here %s"
 msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
@@ -195,6 +265,13 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+# /includes/SeoSansMigraine/Client.php
+#~ msgid "Activate your plugin"
+#~ msgstr "Activer votre plugin"
+
+#~ msgid "You need to activate the licence of your plugin"
+#~ msgstr "Vous devez activer la licence du plugin"
 
 #~ msgid "⚠ We found %s issues"
 #~ msgstr "⚠ Nous avons trouvé %s problèmes"
