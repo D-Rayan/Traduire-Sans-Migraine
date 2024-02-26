@@ -12,10 +12,22 @@ class Menu {
         add_action("admin_menu", [$this, "addSubMenu"]);
     }
 
+    public function loadMenuIcon() {
+        add_action("admin_head", function() {
+            echo '<style>
+            .dashicons-otter::before {
+                content: "💊";
+                padding: 5px 0 !important;
+            }
+            </style>';
+        });
+    }
+
     public function addMenu() {
         if (defined("SANS_MIGRAINE_MENU")) {
             return;
         }
+        $this->loadMenuIcon();
         add_menu_page(
             "Nos Produits",
             "Sans Migraine",

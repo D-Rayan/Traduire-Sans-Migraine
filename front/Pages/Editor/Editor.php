@@ -70,7 +70,7 @@ class Editor {
     }
 
     public function addButton() {
-        Button::render(TextDomain::__("Open my translate tab"), "primary", "display-traduire-sans-migraine-button");
+        Button::render(TextDomain::__("Translate 💊"), "primary", "display-traduire-sans-migraine-button");
     }
     public function loadAdminHooks() {
         add_action( 'add_meta_boxes', [$this, 'registerMetaBox'] );

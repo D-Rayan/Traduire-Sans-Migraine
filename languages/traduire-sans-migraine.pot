@@ -7,11 +7,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-24T13:36:120\n"
+"POT-Creation-Date: 2024-02-26T13:03:010\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Editor.php
 msgid "Open my translate tab"
+msgstr ""
+
+msgid "Translate 💊"
 msgstr ""
 
 # OnSave.php
@@ -42,10 +45,10 @@ msgstr ""
 msgid "Post ID is not set"
 msgstr ""
 
-msgid "We will use the saved content of your post in %s as a source to translate in others language."
+msgid "That's the last version of your post that will be translated. If you have done any modification don't forget to save it before the translation!"
 msgstr ""
 
-msgid "We found some issues"
+msgid "Oops! Something wrong"
 msgstr ""
 
 msgid "The followings articles will not be translated cause we could not find them : %s"
@@ -54,7 +57,7 @@ msgstr ""
 msgid "We are impatient to help you with your translations! Just click the translate button."
 msgstr ""
 
-msgid "The links will not be translated cause they are either not published or not available : %s"
+msgid "The following links will not be translated because they doesn't exist or aren't published : %s"
 msgstr ""
 
 msgid "Use the checkbox on the left to add this language to the list of translations, it will create a new article in %s"

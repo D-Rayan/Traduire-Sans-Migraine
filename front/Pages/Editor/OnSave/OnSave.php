@@ -235,7 +235,7 @@ class OnSave {
                         <div class="right-column">
                             <?php
                             if ($postId == $localPostId) {
-                                Alert::render(false, TextDomain::__("We will use the saved content of your post in %s as a source to translate in others language.", $name), "success", [
+                                Alert::render(false, TextDomain::__("That's the last version of your post that will be translated. If you have done any modification don't forget to save it before the translation!"), "success", [
                                     "isDismissible" => false
                                 ]);
                                 if (count($listsUrlsIssues) > 0) {
@@ -246,7 +246,7 @@ class OnSave {
                                     $listHTML .= "</ul>";
                                     Tooltip::render(
                                     "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issue", count($listsUrlsIssues), count($listsUrlsIssues))  . "</span>",
-                                    Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
+                                    Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
                                         "isDismissible" => false
                                     ]));
                                 }
@@ -256,18 +256,18 @@ class OnSave {
                                     $listHTML = "<ul>";
                                     if (count($notTranslated) > 0) {
                                         foreach ($notTranslated as $url => $postId) {
-                                            $listHTML .= "<li>" . $url . "</li>";
+                                            $listHTML .= "<li><a href='".$url."' target='_blank'>" . $url . "</a></li>";
                                         }
                                     }
                                     if (count($notPublished) > 0) {
                                         foreach ($notPublished as $url => $postId) {
-                                            $listHTML .= "<li>" . $url . "</li>";
+                                            $listHTML .= "<li><a href='".$url."' target='_blank'>" . $url . "</a></li>";
                                         }
                                     }
                                     $listHTML .= "</ul>";
                                     $indicatorText .= "<br/>" . Tooltip::getHTML(
                               "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($notPublished) + count($notTranslated), count($notPublished) + count($notTranslated))  . "</span>",
-                                        Alert::getHTML(TextDomain::__("We found some issues"), TextDomain::__("The links will not be translated cause they are either not published or not available : %s", $listHTML), "warning", [
+                                        Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The following links will not be translated because they doesn't exist or aren't published : %s", $listHTML), "warning", [
                                             "isDismissible" => false
                                         ]));
                                 }
