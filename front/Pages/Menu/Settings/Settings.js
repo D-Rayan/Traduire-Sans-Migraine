@@ -20,3 +20,12 @@ if (buttonSave) {
         stopButtonLoading("#save-settings");
     });
 }
+
+const buttonLogIn = document.querySelector("#log-in");
+if (buttonLogIn) {
+    buttonLogIn.addEventListener("click", async () => {
+        const href = buttonLogIn.dataset.href;
+        // open new tab
+        window.open(href, "_blank");
+    });
+}

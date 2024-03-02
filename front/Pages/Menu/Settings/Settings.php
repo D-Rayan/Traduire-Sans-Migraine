@@ -106,10 +106,19 @@ class Settings {
 
     private static function getStatePlugin() {
         $client = new Client();
+        $accountHasBeenFetch = $client->fetchAccount();
         $account = $client->getAccount();
+        $redirect = $client->getRedirect();
         ob_start();
-        if ($account === null) {
+        if ($account === null && $redirect === null) {
             Alert::render(TextDomain::__("An error occurred"), TextDomain::__("Could not fetch your account."), "error");
+        } else if ($redirect !== null) {
+            Alert::render(
+                    TextDomain::__("Which otter are you?"),
+                    TextDomain::__("You're one step away to use this plugin. You just need to log-in to your account.") . Button::render(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $redirect]),
+                    "primary",
+                    ["isDismissible" => false]
+            );
         } else {
             $quotaMax = $account["quota"]["max"];
             $quotaCurrent = $account["quota"]["current"];

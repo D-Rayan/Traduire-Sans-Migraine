@@ -15,6 +15,7 @@ class Client
     private $settings;
 
     private $account;
+    private $redirect;
 
     public function __construct()
     {
@@ -23,23 +24,26 @@ class Client
         $this->account = null;
     }
 
-    public function getAccount() {
+    public function fetchAccount() {
         $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->get("/accounts");
 
-        if ($response["success"]) {
-            if ($response["status"] >= 300) {
-                var_dump($response);
-            } else {
-                $this->account = $response["data"];
-            }
+        if (!$response["success"]) {
+            return false;
         }
 
-        return $this->account;
+        if ($response["status"] >= 300) {
+            $this->redirect = $response["data"];
+            return false;
+        }
+
+        $this->account = $response["data"];
+
+        return true;
     }
 
     public function checkCredential() {
-        $this->getAccount();
+        $this->fetchAccount();
 
         return $this->account !== null;
     }
@@ -57,5 +61,13 @@ class Client
         return [
             ["name" => "SEO Sans Migraine", "description" => "Un plugin pour traduire vos articles sans effort", "image" => "https://traduire-sans-migraine.com/wp-content/uploads/2021/07/seo-sans-migraine.png"],
         ];
+    }
+
+    public function getAccount() {
+        return $this->account;
+    }
+
+    public function getRedirect() {
+        return $this->redirect;
     }
 }
