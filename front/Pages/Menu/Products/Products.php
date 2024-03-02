@@ -80,7 +80,7 @@ class Products {
                         <img src="<?php echo $product["image"]; ?>" alt="seo-sans-migraine">
                     </div>
                     <div class="product-content">
-                        <h2><?php echo $product["name"]; ?></h2>
+                        <p><?php echo $product["name"]; ?></p>
                         <p><?php echo $product["description"]; ?></p>
                     </div>
                 </div>

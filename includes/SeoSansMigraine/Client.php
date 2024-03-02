@@ -28,7 +28,11 @@ class Client
         $response = $this->client->get("/accounts");
 
         if ($response["success"]) {
-            $this->account = $response["data"];
+            if ($response["status"] >= 300) {
+                var_dump($response);
+            } else {
+                $this->account = $response["data"];
+            }
         }
 
         return $this->account;
