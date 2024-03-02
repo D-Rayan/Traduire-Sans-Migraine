@@ -146,10 +146,8 @@ msgstr "Impossible de récupérer votre compte."
 msgid "Your otter 🦦"
 msgstr "Votre loutre 🦦"
 
-#, fuzzy
-#| msgid "She will reset the "
 msgid "She will reset the %s"
-msgstr "Elle se remettra à jour le %s"
+msgstr "Elle repartira de zéro le %s"
 
 msgid "Need more?"
 msgstr "Besoin de plus ?"

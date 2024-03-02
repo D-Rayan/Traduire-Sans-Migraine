@@ -11,7 +11,9 @@ class BaseClient
     static $Authorization = false;
 
     public function setAuthorization(string $bearer) {
-        self::$Authorization = $bearer;
+        $protocols = array( 'http://', 'https://', 'http://www.', 'https://www.', 'www.' );
+        $domain = explode("/", str_replace( $protocols, '', site_url() ))[0];
+        self::$Authorization = $domain.":".$bearer;
     }
     public function post(string $url, array $body, array $headers = [], array $params = []): array
     {

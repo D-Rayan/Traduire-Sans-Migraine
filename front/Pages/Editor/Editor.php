@@ -44,7 +44,7 @@ class Editor {
         ?>
         <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
         <?php
-            Button::render(TextDomain::__("Open my translate tab"), "primary", "display-traduire-sans-migraine-button");
+            Button::render(TextDomain::__("Translate 💊"), "primary", "display-traduire-sans-migraine-button");
         ?>
         </div>
         <?php
