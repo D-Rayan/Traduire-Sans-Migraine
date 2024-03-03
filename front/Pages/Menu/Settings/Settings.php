@@ -99,25 +99,28 @@ class Settings {
         ob_start();
         ?>
         <span><?php echo TSM__NAME; ?></span><br/>
-        <span class="second-color"><?php echo TextDomain::__("Settings"); ?></span>
+        <span class="second-color"><?php echo TextDomain::__("⚙️ Settings"); ?></span>
         <?php
         return ob_get_clean();
     }
 
     private static function getStatePlugin() {
         $client = new Client();
-        $accountHasBeenFetch = $client->fetchAccount();
+        $client->fetchAccount();
         $account = $client->getAccount();
         $redirect = $client->getRedirect();
         ob_start();
         if ($account === null && $redirect === null) {
             Alert::render(TextDomain::__("An error occurred"), TextDomain::__("Could not fetch your account."), "error");
         } else if ($redirect !== null) {
-            Alert::render(
-                    TextDomain::__("Which otter are you?"),
-                    TextDomain::__("You're one step away to use this plugin. You just need to log-in to your account.") . Button::render(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $redirect]),
-                    "primary",
-                    ["isDismissible" => false]
+            // @todo : do design
+            Suggestions::render(TextDomain::__("Your otter 🦦"),
+                "You're not logged in. Please log-in to continue.",
+                "<div class='suggestion-footer-settings'>
+                <div>".Button::getHTML(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $redirect["url"]])."</div>
+                <div class='right-footer'>
+                    <img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' /></div></div>",
+                [ "classname" => "suggestion-settings"]
             );
         } else {
             $quotaMax = $account["quota"]["max"];
@@ -236,7 +239,7 @@ class Settings {
     private static function getDescription() {
         ob_start();
         ?>
-        <span><?php echo TextDomain::__("You should configure traduire sans migraine to make it the perfect plugin for your need."); ?></span>
+        <span><?php echo TextDomain::__("Here you can configure the tool to make it perfect for your needs."); ?></span>
         <?php
         return ob_get_clean();
     }
@@ -244,7 +247,7 @@ class Settings {
         $content = self::getContent();
         $title = self::getTitle();
         $description = self::getDescription();
-        Menu::render($title, $description, $content);
+        Menu::render($title, $description, $content, "loutre_settings.png");
     }
 }
 

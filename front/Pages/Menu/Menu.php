@@ -1,7 +1,7 @@
 <?php
 
 namespace TraduireSansMigraine\Front\Pages\Menu;
-use TraduireSansMigraine\Front\Components\Button;
+use TraduireSansMigraine\Front\Components\Button;use TraduireSansMigraine\Wordpress\TextDomain;
 
 class Menu {
 
@@ -55,7 +55,7 @@ class Menu {
         $this->loadAdminHooks();
     }
 
-    static function render($title, $description, $content) {
+    static function render($title, $description, $content, $picture = "loutre_amandine.png") {
         ?>
         <div class="wrap">
             <div class="header">
@@ -66,10 +66,7 @@ class Menu {
                         </a>
                     </div>
                     <div class="content">
-                        <span>Formations</span>
-                        <span>Travailler avec moi</span>
-                        <span>La Newsletter</span>
-                        <span>Pourquoi la loutre</span>
+                        <span><?php echo TextDomain::__("Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"); ?></span>
                     </div>
                     <div class="cta">
                         <?php
@@ -79,7 +76,7 @@ class Menu {
                     </div>
                 </div>
                 <div class="header-content">
-                    <div class="left">
+                    <div class="top">
                         <div class="title">
                             <?php echo $title; ?>
                         </div>
@@ -90,7 +87,7 @@ class Menu {
                     <div class="right">
                         <div>
                             <div>
-                                <img src="<?php echo TSM__ASSETS_PATH; ?>loutre_amandine.png" />
+                                <img src="<?php echo TSM__ASSETS_PATH; ?><?php echo $picture; ?>" />
                             </div>
                         </div>
                     </div>

@@ -60,8 +60,8 @@ class Products {
     private static function getTitle() {
         ob_start();
         ?>
-        <span><?php echo TextDomain::__("Our products"); ?></span><br/>
-        <span class="second-color"><?php echo TextDomain::__("Sans-Migraine"); ?></span>
+        <span><?php echo TextDomain::__("Explore all the tools"); ?></span>
+        <span><?php echo TextDomain::__("SEO sans migraine 💊"); ?></span>
         <?php
         return ob_get_clean();
     }
@@ -95,7 +95,7 @@ class Products {
     private static function getDescription() {
         ob_start();
         ?>
-        <span><?php echo TextDomain::__("Products designed to help you in your SEO, without any headache"); ?></span>
+        <span class="second-color"><?php echo TextDomain::__("Each tool aim to help you in your SEO strategy and you can find them all here."); ?></span>
         <?php
         return ob_get_clean();
     }
