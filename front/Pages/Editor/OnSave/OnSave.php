@@ -180,12 +180,12 @@ class OnSave {
                     $flag = $translationPost["flag"];
                     $code = $translationPost["code"];
                     $postId = $translationPost["postId"];
-                    $checked = !$postId && $postId != $localPostId;
+                    $translatable = in_array($code, $languagesTranslatable);
+                    $checked = !$postId && $postId != $localPostId && $translatable;
 
                     $issuesTranslatedUrls = $linkManager->getIssuedInternalLinks($postContent, $codeFrom, $code);
                     $notTranslated = $issuesTranslatedUrls["notTranslated"];
                     $notPublished = $issuesTranslatedUrls["notPublished"];
-                    $translatable = in_array($code, $languagesTranslatable);
                     $haveWarnings = count($notTranslated) + count($notPublished) > 0;
 
                     $enrichedTranslationsPosts[$codeSlug] = [
