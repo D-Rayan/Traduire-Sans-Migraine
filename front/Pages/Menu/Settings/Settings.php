@@ -215,7 +215,7 @@ class Settings {
                     </div>
                 </div>
                 <div>
-                    <img src="https://www.seo-sans-migraine.fr/wp-content/uploads/2024/01/service_gmaps.jpg" />
+                    <img src="<?php echo TSM__ASSETS_PATH; ?>loutre_ordinateur.jpg" />
                 </div>
             </div>
         </div>
@@ -247,9 +247,10 @@ class Settings {
         $content = self::getContent();
         $title = self::getTitle();
         $description = self::getDescription();
-        Menu::render($title, $description, $content, "loutre_settings.png");
+        Menu::render($title, $description, $content, "loutre_docteur.png");
     }
 }
 
 $settings = new Settings();
 $settings->init();
+
