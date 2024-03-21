@@ -297,7 +297,7 @@ class OnSave {
                                     ]);
                                 }
                             } else {
-                                Alert::render(false, TextDomain::__("At the moment none of our otters are able to write in this language."), "primary", [
+                                Alert::render(false, TextDomain::__("At the moment none of our otters are able to write in this language."), "info", [
                                     "isDismissible" => false
                                 ]);
                             }

@@ -57,12 +57,12 @@ class Client
     }
 
     public function getLanguages() {
-        try {
-            $response = $this->client->get("/languages");
-            return $response["languages"];
-        } catch (\Exception $e) {
+        $response = $this->client->get("/languages");
+        if (!$response["success"]) {
             return [];
         }
+
+        return $response["data"]["languages"];
     }
 
     public function getProducts() {

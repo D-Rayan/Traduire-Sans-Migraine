@@ -75,7 +75,6 @@ class LogIn {
                 TextDomain::__("You're already logged in. You can start translating your content."), "");
         }
         $urlToOpen = $clientSeoSansMigraine->getRedirect()["url"];
-        var_dump($clientSeoSansMigraine->getRedirect());
         return Suggestions::getHTML(TextDomain::__("Your otter 🦦"),
             TextDomain::__("You're not logged in. Please log-in to continue."),
             "<div class='suggestion-footer-settings' id='log-in'>

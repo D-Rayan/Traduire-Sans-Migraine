@@ -22,3 +22,7 @@
 .warning-issues {
     text-decoration: underline;
 }
+
+.traduire-sans-migraine-list-languages .traduire-sans-migraine-alert {
+    margin-bottom: 0 !important;
+}
