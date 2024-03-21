@@ -71,7 +71,9 @@ class Menu {
                     <div class="cta">
                         <?php
                         Button::render("Contactez-moi", "primary", "contact-me");
-                        Button::render("Voir mon compte", "primary", "contact-me");
+                        Button::render("Voir mon compte", "primary", "my-account", [
+                            "href" => TSM__CLIENT_LOGIN_DOMAIN
+                        ]);
                         ?>
                     </div>
                 </div>

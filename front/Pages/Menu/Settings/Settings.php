@@ -106,6 +106,7 @@ class Settings {
 
     private static function getStatePlugin() {
         $client = new Client();
+        $settingsInstance = new SettingsPlugin();
         $client->fetchAccount();
         $account = $client->getAccount();
         $redirect = $client->getRedirect();
@@ -115,7 +116,7 @@ class Settings {
         } else if ($redirect !== null) {
             // @todo : do design
             Suggestions::render(TextDomain::__("Your otter 🦦"),
-                "You're not logged in. Please log-in to continue.",
+                TextDomain::__("You're not logged in. Please log-in to continue."),
                 "<div class='suggestion-footer-settings'>
                 <div>".Button::getHTML(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $redirect["url"]])."</div>
                 <div class='right-footer'>
@@ -129,7 +130,7 @@ class Settings {
             ;
             $step = Step::getHTML([
                 "classname" => "settings-step-progress",
-                "indicatorText" => TextDomain::_n("She have translated %s words on %s", "She have translated %s word on %s", $quotaCurrent, $quotaCurrent, $quotaMax),
+                "indicatorText" => TextDomain::_n("She have translated %s characters on %s", "She have translated %s character on %s", $quotaCurrent, $quotaCurrent, $quotaMax),
                 "percentage" => ($quotaCurrent / $quotaMax) * 100 . "%",
             ]);
             Suggestions::render(TextDomain::__("Your otter 🦦"),
@@ -138,7 +139,9 @@ class Settings {
                 <div>".TextDomain::__("She will reset the %s", date("d/m/y", strtotime($quotaResetDate)))."</div>
                 <div class='right-footer'>
                     <img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />"
-                    . Button::getHTML(TextDomain::__("Need more?"), "primary", "upgrade-quota")
+                    . Button::getHTML(TextDomain::__("Need more?"), "primary", "upgrade-quota", [
+                            "href" => TSM__CLIENT_LOGIN_DOMAIN . "?key=" . $settingsInstance->getToken(),
+                ])
                 . "</div></div>",
                 [ "classname" => "suggestion-settings"]
             );
