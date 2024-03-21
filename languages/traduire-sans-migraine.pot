@@ -1,19 +1,16 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.4.111\n"
+"Project-Id-Version: Traduire Sans Migraine 0.4.203\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-26T13:03:010\n"
+"POT-Creation-Date: 2024-03-21T09:51:200\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Editor.php
-msgid "Open my translate tab"
-msgstr ""
-
 msgid "Translate 💊"
 msgstr ""
 
@@ -92,21 +89,25 @@ msgstr ""
 msgid "🔎 We found %s issues"
 msgstr ""
 
+# Menu.php
+msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
+msgstr ""
+
 # Products.php
-msgid "Our products"
+msgid "Explore all the tools"
 msgstr ""
 
-msgid "Sans-Migraine"
+msgid "SEO sans migraine 💊"
 msgstr ""
 
-msgid "Products designed to help you in your SEO, without any headache"
+msgid "Each tool aim to help you in your SEO strategy and you can find them all here."
 msgstr ""
 
 # Settings.php
 msgid "Your settings have been saved."
 msgstr ""
 
-msgid "Settings"
+msgid "⚙️ Settings"
 msgstr ""
 
 msgid "An error occurred"
@@ -116,6 +117,9 @@ msgid "Could not fetch your account."
 msgstr ""
 
 msgid "Your otter 🦦"
+msgstr ""
+
+msgid "Log-in"
 msgstr ""
 
 msgid "She will reset the %s"
@@ -145,13 +149,16 @@ msgstr ""
 msgid "Keywords"
 msgstr ""
 
+msgid "Settings"
+msgstr ""
+
 msgid "What the otter should update when the post already exists?"
 msgstr ""
 
 msgid "Save"
 msgstr ""
 
-msgid "You should configure traduire sans migraine to make it the perfect plugin for your need."
+msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
 
 # Settings.php

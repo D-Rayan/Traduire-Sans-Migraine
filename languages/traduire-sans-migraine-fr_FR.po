@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-02-26T13:03:010\n"
+"POT-Creation-Date: 2024-03-21T09:51:200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -13,9 +13,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 "X-Domain: traduire-sans-migraine\n"
-
-msgid "Open my translate tab"
-msgstr "Ouvrir ma console de traduction"
 
 msgid "Translate 💊"
 msgstr "Traduire 💊"
@@ -119,23 +116,31 @@ msgstr "🔎 Nous avons trouvé %s problème"
 msgid "🔎 We found %s issues"
 msgstr "🔎 Nous avons trouvé %s problèmes"
 
+# Menu.php
+msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
+msgstr "Vous aimez nos produits ? Aidez nous avec quelques mots. ⭐️⭐️⭐️⭐️⭐️"
+
 # Products.php
-msgid "Our products"
-msgstr "Nos produits"
+msgid "Explore all the tools"
+msgstr "Découvrez nos produits"
 
 # Author
-msgid "Sans-Migraine"
-msgstr "Sans-Migraine"
+msgid "SEO sans migraine 💊"
+msgstr "SEO sans migraine 💊"
 
-msgid "Products designed to help you in your SEO, without any headache"
-msgstr "Produits pensé pour vous aider dans votre SEO sans migraine"
+msgid ""
+"Each tool aim to help you in your SEO strategy and you can find them all "
+"here."
+msgstr ""
+"Chaque outil vise à vous aider dans votre stratégie SEO. Voici tous nos "
+"produits"
 
 # Settings.php
 msgid "Your settings have been saved."
 msgstr "Vos préférences ont été sauvegardés."
 
-msgid "Settings"
-msgstr "Préférences"
+msgid "⚙️ Settings"
+msgstr "⚙️ Préférences"
 
 msgid "An error occurred"
 msgstr "Une erreur est survenue"
@@ -145,6 +150,9 @@ msgstr "Impossible de récupérer votre compte."
 
 msgid "Your otter 🦦"
 msgstr "Votre loutre 🦦"
+
+msgid "Log-in"
+msgstr "Se Connecter"
 
 msgid "She will reset the %s"
 msgstr "Elle repartira de zéro le %s"
@@ -173,18 +181,19 @@ msgstr "Description SEO"
 msgid "Keywords"
 msgstr "Mots clés"
 
+msgid "Settings"
+msgstr "Préférences"
+
 msgid "What the otter should update when the post already exists?"
 msgstr "Que devra mettre à jour la loutre lorsque l’article existe déjà ?"
 
 msgid "Save"
 msgstr "Sauvegarder"
 
-msgid ""
-"You should configure traduire sans migraine to make it the perfect plugin "
-"for your need."
+msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
-"N’hésitez pas à configurer traduire sans migraine pour qu’il corresponde à "
-"vos attentes."
+"Ici vous pouvez configurer sans migraine pour qu’il corresponde à vos "
+"besoins."
 
 # Settings.php
 msgid "She have translated %s words on %s"
@@ -266,6 +275,20 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid "Open my translate tab"
+#~ msgstr "Ouvrir ma console de traduction"
+
+# Products.php
+#~ msgid "Our products"
+#~ msgstr "Nos produits"
+
+# Author
+#~ msgid "Sans-Migraine"
+#~ msgstr "Sans-Migraine"
+
+#~ msgid "Products designed to help you in your SEO, without any headache"
+#~ msgstr "Produits pensé pour vous aider dans votre SEO sans migraine"
 
 #~ msgid ""
 #~ "We will use the saved content of your post in %s as a source to translate "
