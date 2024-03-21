@@ -255,7 +255,7 @@ class OnSave {
                                     }
                                     $listHTML .= "</ul>";
                                     Tooltip::render(
-                                    "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issue", count($listsUrlsIssues), count($listsUrlsIssues))  . "</span>",
+                                    "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($listsUrlsIssues), count($listsUrlsIssues))  . "</span>",
                                     Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
                                         "isDismissible" => false
                                     ]));

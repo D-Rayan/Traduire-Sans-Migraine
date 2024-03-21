@@ -123,7 +123,7 @@ class Settings {
             ;
             $step = Step::getHTML([
                 "classname" => "settings-step-progress",
-                "indicatorText" => TextDomain::_n("She have translated %s characters on %s", "She have translated %s character on %s", $quotaCurrent, $quotaCurrent, $quotaMax),
+                "indicatorText" => TextDomain::_n("She have translated %s character on %s", "She have translated %s characters on %s", $quotaCurrent, $quotaCurrent, $quotaMax),
                 "percentage" => ($quotaCurrent / $quotaMax) * 100 . "%",
             ]);
             Suggestions::render(TextDomain::__("Your otter 🦦"),

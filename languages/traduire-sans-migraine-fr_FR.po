@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-03-21T14:08:420\n"
+"POT-Creation-Date: 2024-03-21T14:27:410\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -207,12 +207,12 @@ msgstr ""
 "besoins."
 
 # Settings.php
-msgid "She have translated %s characters on %s"
-msgstr "Elle a traduit %s caractères sur %s"
-
-# Settings.php
 msgid "She have translated %s character on %s"
 msgstr "Elle a traduit %s caractère sur %s"
+
+# Settings.php
+msgid "She have translated %s characters on %s"
+msgstr "Elle a traduit %s caractères sur %s"
 
 # /includes/Languages/Polylang.php
 msgid "%s not existing."
