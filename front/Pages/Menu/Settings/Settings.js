@@ -21,14 +21,6 @@ if (buttonSave) {
     });
 }
 
-const buttonLogIn = document.querySelector("#log-in");
-if (buttonLogIn) {
-    buttonLogIn.addEventListener("click", async () => {
-        const href = buttonLogIn.dataset.href;
-        window.open(href, "_blank");
-    });
-}
-
 const buttonUpgrade = document.querySelector("#upgrade-quota");
 if (buttonUpgrade) {
     buttonUpgrade.addEventListener("click", async () => {

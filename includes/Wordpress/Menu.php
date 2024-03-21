@@ -42,8 +42,8 @@ class Menu {
     public function addSubMenu() {
         add_submenu_page(
             "sans-migraine",
-            "Traduire Sans Migraine",
-            "Traduire Sans Migraine",
+            "⚙️ Traduire Sans Migraine",
+            "⚙️ Traduire Sans Migraine",
             "manage_options",
             "traduire-sans-migraine",
             [$this, "renderSubMenu"]

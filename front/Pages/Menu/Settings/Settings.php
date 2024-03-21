@@ -6,6 +6,7 @@ use TraduireSansMigraine\Front\Components\Button;
 use TraduireSansMigraine\Front\Components\Checkbox;
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Front\Components\Suggestions;
+use TraduireSansMigraine\Front\Pages\LogIn\LogIn;
 use TraduireSansMigraine\Front\Pages\Menu\Menu;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings as SettingsPlugin;
@@ -114,15 +115,7 @@ class Settings {
         if ($account === null && $redirect === null) {
             Alert::render(TextDomain::__("An error occurred"), TextDomain::__("Could not fetch your account."), "error");
         } else if ($redirect !== null) {
-            // @todo : do design
-            Suggestions::render(TextDomain::__("Your otter 🦦"),
-                TextDomain::__("You're not logged in. Please log-in to continue."),
-                "<div class='suggestion-footer-settings'>
-                <div>".Button::getHTML(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $redirect["url"]])."</div>
-                <div class='right-footer'>
-                    <img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' /></div></div>",
-                [ "classname" => "suggestion-settings"]
-            );
+            LogIn::render($redirect["url"]);
         } else {
             $quotaMax = $account["quota"]["max"];
             $quotaCurrent = $account["quota"]["current"];

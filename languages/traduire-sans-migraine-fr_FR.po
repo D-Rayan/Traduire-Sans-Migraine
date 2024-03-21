@@ -153,6 +153,8 @@ msgstr "Votre loutre 🦦"
 
 msgid "You're not logged in. Please log-in to continue."
 msgstr ""
+"Votre compte n’est pas encore relié ! Pas de panique, cela ne prends que "
+"quelques secondes."
 
 msgid "Log-in"
 msgstr "Se Connecter"

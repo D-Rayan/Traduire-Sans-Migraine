@@ -309,7 +309,9 @@ class OnSave {
                 "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
         $htmlContent = ob_get_clean();
         Modal::render(TSM__NAME, $htmlContent, [
-            Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button"),
+            Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button", [
+                    "logged" => $this->clientSeoSansMigraine->checkCredential() ? "true" : "false",
+            ]),
             Button::getHTML(TextDomain::__("Translate later"), "ghost", "closing-button"),
         ]);
         wp_die();

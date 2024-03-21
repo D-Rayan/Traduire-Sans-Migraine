@@ -10,10 +10,15 @@ class BaseClient
     const BASE_URL = TSM__API_DOMAIN;
     static $Authorization = false;
 
-    public function setAuthorization(string $bearer) {
+    public function getDomain() {
         $protocols = array( 'http://', 'https://', 'http://www.', 'https://www.', 'www.' );
         $domain = explode("/", str_replace( $protocols, '', site_url() ))[0];
-        self::$Authorization = $domain.":".$bearer;
+        return $domain;
+    }
+
+    public function setAuthorization(string $bearer) {
+
+        self::$Authorization = $this->getDomain().":".$bearer;
     }
     public function post(string $url, array $body, array $headers = [], array $params = []): array
     {

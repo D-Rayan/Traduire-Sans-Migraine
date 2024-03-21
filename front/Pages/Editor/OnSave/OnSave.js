@@ -74,10 +74,38 @@ function addListenerToCheckboxes(modal) {
     });
 }
 
+async function displayLogInSection(modal, callbackOnLoggedIn) {
+    const modalContent = modal.querySelector(".traduire-sans-migraine-modal__content-body-text");
+    if (modalContent.querySelector("#login-container")) {
+        return;
+    }
+    setButtonLoading('#translate-button')
+    const logInDiv = document.createElement("div");
+    logInDiv.id = "login-container";
+    modalContent.prepend(logInDiv);
+    await renderLogInHTML(modal.querySelector("#login-container"), callbackOnLoggedIn);
+    stopButtonLoading('#translate-button')
+}
+
+function removeLogInSection(modal) {
+    const logInDiv = modal.querySelector("#login-container");
+    if (logInDiv) {
+        logInDiv.remove();
+    }
+}
+
 function addListenerToButtonTranslate(modal) {
     const buttonTranslate = modal.querySelector('#translate-button');
     buttonTranslate.addEventListener('click', async (e) => {
         e.preventDefault();
+        if (buttonTranslate.dataset.logged === "false") {
+            await displayLogInSection(modal,() => {
+                removeLogInSection(modal);
+                buttonTranslate.dataset.logged = "true";
+                buttonTranslate.click();
+            });
+            return;
+        }
         const checkedCheckboxes = modal.querySelectorAll("input[type='checkbox']:checked");
         const languages = [];
         checkedCheckboxes.forEach(checkbox => {
@@ -113,7 +141,7 @@ async function sendRequest(modal, language) {
             percentage: 100,
             div: stepDiv,
             status: "error",
-            html: data.error.message.join("<br>"),
+            html: typeof data.error === "string" ? data.error : data.error.message.join("<br>"),
         });
         return false;
     }

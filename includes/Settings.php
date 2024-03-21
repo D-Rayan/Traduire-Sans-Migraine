@@ -97,7 +97,6 @@ class Settings
     }
 
     public function getToken(): string {
-        return "BFAZIOEZ29828ED128";
         $token = get_option("seo_sans_migraine_token");
         if (empty($token)) {
             $token = $this->generateAndSaveToken();
