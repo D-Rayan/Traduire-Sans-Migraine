@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-03-21T09:51:200\n"
+"POT-Creation-Date: 2024-03-21T10:30:030\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -151,6 +151,9 @@ msgstr "Impossible de récupérer votre compte."
 msgid "Your otter 🦦"
 msgstr "Votre loutre 🦦"
 
+msgid "You're not logged in. Please log-in to continue."
+msgstr ""
+
 msgid "Log-in"
 msgstr "Se Connecter"
 
@@ -196,12 +199,12 @@ msgstr ""
 "besoins."
 
 # Settings.php
-msgid "She have translated %s words on %s"
-msgstr "Elle a traduit %s mots sur %s"
+msgid "She have translated %s characters on %s"
+msgstr "Elle a traduit %s caractères sur %s"
 
 # Settings.php
-msgid "She have translated %s word on %s"
-msgstr "Elle a traduit %s mot sur %s"
+msgid "She have translated %s character on %s"
+msgstr "Elle a traduit %s caractère sur %s"
 
 # /includes/Languages/Polylang.php
 msgid "%s not existing."
