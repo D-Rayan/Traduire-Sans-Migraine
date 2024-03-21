@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-03-21T10:30:030\n"
+"POT-Creation-Date: 2024-03-21T14:08:420\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -91,6 +91,9 @@ msgstr ""
 "Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
 "traduire. Cela remplacera l’article déjà existant en %s"
 
+msgid "At the moment none of our otters are able to write in this language."
+msgstr "Pour le moment aucune de nos loutres ne sait écrire dans cette langue."
+
 msgid "You're not finding a specific language?"
 msgstr "Vous ne trouvez pas la langue que vous souhaitez ?"
 
@@ -115,6 +118,20 @@ msgstr "🔎 Nous avons trouvé %s problème"
 
 msgid "🔎 We found %s issues"
 msgstr "🔎 Nous avons trouvé %s problèmes"
+
+msgid "Your otter 🦦"
+msgstr "Votre loutre 🦦"
+
+msgid "You're already logged in. You can start translating your content."
+msgstr "Vous êtes déjà connecté. N’attendez plus et traduisez votre contenu."
+
+msgid "You're not logged in. Please log-in to continue."
+msgstr ""
+"Votre compte n’est pas encore relié ! Pas de panique, cela ne prends que "
+"quelques secondes."
+
+msgid "Log-in"
+msgstr "Se Connecter"
 
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
@@ -147,17 +164,6 @@ msgstr "Une erreur est survenue"
 
 msgid "Could not fetch your account."
 msgstr "Impossible de récupérer votre compte."
-
-msgid "Your otter 🦦"
-msgstr "Votre loutre 🦦"
-
-msgid "You're not logged in. Please log-in to continue."
-msgstr ""
-"Votre compte n’est pas encore relié ! Pas de panique, cela ne prends que "
-"quelques secondes."
-
-msgid "Log-in"
-msgstr "Se Connecter"
 
 msgid "She will reset the %s"
 msgstr "Elle repartira de zéro le %s"
@@ -294,13 +300,6 @@ msgstr "GPL2"
 
 #~ msgid "Products designed to help you in your SEO, without any headache"
 #~ msgstr "Produits pensé pour vous aider dans votre SEO sans migraine"
-
-#~ msgid ""
-#~ "We will use the saved content of your post in %s as a source to translate "
-#~ "in others language."
-#~ msgstr ""
-#~ "On utilisera la dernière sauvegarde de votre article en %s en tant que "
-#~ "source pour traduire dans les autres langues."
 
 #~ msgid "We found some issues"
 #~ msgstr "Nous avons trouvé des problèmes"

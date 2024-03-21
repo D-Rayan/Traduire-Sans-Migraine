@@ -56,6 +56,15 @@ class Client
         ]);
     }
 
+    public function getLanguages() {
+        try {
+            $response = $this->client->get("/languages");
+            return $response["languages"];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
     public function getProducts() {
         return [
             ["name" => "SEO Sans Migraine", "description" => "Un plugin pour traduire vos articles sans effort", "image" => "https://traduire-sans-migraine.com/wp-content/uploads/2021/07/seo-sans-migraine.png"],

@@ -167,6 +167,7 @@ class OnSave {
         $postContent = get_post($localPostId)->post_content;
         $codeFrom = $languageManager->getLanguageManager()->getLanguageForPost($localPostId);
         $listsUrlsIssues = $linkManager->extractAndRetrieveInternalLinks($postContent, $codeFrom, true);
+        $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
         ob_start();
         ?>
         <div class="traduire-sans-migraine-list-languages">
@@ -184,6 +185,7 @@ class OnSave {
                     $issuesTranslatedUrls = $linkManager->getIssuedInternalLinks($postContent, $codeFrom, $code);
                     $notTranslated = $issuesTranslatedUrls["notTranslated"];
                     $notPublished = $issuesTranslatedUrls["notPublished"];
+                    $translatable = in_array($code, $languagesTranslatable);
                     $haveWarnings = count($notTranslated) + count($notPublished) > 0;
 
                     $enrichedTranslationsPosts[$codeSlug] = [
@@ -194,11 +196,18 @@ class OnSave {
                         "checked" => $checked,
                         "haveWarnings" => $haveWarnings,
                         "notTranslated" => $notTranslated,
-                        "notPublished" => $notPublished
+                        "notPublished" => $notPublished,
+                        "translatable" => $translatable,
                     ];
                 }
 
                 usort($enrichedTranslationsPosts, function ($a, $b) use ($localPostId) {
+                    if ($a["translatable"] && !$b["translatable"])
+                        return -1;
+
+                    if (!$a["translatable"] && $b["translatable"])
+                        return 1;
+
                     if ($a["postId"] == $localPostId)
                         return -1;
                     if ($b["postId"] == $localPostId)
@@ -225,12 +234,13 @@ class OnSave {
                     $postId = $enrichedTranslationPost["postId"];
                     $checked = $enrichedTranslationPost["checked"];
                     $notTranslated = $enrichedTranslationPost["notTranslated"];
+                    $translatable = $enrichedTranslationPost["translatable"];
                     $notPublished = $enrichedTranslationPost["notPublished"];
                     $haveWarnings = $enrichedTranslationPost["haveWarnings"];
                     ?>
                     <div class="language" data-language="<?php echo $code; ?>">
                         <div class="left-column">
-                            <?php Checkbox::render($flag . " " . $name, $code, $checked, $postId == $localPostId); ?>
+                            <?php Checkbox::render($flag . " " . $name, $code, $checked, $postId == $localPostId || !$translatable); ?>
                         </div>
                         <div class="right-column">
                             <?php
@@ -250,7 +260,7 @@ class OnSave {
                                         "isDismissible" => false
                                     ]));
                                 }
-                            } else {
+                            } else if ($translatable) {
                                 $indicatorText = TextDomain::__("We are impatient to help you with your translations! Just click the translate button.");
                                 if ($haveWarnings) {
                                     $listHTML = "<ul>";
@@ -286,6 +296,10 @@ class OnSave {
                                         "classname" => $checked ? "hidden" : ""
                                     ]);
                                 }
+                            } else {
+                                Alert::render(false, TextDomain::__("At the moment none of our otters are able to write in this language."), "primary", [
+                                    "isDismissible" => false
+                                ]);
                             }
                             ?>
                         </div>
