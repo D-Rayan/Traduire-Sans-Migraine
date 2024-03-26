@@ -2,6 +2,7 @@
 
 namespace TraduireSansMigraine\Languages;
 
+use TraduireSansMigraine\Locker;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -117,11 +118,14 @@ class Polylang implements LanguageInterface
         if (!function_exists("pll_set_post_language")) {
             throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
         }
+        $locker = new Locker($postId, 5);
+        $locker->lock();
         pll_set_post_language($translatedPostId, $codeLanguage);
         $translatedPosts = pll_get_post_translations($postId);
         $translatedPosts[$codeLanguage] = $translatedPostId;
         $translatedPosts[$codeFrom] = $postId;
         pll_save_post_translations($translatedPosts);
+        $locker->unlock();
     }
 
     public function getLanguageManagerName(): string
