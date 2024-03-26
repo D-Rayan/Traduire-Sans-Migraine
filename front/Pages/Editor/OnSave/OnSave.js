@@ -21,7 +21,12 @@ function displayCountCheckedToButton(modal) {
         buttonTranslate.classList.add('disabled');
     }
 }
-function sendRequests(modal, languages) {
+async function sendRequests(modal, languages) {
+    const response = await sendRequestPrepare(languages);
+    if (!response) {
+        // set error message
+        return;
+    }
     return Promise.all(languages.map(async language => {
         const tokenId = await sendRequest(modal, language);
         if (!tokenId) {
@@ -146,4 +151,17 @@ async function sendRequest(modal, language) {
         return false;
     }
     return data.data.tokenId;
+}
+
+async function sendRequestPrepare(languages) {
+    const body = {
+        post_id: getQuery("post"),
+        languages
+    }
+    const fetchResponse = await fetch(`${tsm.url}editor_prepare_translate`, {
+        method: "POST",
+        body: JSON.stringify(body),
+    });
+    const data = await fetchResponse.json();
+    return data.success;
 }

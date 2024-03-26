@@ -49,7 +49,22 @@ class Hooks
             $this->dataToTranslate["categories"] = $this->languageManager->getLanguageManager()->getTranslationCategories($this->originalPost->post_category, $this->codeTo);
             $this->translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($this->originalPost->ID, $this->codeTo);
             if (!$this->translatedPostId) {
-                $this->createPost();
+                update_option("_seo_sans_migraine_state_" . $this->tokenId, [
+                    "percentage" => 100,
+                    "status" => Step::$STEP_STATE["ERROR"],
+                    "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                ]);
+            }
+            $translatedPost = get_post($this->translatedPostId);
+            if (!$translatedPost) {
+                update_option("_seo_sans_migraine_state_" . $this->tokenId, [
+                    "percentage" => 100,
+                    "status" => Step::$STEP_STATE["ERROR"],
+                    "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                ]);
+            }
+            if (strstr($translatedPost->post_name, "-traduire-sans-migraine")) {
+                $this->updateTemporaryPostToRealOne();
             } else {
                 $this->updatePost();
             }
@@ -69,7 +84,7 @@ class Hooks
         }
     }
 
-    private function createPost() {
+    private function updateTemporaryPostToRealOne() {
         global $wpdb;
 
         $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $this->dataToTranslate["slug"]);
@@ -78,29 +93,19 @@ class Hooks
             $this->dataToTranslate["slug"] .= "-" . $this->codeTo . "-" . time();
         }
 
-        $this->translatedPostId = wp_insert_post([
+        $updatePostData = [
+            'ID' => $this->translatedPostId,
             'post_title' => $this->dataToTranslate["title"],
             'post_content' => $this->dataToTranslate["content"],
-            'post_author' => $this->originalPost->post_author,
             'post_category' => $this->dataToTranslate["categories"],
-            'post_type' => $this->originalPost->post_type,
             'post_name' => $this->dataToTranslate["slug"],
-            'post_status' => 'draft'
-        ], true);
+        ];
+        wp_update_post($updatePostData);
 
-        if (!$this->translatedPostId) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "html" => TextDomain::__("Oops! The otters couldn't create the new post. Please try again 🦦"),
-            ]);
-            return new \WP_REST_Response(["success" => false, "error" => "Could not create post"], 500);
-        }
         $thumbnailId = get_post_meta($this->originalPost->ID, '_thumbnail_id', true);
         if (!empty($thumbnailId)) {
             update_post_meta($this->translatedPostId, '_thumbnail_id', $thumbnailId);
         }
-        $this->languageManager->getLanguageManager()->setTranslationPost($this->originalPost->ID, $this->codeTo, $this->translatedPostId, $this->codeFrom);
     }
 
     private function updatePost() {

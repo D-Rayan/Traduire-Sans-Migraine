@@ -52,9 +52,52 @@ class OnSave {
 
     public function loadHooksAdmin() {
         add_action("wp_ajax_traduire-sans-migraine_editor_onSave_render", [$this, "render"]);
+        add_action("wp_ajax_traduire-sans-migraine_editor_prepare_translate", [$this, "prepareTranslation"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_start_translate", [$this, "startTranslate"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_get_state_translate", [$this, "getTranslateState"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_get_post_translated", [$this, "getTranslatedPostId"]);
+    }
+
+    public function prepareTranslation() {
+        global $wpdb;
+        if (!isset($_POST["post_id"]) || !isset($_POST["languages"])) {
+            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
+            wp_die();
+        }
+        $result = $this->clientSeoSansMigraine->checkCredential();
+        if (!$result) {
+            echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
+            wp_die();
+        }
+        $postId = $_POST["post_id"];
+        $languageManager = new LanguageManager();
+        $originalTranslations = $languageManager->getLanguageManager()->getAllTranslationsPost($postId);
+        $translations = [];
+        $originalPost = get_post($postId);
+        foreach ($originalTranslations as $slug => $translation) {
+            if ($translation["postId"]) {
+                $translations[$slug] = $translation["postId"];
+            } else {
+                $temporaryNamePost = "post-" . $postId . "-" . $slug."-traduire-sans-migraine";
+                $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $temporaryNamePost);
+                $exists = $wpdb->get_var($query);
+                if (!empty($exists)) {
+                    $temporaryNamePost .= "-" . time();
+                }
+
+                $translations[$slug] = wp_insert_post([
+                    'post_title' => "Translation of post " . $postId . " in " . $slug,
+                    'post_content' => "This content is temporary...",
+                    'post_author' => $originalPost->post_author,
+                    'post_type' => $originalPost->post_type,
+                    'post_name' => $temporaryNamePost,
+                    'post_status' => 'draft'
+                ], true);
+            }
+        }
+        $languageManager->getLanguageManager()->saveAllTranslationsPost($translations);
+        echo json_encode(["success" => true]);
+        wp_die();
     }
 
     public function startTranslate() {
