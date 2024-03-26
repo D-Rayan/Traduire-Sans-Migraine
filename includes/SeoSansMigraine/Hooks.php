@@ -36,6 +36,7 @@ class Hooks
     }
 
     public function setTranslations($data) {
+        set_time_limit(0); // Can be a long process cause of the lock system
         try {
             $response = $this->checkRequirements($data);
             if ($response !== true) {
