@@ -15,7 +15,8 @@
 namespace TraduireSansMigraine;
 
 
-use TraduireSansMigraine\SeoSansMigraine\Hooks;
+use TraduireSansMigraine\Wordpress\Hooks\Hooks;
+use TraduireSansMigraine\Wordpress\Hooks\TranslationsHooks;
 use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\TextDomain;
 use TraduireSansMigraine\Wordpress\Updater;
@@ -37,12 +38,18 @@ class TraduireSansMigraine {
     private $updater;
     private $textDomain;
 
+    private $hooks;
+
+    private $translationsHooks;
+
     private $menu;
     public function __construct() {
         $this->settings = new Settings();
         $this->updater = new Updater();
         $this->textDomain = new TextDomain();
         $this->menu = new Menu();
+        $this->hooks = new Hooks();
+        $this->translationsHooks = new TranslationsHooks();
         $this->init();
     }
 
@@ -70,8 +77,8 @@ class TraduireSansMigraine {
         $this->loadPages();
         add_action("admin_init", [$this, "checkRequirements"]);
         $this->menu->init();
-        $hooks = new Hooks();
-        $hooks->init();
+        $this->hooks->init();
+        $this->translationsHooks->init();
     }
 }
 

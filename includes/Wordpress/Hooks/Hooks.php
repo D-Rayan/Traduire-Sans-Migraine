@@ -1,13 +1,12 @@
 <?php
 
-namespace TraduireSansMigraine\SeoSansMigraine;
+namespace TraduireSansMigraine\Wordpress\Hooks;
 
 
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
-use \WP_REST_Response;
 
 if (!defined("ABSPATH")) {
     exit;

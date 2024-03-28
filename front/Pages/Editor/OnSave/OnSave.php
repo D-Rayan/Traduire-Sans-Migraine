@@ -11,7 +11,6 @@ use TraduireSansMigraine\Front\Components\Suggestions;
 use TraduireSansMigraine\Front\Components\Tooltip;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
@@ -19,6 +18,9 @@ class OnSave {
 
     private $path;
     private $clientSeoSansMigraine;
+
+    private $linkManager;
+    private $languageManager;
     public function __construct() {
         $this->path = plugin_dir_url(__FILE__);
         $this->clientSeoSansMigraine = new Client();
@@ -52,151 +54,118 @@ class OnSave {
 
     public function loadHooksAdmin() {
         add_action("wp_ajax_traduire-sans-migraine_editor_onSave_render", [$this, "render"]);
-        add_action("wp_ajax_traduire-sans-migraine_editor_prepare_translate", [$this, "prepareTranslation"]);
-        add_action("wp_ajax_traduire-sans-migraine_editor_start_translate", [$this, "startTranslate"]);
-        add_action("wp_ajax_traduire-sans-migraine_editor_get_state_translate", [$this, "getTranslateState"]);
-        add_action("wp_ajax_traduire-sans-migraine_editor_get_post_translated", [$this, "getTranslatedPostId"]);
     }
 
-    public function prepareTranslation() {
-        global $wpdb;
-        if (!isset($_POST["post_id"]) || !isset($_POST["languages"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
-            wp_die();
-        }
-        $result = $this->clientSeoSansMigraine->checkCredential();
-        if (!$result) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
-            wp_die();
-        }
-        $postId = $_POST["post_id"];
-        $languageManager = new LanguageManager();
-        $originalTranslations = $languageManager->getLanguageManager()->getAllTranslationsPost($postId);
-        $translations = [];
-        $originalPost = get_post($postId);
-        foreach ($originalTranslations as $slug => $translation) {
-            if ($translation["postId"]) {
-                $translations[$slug] = $translation["postId"];
-            } else {
-                $temporaryNamePost = "post-" . $postId . "-" . $slug."-traduire-sans-migraine";
-                $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $temporaryNamePost);
-                $exists = $wpdb->get_var($query);
-                if (!empty($exists)) {
-                    $temporaryNamePost .= "-" . time();
-                }
+    private function getTranslationsPostsData($post) {
+        $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
+        $translationsPosts = $this->getLanguageManager()->getAllTranslationsPost($post["id"]);
+        $enrichedTranslationsPosts = [];
+        foreach ($translationsPosts as $codeSlug => $translationPost) {
+            $translatable = in_array($translationPost["code"], $languagesTranslatable);
+            $checked = !$translationPost["postId"] && $translationPost["postId"] != $post["id"] && $translatable;
+            $issuesTranslatedUrls = $this->getLinkManager()->getIssuedInternalLinks($post["content"], $post["language"], $translationPost["code"]);
+            $notTranslated = $issuesTranslatedUrls["notTranslated"];
+            $notPublished = $issuesTranslatedUrls["notPublished"];
+            $haveWarnings = count($notTranslated) + count($notPublished) > 0;
 
-                $translations[$slug] = wp_insert_post([
-                    'post_title' => "Translation of post " . $postId . " in " . $slug,
-                    'post_content' => "This content is temporary...",
-                    'post_author' => $originalPost->post_author,
-                    'post_type' => $originalPost->post_type,
-                    'post_name' => $temporaryNamePost,
-                    'post_status' => 'draft'
-                ], true);
-            }
+            $enrichedTranslationsPosts[$codeSlug] = [
+                "name" => $translationPost["name"],
+                "flag" => $translationPost["flag"],
+                "code" => $translationPost["code"],
+                "postId" => $translationPost["postId"],
+                "checked" => $checked,
+                "haveWarnings" => $haveWarnings,
+                "notTranslated" => $notTranslated,
+                "notPublished" => $notPublished,
+                "translatable" => $translatable,
+            ];
         }
-        $languageManager->getLanguageManager()->saveAllTranslationsPost($translations);
-        echo json_encode(["success" => true]);
-        wp_die();
+
+        usort($enrichedTranslationsPosts, function ($a, $b) use ($post) {
+            if ($a["translatable"] && !$b["translatable"])
+                return -1;
+
+            if (!$a["translatable"] && $b["translatable"])
+                return 1;
+
+            if ($a["postId"] == $post["id"])
+                return -1;
+            if ($b["postId"] == $post["id"])
+                return 1;
+
+            if ($a["haveWarnings"] && !$b["haveWarnings"])
+                return 1;
+
+            if (!$a["haveWarnings"] && $b["haveWarnings"])
+                return -1;
+
+            if ($a["checked"] && !$b["checked"])
+                return 1;
+
+            if (!$a["checked"] && $b["checked"])
+                return -1;
+
+            return $a["name"] > $b["name"] ? 1 : -1;
+        });
+
+        return $enrichedTranslationsPosts;
     }
 
-    public function startTranslate() {
-        if (!isset($_GET["post_id"]) || !isset($_GET["language"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
-            wp_die();
-        }
-        $settings = new Settings();
-        $result = $this->clientSeoSansMigraine->checkCredential();
-        if (!$result) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
-            wp_die();
-        }
-        $postId = $_GET["post_id"];
-        $codeTo = $_GET["language"];
-        $post = get_post($postId);
-        if (!$post) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post not found")]);
-            wp_die();
-        }
-        $languageManager = new LanguageManager();
-        $codeFrom = $languageManager->getLanguageManager()->getLanguageForPost($postId);
-        $willBeAnUpdate = $languageManager->getLanguageManager()->getTranslationPost($postId, $codeTo) !== null;
-        $dataToTranslate = [];
-        if (!empty($post->post_content) && (!$willBeAnUpdate || $settings->settingIsEnabled("content"))) { $dataToTranslate["content"] = $post->post_content; }
-        if (!empty($post->post_title) && (!$willBeAnUpdate || $settings->settingIsEnabled("title"))) { $dataToTranslate["title"] = $post->post_title; }
-        if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
-        if (!empty($post->post_name) && (!$willBeAnUpdate || $settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = $post->post_name; }
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
-            $metaTitle = get_post_meta($postId, "_yoast_wpseo_title", true);
-            if ($metaTitle && !empty($metaTitle) && (!$willBeAnUpdate || $settings->settingIsEnabled("_yoast_wpseo_title"))) { $dataToTranslate["metaTitle"] = $metaTitle; }
-            $metaDescription = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
-            if ($metaDescription && !empty($metaDescription) && (!$willBeAnUpdate || $settings->settingIsEnabled("_yoast_wpseo_metadesc"))) { $dataToTranslate["metaDescription"] = $metaDescription; }
-            $metaKeywords = get_post_meta($postId, "_yoast_wpseo_metakeywords", true);
-            if ($metaKeywords && !empty($metaKeywords) && (!$willBeAnUpdate || $settings->settingIsEnabled("_yoast_wpseo_metakeywords"))) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
-        }
-        if (is_plugin_active("seo-by-rank-math/rank-math.php")) {
-            $rankMathDescription = get_post_meta($postId, "rank_math_description", true);
-            if ($rankMathDescription && !empty($rankMathDescription) && (!$willBeAnUpdate || $settings->settingIsEnabled("rank_math_description"))) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
-            $rankMathTitle = get_post_meta($postId, "rank_math_title", true);
-            if ($rankMathTitle && !empty($rankMathTitle) && (!$willBeAnUpdate || $settings->settingIsEnabled("rank_math_title"))) { $dataToTranslate["rankMathTitle"] = $rankMathTitle; }
-            $rankMathFocusKeyword = get_post_meta($postId, "rank_math_focus_keyword", true);
-            if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword) && (!$willBeAnUpdate || $settings->settingIsEnabled("rank_math_focus_keyword"))) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
-        }
-
-
-
-        $result = $this->clientSeoSansMigraine->startTranslation($dataToTranslate, $codeFrom, $codeTo);
-        if ($result["success"]) {
-            $tokenId = $result["data"]["tokenId"];
-            update_option("_seo_sans_migraine_state_" . $tokenId, [
-                "percentage" => 50,
-                "status" => Step::$STEP_STATE["PROGRESS"],
-                "html" => TextDomain::__("The otters are translating your post 🦦"),
-            ]);
-            update_option("_seo_sans_migraine_postId_" . $tokenId, $postId);
-        }
-        echo json_encode($result);
-        wp_die();
-    }
-
-    public function getTranslateState() {
-        if (!isset($_GET["tokenId"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token ID missing")]);
-            wp_die();
-        }
-        $tokenId = $_GET["tokenId"];
-        $state = get_option("_seo_sans_migraine_state_" . $tokenId, [
-            "percentage" => 25,
-            "status" => Step::$STEP_STATE["PROGRESS"],
-            "html" => TextDomain::__("We will create and translate your post 💡"),
+    private function renderCurrentPostInformation($post) {
+        $listsUrlsIssues = $this->getLinkManager()->extractAndRetrieveInternalLinks($post["content"], $post["language"], true);
+        Alert::render(false, TextDomain::__("That's the last version of your post that will be translated. If you have done any modification don't forget to save it before the translation!"), "success", [
+            "isDismissible" => false
         ]);
-        if (!$state) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token not found")]);
-            wp_die();
+        if (count($listsUrlsIssues) > 0) {
+            $listHTML = "<ul>";
+            foreach ($listsUrlsIssues as $url => $state) {
+                $listHTML .= "<li>".$url."</li>";
+            }
+            $listHTML .= "</ul>";
+            Tooltip::render(
+                "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($listsUrlsIssues), count($listsUrlsIssues))  . "</span>",
+                Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
+                    "isDismissible" => false
+                ]));
         }
-        if (isset($state[4]) && $state[4] === "success") {
-            delete_option("_seo_sans_migraine_state_" . $tokenId);
-            delete_option("_seo_sans_migraine_postId_" . $tokenId);
-        }
-        echo json_encode(["success" => true, "data" => $state]);
-        wp_die();
     }
 
-    public function getTranslatedPostId() {
-        if (!isset($_GET["post_id"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
-            wp_die();
+    private function renderTranslatablePostInformation($postTranslationData) {
+        $indicatorText = TextDomain::__("We are impatient to help you with your translations! Just click the translate button.");
+        if ($postTranslationData["haveWarnings"]) {
+            $listHTML = "<ul>";
+            if (count($postTranslationData["notTranslated"]) > 0) {
+                foreach ($postTranslationData["notTranslated"] as $url => $postId) {
+                    $listHTML .= "<li><a href='".$url."' target='_blank'>" . $url . "</a></li>";
+                }
+            }
+            if (count($postTranslationData["notPublished"]) > 0) {
+                foreach ($postTranslationData["notPublished"] as $url => $postId) {
+                    $listHTML .= "<li><a href='".$url."' target='_blank'>" . $url . "</a></li>";
+                }
+            }
+            $listHTML .= "</ul>";
+            $indicatorText .= "<br/>" . Tooltip::getHTML(
+                    "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($postTranslationData["notPublished"]) + count($postTranslationData["notTranslated"]), count($postTranslationData["notPublished"]) + count($postTranslationData["notTranslated"]))  . "</span>",
+                    Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The following links will not be translated because they doesn't exist or aren't published : %s", $listHTML), "warning", [
+                        "isDismissible" => false
+                    ]));
         }
-        if (!isset($_GET["language"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Language missing")]);
-            wp_die();
+        Step::render([
+            "classname" => $postTranslationData["checked"] ? "":  "hidden",
+            "indicatorText" => $indicatorText
+        ]);
+        if ($postTranslationData["checked"]) {
+            Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations, it will create a new article in %s", $postTranslationData["name"]), "primary", [
+                "isDismissible" => false,
+                "classname" => $postTranslationData["checked"] ? "hidden" : ""
+            ]);
+        } else {
+            Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations. It will overwrite the current translation in %s", $postTranslationData["name"]), "primary", [
+                "isDismissible" => false,
+                "classname" => $postTranslationData["checked"] ? "hidden" : ""
+            ]);
         }
-        $languageManager = new LanguageManager();
-        $postId = $_GET["post_id"];
-        $language = $_GET["language"];
-        $translatedPostId = $languageManager->getLanguageManager()->getTranslationPost($postId, $language);
-        echo json_encode(["success" => true, "data" => $translatedPostId]);
-        wp_die();
     }
 
     public function render() {
@@ -204,141 +173,38 @@ class OnSave {
             Modal::render(TSM__NAME, Alert::getHTML(TSM__NAME, TextDomain::__("Post ID is not set"), "danger"));
             return;
         }
+
         $localPostId = $_GET["post_id"];
-        $languageManager = new LanguageManager();
-        $linkManager = new LinkManager();
-        $postContent = get_post($localPostId)->post_content;
-        $codeFrom = $languageManager->getLanguageManager()->getLanguageForPost($localPostId);
-        $listsUrlsIssues = $linkManager->extractAndRetrieveInternalLinks($postContent, $codeFrom, true);
-        $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
+        $currentPost = [
+            "id" => $localPostId,
+            "content" => get_post($localPostId)->post_content,
+            "language" => $this->getLanguageManager()->getLanguageForPost($localPostId)
+        ];
         ob_start();
         ?>
         <div class="traduire-sans-migraine-list-languages">
         <?php
             try {
-                $translationsPosts = $languageManager->getLanguageManager()->getAllTranslationsPost($localPostId);
-                $enrichedTranslationsPosts = [];
-                foreach ($translationsPosts as $codeSlug => $translationPost) {
-                    $name = $translationPost["name"];
-                    $flag = $translationPost["flag"];
-                    $code = $translationPost["code"];
-                    $postId = $translationPost["postId"];
-                    $translatable = in_array($code, $languagesTranslatable);
-                    $checked = !$postId && $postId != $localPostId && $translatable;
-
-                    $issuesTranslatedUrls = $linkManager->getIssuedInternalLinks($postContent, $codeFrom, $code);
-                    $notTranslated = $issuesTranslatedUrls["notTranslated"];
-                    $notPublished = $issuesTranslatedUrls["notPublished"];
-                    $haveWarnings = count($notTranslated) + count($notPublished) > 0;
-
-                    $enrichedTranslationsPosts[$codeSlug] = [
-                        "name" => $name,
-                        "flag" => $flag,
-                        "code" => $code,
-                        "postId" => $postId,
-                        "checked" => $checked,
-                        "haveWarnings" => $haveWarnings,
-                        "notTranslated" => $notTranslated,
-                        "notPublished" => $notPublished,
-                        "translatable" => $translatable,
-                    ];
-                }
-
-                usort($enrichedTranslationsPosts, function ($a, $b) use ($localPostId) {
-                    if ($a["translatable"] && !$b["translatable"])
-                        return -1;
-
-                    if (!$a["translatable"] && $b["translatable"])
-                        return 1;
-
-                    if ($a["postId"] == $localPostId)
-                        return -1;
-                    if ($b["postId"] == $localPostId)
-                        return 1;
-
-                    if ($a["haveWarnings"] && !$b["haveWarnings"])
-                        return 1;
-
-                    if (!$a["haveWarnings"] && $b["haveWarnings"])
-                        return -1;
-
-                    if ($a["checked"] && !$b["checked"])
-                        return 1;
-
-                    if (!$a["checked"] && $b["checked"])
-                        return -1;
-
-                    return $a["name"] > $b["name"] ? 1 : -1;
-                });
-                foreach ($enrichedTranslationsPosts as $codeSlug => $enrichedTranslationPost) {
-                    $name = $enrichedTranslationPost["name"];
-                    $flag = $enrichedTranslationPost["flag"];
-                    $code = $enrichedTranslationPost["code"];
-                    $postId = $enrichedTranslationPost["postId"];
-                    $checked = $enrichedTranslationPost["checked"];
-                    $notTranslated = $enrichedTranslationPost["notTranslated"];
-                    $translatable = $enrichedTranslationPost["translatable"];
-                    $notPublished = $enrichedTranslationPost["notPublished"];
-                    $haveWarnings = $enrichedTranslationPost["haveWarnings"];
+                $enrichedTranslationsPosts = $this->getTranslationsPostsData($currentPost);
+                foreach ($enrichedTranslationsPosts as $enrichedTranslationPost) {
                     ?>
-                    <div class="language" data-language="<?php echo $code; ?>">
+                    <div class="language" data-language="<?php echo $enrichedTranslationPost["code"]; ?>">
                         <div class="left-column">
-                            <?php Checkbox::render($flag . " " . $name, $code, $checked, $postId == $localPostId || !$translatable); ?>
+                            <?php
+                                Checkbox::render(
+                                    $enrichedTranslationPost["flag"] . " " . $enrichedTranslationPost["name"],
+                                    $enrichedTranslationPost["code"],
+                                    $enrichedTranslationPost["checked"],
+                                    $enrichedTranslationPost["postId"] == $localPostId || !$enrichedTranslationPost["translatable"]
+                                );
+                            ?>
                         </div>
                         <div class="right-column">
                             <?php
-                            if ($postId == $localPostId) {
-                                Alert::render(false, TextDomain::__("That's the last version of your post that will be translated. If you have done any modification don't forget to save it before the translation!"), "success", [
-                                    "isDismissible" => false
-                                ]);
-                                if (count($listsUrlsIssues) > 0) {
-                                    $listHTML = "<ul>";
-                                    foreach ($listsUrlsIssues as $url => $state) {
-                                        $listHTML .= "<li>".$url."</li>";
-                                    }
-                                    $listHTML .= "</ul>";
-                                    Tooltip::render(
-                                    "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($listsUrlsIssues), count($listsUrlsIssues))  . "</span>",
-                                    Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The followings articles will not be translated cause we could not find them : %s", $listHTML), "warning", [
-                                        "isDismissible" => false
-                                    ]));
-                                }
-                            } else if ($translatable) {
-                                $indicatorText = TextDomain::__("We are impatient to help you with your translations! Just click the translate button.");
-                                if ($haveWarnings) {
-                                    $listHTML = "<ul>";
-                                    if (count($notTranslated) > 0) {
-                                        foreach ($notTranslated as $url => $postId) {
-                                            $listHTML .= "<li><a href='".$url."' target='_blank'>" . $url . "</a></li>";
-                                        }
-                                    }
-                                    if (count($notPublished) > 0) {
-                                        foreach ($notPublished as $url => $postId) {
-                                            $listHTML .= "<li><a href='".$url."' target='_blank'>" . $url . "</a></li>";
-                                        }
-                                    }
-                                    $listHTML .= "</ul>";
-                                    $indicatorText .= "<br/>" . Tooltip::getHTML(
-                              "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($notPublished) + count($notTranslated), count($notPublished) + count($notTranslated))  . "</span>",
-                                        Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The following links will not be translated because they doesn't exist or aren't published : %s", $listHTML), "warning", [
-                                            "isDismissible" => false
-                                        ]));
-                                }
-                                Step::render([
-                                    "classname" => $checked ? "":  "hidden",
-                                    "indicatorText" => $indicatorText
-                                ]);
-                                if ($checked) {
-                                    Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations, it will create a new article in %s", $name), "primary", [
-                                        "isDismissible" => false,
-                                        "classname" => $checked ? "hidden" : ""
-                                    ]);
-                                } else {
-                                    Alert::render(false, TextDomain::__("Use the checkbox on the left to add this language to the list of translations. It will overwrite the current translation in %s", $name), "primary", [
-                                        "isDismissible" => false,
-                                        "classname" => $checked ? "hidden" : ""
-                                    ]);
-                                }
+                            if ($enrichedTranslationPost["postId"] == $localPostId) {
+                                $this->renderCurrentPostInformation($currentPost);
+                            } else if ($enrichedTranslationPost["translatable"]) {
+                                $this->renderTranslatablePostInformation($enrichedTranslationPost);
                             } else {
                                 Alert::render(false, TextDomain::__("At the moment none of our otters are able to write in this language."), "info", [
                                     "isDismissible" => false
@@ -360,7 +226,7 @@ class OnSave {
                 TextDomain::__("You're not finding a specific language?"),
                 TextDomain::__("To translate you first need to add the language to your website.")
                 . "<br/>"
-                . TextDomain::__("Go to %s to add a new language.", $languageManager->getLanguageManager()->getLanguageManagerName())
+                . TextDomain::__("Go to %s to add a new language.", $this->getLanguageManager()->getLanguageManagerName())
                 . "<br/>"
                 . TextDomain::__("Then come back here to translate your post."),
                 "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
@@ -388,6 +254,22 @@ class OnSave {
     public function init() {
         $this->loadAssets();
         $this->loadHooks();
+    }
+
+    private function getLinkManager() {
+        if (!isset($this->linkManager)) {
+            $this->linkManager = new LinkManager();
+        }
+
+        return $this->linkManager;
+    }
+
+    private function getLanguageManager() {
+        if (!isset($this->languageManager)) {
+            $this->languageManager = new LanguageManager();
+        }
+
+        return $this->languageManager->getLanguageManager();
     }
 }
 
