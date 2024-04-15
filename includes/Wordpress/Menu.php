@@ -30,20 +30,32 @@ class Menu {
         $this->loadMenuIcon();
         add_menu_page(
             "Nos Produits",
-            "Sans Migraine",
+            "Traduire sans migraine",
             "manage_options",
             "sans-migraine",
             [$this, "renderMenu"],
             "dashicons-otter"
         );
         define("SANS_MIGRAINE_MENU", "sans-migraine");
+        $this->rewriteTextMenu();
+    }
+
+    public function rewriteTextMenu() {
+        add_action("admin_footer", function() {
+            ?>
+            <script style="text/javascript">
+                const menuSanMigraine = document.querySelector("a[href*='page=sans-migraine'].wp-first-item");
+                menuSanMigraine.innerHTML = "Nos produits";
+            </script>
+            <?php
+        });
     }
 
     public function addSubMenu() {
         add_submenu_page(
             "sans-migraine",
             "⚙️ Traduire Sans Migraine",
-            "⚙️ Traduire Sans Migraine",
+            "⚙️ Paramètres",
             "manage_options",
             "traduire-sans-migraine",
             [$this, "renderSubMenu"]

@@ -41,6 +41,9 @@
     transform: translate3d(0, 0, 0);
     transition: color 0.1s, border 0.1s, background 0.15s, box-shadow 0.1s;
 }
+ .traduire-sans-migraine-checkbox [type=checkbox].substituted:indeterminate + label:before {
+     background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xml:space="preserve" fill="white" viewBox="0 0 9 9"><rect height="1.6" width="5" y="3" x="2"></rect></svg>') no-repeat center, white;
+ }
 .traduire-sans-migraine-checkbox [type=checkbox].substituted:enabled:active + label:before,
 .traduire-sans-migraine-checkbox [type=checkbox].substituted:enabled + label:active:before {
     box-shadow: 0 0 0.04em, 0 0.06em 0.16em -0.03em transparent inset, 0 0 0 0.07em rgba(0, 0, 0, 0.1) inset;
@@ -87,3 +90,14 @@
     background-color: #c68035;
     color: rgba(0, 0, 0, 0.275);
 }
+
+ .traduire-sans-migraine-checkbox [type=checkbox].substituted:indeterminate + label:before {
+     background-color: #61aaf8;
+     background-size: 0.75em;
+     color: rgba(0, 0, 0, 0.075);
+ }
+ .traduire-sans-migraine-checkbox [type=checkbox].substituted:indeterminate:enabled:active + label:before,
+ .traduire-sans-migraine-checkbox [type=checkbox].substituted:indeterminate:enabled + label:active:before {
+     background-color: #469eff;
+     color: rgba(0, 0, 0, 0.275);
+ }

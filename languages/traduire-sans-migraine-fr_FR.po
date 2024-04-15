@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-03-21T14:27:410\n"
+"POT-Creation-Date: 2024-04-15T06:36:090\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -16,34 +16,6 @@ msgstr ""
 
 msgid "Translate 💊"
 msgstr "Traduire 💊"
-
-# /front/Pages/Editor/OnSave/OnSave.php
-msgid "Post ID missing"
-msgstr "Post ID manquant"
-
-msgid "Token invalid"
-msgstr "Clé d’accès invalide"
-
-msgid "Post not found"
-msgstr "Le post n’existe pas"
-
-msgid "The otters are translating your post 🦦"
-msgstr "Les loutres traduisent ton article 🦦"
-
-msgid "Token ID missing"
-msgstr "Clés d’accès manquante"
-
-msgid "We will create and translate your post 💡"
-msgstr "On va créer et traduire ton article 💡"
-
-msgid "Token not found"
-msgstr "Clé d’accès n’existe pas"
-
-msgid "Language missing"
-msgstr "Le langage est manquant"
-
-msgid "Post ID is not set"
-msgstr "L’ID du post est manquant"
 
 msgid ""
 "That's the last version of your post that will be translated. If you have "
@@ -90,6 +62,12 @@ msgid ""
 msgstr ""
 "Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
 "traduire. Cela remplacera l’article déjà existant en %s"
+
+msgid "Post ID is not set"
+msgstr "L’ID du post est manquant"
+
+msgid "Unselect/Select All"
+msgstr "Sélectionner/Désélectionner tous"
 
 msgid "At the moment none of our otters are able to write in this language."
 msgstr "Pour le moment aucune de nos loutres ne sait écrire dans cette langue."
@@ -150,7 +128,7 @@ msgid ""
 "here."
 msgstr ""
 "Chaque outil vise à vous aider dans votre stratégie SEO. Voici tous nos "
-"produits"
+"produits."
 
 # Settings.php
 msgid "Your settings have been saved."
@@ -218,26 +196,6 @@ msgstr "Elle a traduit %s caractères sur %s"
 msgid "%s not existing."
 msgstr "%s n’existe pas."
 
-msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
-
-msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
-msgstr ""
-"Oops ! Les loutres ont n’ont pas réussi à créer le nouvel article. Réessayer "
-"🦦"
-
-# Hooks.php
-msgid ""
-"Oops! The otters have lost the translation in the river. Please try again 🦦"
-msgstr ""
-"Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
-
-msgid "The otters works on your SEO optimization 🦦"
-msgstr "Les loutres peaufinent la mise en forme 🦦"
-
-msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
-msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
-
 # /includes/Settings.php
 msgid "PHP version is too low"
 msgstr "Votre version PHP est trop basse"
@@ -250,6 +208,46 @@ msgstr "%s requis au moins un des plugins suivants : %s"
 
 msgid "Missing required plugins"
 msgstr "Des plugins requis sont manquants"
+
+msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
+msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
+
+msgid "The otters have finished the translation 🦦, Check it right here %s"
+msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
+
+# Hooks.php
+msgid ""
+"Oops! The otters have lost the translation in the river. Please try again 🦦"
+msgstr ""
+"Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
+
+msgid "The otters works on your SEO optimization 🦦"
+msgstr "Les loutres peaufinent la mise en forme 🦦"
+
+# /front/Pages/Editor/OnSave/OnSave.php
+msgid "Post ID missing"
+msgstr "Post ID manquant"
+
+msgid "Token invalid"
+msgstr "Clé d’accès invalide"
+
+msgid "Post not found"
+msgstr "Le post n’existe pas"
+
+msgid "The otters are translating your post 🦦"
+msgstr "Les loutres traduisent ton article 🦦"
+
+msgid "Token ID missing"
+msgstr "Clés d’accès manquante"
+
+msgid "We will create and translate your post 💡"
+msgstr "On va créer et traduire ton article 💡"
+
+msgid "Token not found"
+msgstr "Clé d’accès n’existe pas"
+
+msgid "Language missing"
+msgstr "Le langage est manquant"
 
 # Plugin Name
 msgid "Traduire Sans Migraine"
@@ -286,6 +284,11 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
+#~ msgstr ""
+#~ "Oops ! Les loutres ont n’ont pas réussi à créer le nouvel article. "
+#~ "Réessayer 🦦"
 
 #~ msgid "Open my translate tab"
 #~ msgstr "Ouvrir ma console de traduction"

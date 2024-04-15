@@ -1,3 +1,11 @@
+function getCheckboxesListChecked(modal) {
+    return modal.querySelectorAll("input[type='checkbox']:not([id='global-languages']):not([disabled]):checked")
+}
+
+function getCheckboxesList(modal) {
+    return modal.querySelectorAll("input[type='checkbox']:not([id='global-languages']):not([disabled])")
+}
+
 function injectFunctionTranslationModal(modal) {
     addListenerToCheckboxes(modal);
     displayCountCheckedToButton(modal);
@@ -10,7 +18,7 @@ function getStepList(modal, language) {
     return modal.querySelector(`.language[data-language="${language}"] .right-column .traduire-sans-migraine-step`)
 }
 function displayCountCheckedToButton(modal) {
-    const checkedCheckboxes = modal.querySelectorAll("input[type='checkbox']:checked");
+    const checkedCheckboxes = getCheckboxesListChecked(modal);
     const buttonTranslate = modal.querySelector('#translate-button');
     if (checkedCheckboxes.length > 0) {
         buttonTranslate.disabled = false;
@@ -64,19 +72,37 @@ async function fetchStateTranslateUntilOver(modal, tokenId, language) {
 }
 
 function addListenerToCheckboxes(modal) {
-    modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
+    const handleOnChange = (checkbox) => {
+        displayCountCheckedToButton(modal);
+        const column = checkbox.closest(".language").querySelector(".right-column");
+        if (checkbox.checked) {
+            column.querySelector(":scope > .notice").classList.add("hidden");
+            column.querySelector(".traduire-sans-migraine-step").classList.remove("hidden");
+        } else {
+            column.querySelector(".traduire-sans-migraine-step").classList.add("hidden");
+            column.querySelector(":scope > .notice").classList.remove("hidden");
+        }
+    };
+    const allCheckboxes = getCheckboxesList(modal);
+    const globalCheckbox = modal.querySelector("#global-languages");
+    const updateDisplayGlobalCheckbox = () => {
+        const checkedCheckboxes = getCheckboxesListChecked(modal).length;
+        globalCheckbox.checked = (allCheckboxes.length === checkedCheckboxes);
+        globalCheckbox.indeterminate = checkedCheckboxes > 0 && !globalCheckbox.checked;
+    };
+    globalCheckbox.addEventListener('change', () => {
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = globalCheckbox.checked;
+            handleOnChange(checkbox);
+        });
+    })
+    allCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            displayCountCheckedToButton(modal);
-            const column = checkbox.closest(".language").querySelector(".right-column");
-            if (checkbox.checked) {
-                column.querySelector(":scope > .notice").classList.add("hidden");
-                column.querySelector(".traduire-sans-migraine-step").classList.remove("hidden");
-            } else {
-                column.querySelector(".traduire-sans-migraine-step").classList.add("hidden");
-                column.querySelector(":scope > .notice").classList.remove("hidden");
-            }
+            handleOnChange(checkbox);
+            updateDisplayGlobalCheckbox();
         });
     });
+    updateDisplayGlobalCheckbox();
 }
 
 async function displayLogInSection(modal, callbackOnLoggedIn) {
@@ -111,11 +137,12 @@ function addListenerToButtonTranslate(modal) {
             });
             return;
         }
-        const checkedCheckboxes = modal.querySelectorAll("input[type='checkbox']:checked");
+        const checkedCheckboxes = getCheckboxesListChecked(modal);
         const languages = [];
         checkedCheckboxes.forEach(checkbox => {
             languages.push(checkbox.id);
         });
+        modal.querySelector("#global-languages-section").remove();
         modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
             if (checkbox.checked) {
                 checkbox.disabled = true;

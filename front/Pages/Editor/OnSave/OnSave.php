@@ -182,6 +182,18 @@ class OnSave {
         ];
         ob_start();
         ?>
+        <div class="language" id="global-languages-section">
+            <div class="left-column">
+                <?php
+                Checkbox::render(
+                    TextDomain::__("Unselect/Select All"),
+                    "global-languages",
+                    false,
+                    false
+                );
+                ?>
+            </div>
+        </div>
         <div class="traduire-sans-migraine-list-languages">
         <?php
             try {
