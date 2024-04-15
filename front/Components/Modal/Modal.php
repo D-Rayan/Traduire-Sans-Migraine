@@ -33,9 +33,9 @@ class Modal {
         }
     }
 
-    public static function render($title, $message, $buttons = []) {
+    public static function render($title, $message, $buttons = [], $options = []) {
         ?>
-        <div class="traduire-sans-migraine-modal">
+        <div class="traduire-sans-migraine-modal <?php if (isset($options["size"])) { echo 'traduire-sans-migraine-modal-size-' . $options["size"]; } ?>">
             <div class="traduire-sans-migraine-modal__content">
                 <div class="traduire-sans-migraine-modal__content-header">
                     <div class="traduire-sans-migraine-modal__header-left">

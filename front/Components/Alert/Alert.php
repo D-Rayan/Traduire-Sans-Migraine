@@ -37,7 +37,7 @@ class Alert {
             "isDismissible" => true
     ]) {
         ob_start();
-        if ($title) {
+        if ($title && !empty($title)) {
             ?>
             <div class="notice traduire-sans-migraine-alert traduire-sans-migraine-alert-<?php echo $type; ?> <?php echo $options["classname"]; ?>">
                 <div class="traduire-sans-migraine-alert__title">

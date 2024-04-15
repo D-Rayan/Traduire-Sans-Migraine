@@ -68,3 +68,8 @@
     display: flex;
     gap: 1rem;
 }
+
+
+.traduire-sans-migraine-modal-size-little .traduire-sans-migraine-modal__content {
+    height: auto;
+}

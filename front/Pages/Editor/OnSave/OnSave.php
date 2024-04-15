@@ -175,6 +175,9 @@ class OnSave {
         }
 
         $localPostId = $_GET["post_id"];
+        if (get_post_status( $localPostId ) === "trash") {
+            return;
+        }
         $currentPost = [
             "id" => $localPostId,
             "content" => get_post($localPostId)->post_content,
