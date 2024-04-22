@@ -117,7 +117,7 @@ class Settings {
         } else if ($redirect !== null) {
             LogIn::render($redirect["url"]);
         } else {
-            $quotaMax = $account["quota"]["max"];
+            $quotaMax = $account["quota"]["max"] + $account["quota"]["bonus"];
             $quotaCurrent = $account["quota"]["current"];
             $quotaResetDate = $account["quota"]["resetDate"];
             ;

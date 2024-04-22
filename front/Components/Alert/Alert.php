@@ -39,10 +39,10 @@ class Alert {
         ob_start();
         if ($title && !empty($title)) {
             ?>
-            <div class="notice traduire-sans-migraine-alert traduire-sans-migraine-alert-<?php echo $type; ?> <?php echo $options["classname"]; ?>">
+            <div class="notice traduire-sans-migraine-alert traduire-sans-migraine-alert-<?php echo $type; ?> <?php if (isset($options["classname"])) { echo $options["classname"]; } ?>">
                 <div class="traduire-sans-migraine-alert__title">
                     <span class="traduire-sans-migraine-alert__title-text"><?php echo $title; ?></span>
-                    <?php echo ($options["isDismissible"] ? '<span class="traduire-sans-migraine-alert__title-close">X</span>' : '') ; ?>
+                    <?php echo (isset($options["isDismissible"]) && $options["isDismissible"] ? '<span class="traduire-sans-migraine-alert__title-close">X</span>' : '') ; ?>
                 </div>
                 <div class="traduire-sans-migraine-alert__body">
                     <?php echo $message; ?>
@@ -51,10 +51,10 @@ class Alert {
             <?php
         } else {
             ?>
-            <div class="notice traduire-sans-migraine-alert traduire-sans-migraine-alert-<?php echo $type; ?> <?php echo $options["classname"]; ?>">
+            <div class="notice traduire-sans-migraine-alert traduire-sans-migraine-alert-<?php echo $type; ?> <?php if (isset($options["classname"])) { echo $options["classname"]; } ?>">
                 <div class="traduire-sans-migraine-alert__title">
                     <span></span>
-                    <?php echo ($options["isDismissible"] ? '<span class="traduire-sans-migraine-alert__title-close">X</span>' : ''); ?>
+                    <?php echo (isset($options["isDismissible"]) && $options["isDismissible"] ? '<span class="traduire-sans-migraine-alert__title-close">X</span>' : ''); ?>
                 </div>
                 <div>
                     <?php echo $message; ?>
