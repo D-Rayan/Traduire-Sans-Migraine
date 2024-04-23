@@ -37,6 +37,7 @@ jobs:
           script: |
             cd ~/staging/wp-content/uploads/products/traduire-sans-migraine
             php -f cli/updatingVersion.php
+            php -f cli/updatingName.php staging
             mkdir traduire-sans-migraine
             mv front includes languages traduire-sans-migraine.php index.php traduire-sans-migraine
             cp env.staging.php traduire-sans-migraine/env.php

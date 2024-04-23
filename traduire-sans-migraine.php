@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: Traduire Sans Migraine
+ * Plugin Name: PLACEHOLDER_NAME
  * Plugin URI: https://www.seo-sans-migraine.com/translate-without-headache
  * Description: Translate Without Headache will help you translate your content within keeping good SEO practices.
  * Version: PLACEHOLDER_VERSION
