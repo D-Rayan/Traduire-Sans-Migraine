@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-04-15T06:36:090\n"
+"POT-Creation-Date: 2024-04-23T13:25:180\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -13,6 +13,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 "X-Domain: traduire-sans-migraine\n"
+
+msgid "Post ID is not set"
+msgstr "L’ID du post est manquant"
+
+msgid "You have moved to the trash one publication."
+msgstr "Vous avez déplacé un article à la corbeille."
+
+msgid "No"
+msgstr "Non"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "The original publication isn't in the trash."
+msgstr "La publication de base n’est pas à la corbeille."
+
+msgid "No Translations to delete."
+msgstr "Aucune traduction à supprimer."
+
+# Articles.php
+msgid "Do you wish to also set the translation into the trash?"
+msgstr "Souhaitez-vous aussi mettre la traduction à la corbeille ?"
+
+msgid "The translation has been moved to the trash."
+msgstr "La traduction a été déplacé dans la corbeille."
+
+# Articles.php
+msgid "Do you wish to also set the %n translations into the trash?"
+msgstr "Souhaitez-vous aussi mettre les %n traductions dans la corbeille ?"
+
+msgid "The %n translations have been moved to the trash."
+msgstr "Les %n traductions ont été déplacées dans la corbeille."
 
 msgid "Translate 💊"
 msgstr "Traduire 💊"
@@ -62,9 +94,6 @@ msgid ""
 msgstr ""
 "Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
 "traduire. Cela remplacera l’article déjà existant en %s"
-
-msgid "Post ID is not set"
-msgstr "L’ID du post est manquant"
 
 msgid "Unselect/Select All"
 msgstr "Sélectionner/Désélectionner tous"

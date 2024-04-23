@@ -112,8 +112,8 @@ class Articles {
         ?>
         <div class="buttons-actions">
             <?php
-            Button::render(TextDomain::__("Non"), "primary", "no-button");
-            Button::render(TextDomain::__("Oui"), "danger", "yes-button");
+            Button::render(TextDomain::__("No"), "primary", "no-button");
+            Button::render(TextDomain::__("Yes"), "danger", "yes-button");
             ?>
         </div>
         <?php

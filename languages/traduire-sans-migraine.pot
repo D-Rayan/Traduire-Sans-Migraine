@@ -1,15 +1,48 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.5.003\n"
+"Project-Id-Version: [Test] Traduire Sans Migraine 0.6.000\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-15T06:36:090\n"
+"POT-Creation-Date: 2024-04-23T13:25:180\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
+# Articles.php
+msgid "Post ID is not set"
+msgstr ""
+
+msgid "You have moved to the trash one publication."
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "The original publication isn't in the trash."
+msgstr ""
+
+msgid "No Translations to delete."
+msgstr ""
+
+# Articles.php
+msgid "Do you wish to also set the translation into the trash?"
+msgstr ""
+
+msgid "The translation has been moved to the trash."
+msgstr ""
+
+# Articles.php
+msgid "Do you wish to also set the %n translations into the trash?"
+msgstr ""
+
+msgid "The %n translations have been moved to the trash."
+msgstr ""
+
 # Editor.php
 msgid "Translate 💊"
 msgstr ""
@@ -34,9 +67,6 @@ msgid "Use the checkbox on the left to add this language to the list of translat
 msgstr ""
 
 msgid "Use the checkbox on the left to add this language to the list of translations. It will overwrite the current translation in %s"
-msgstr ""
-
-msgid "Post ID is not set"
 msgstr ""
 
 msgid "Unselect/Select All"
