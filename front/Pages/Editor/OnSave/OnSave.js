@@ -30,11 +30,6 @@ function displayCountCheckedToButton(modal) {
     }
 }
 async function sendRequests(modal, languages) {
-    const response = await sendRequestPrepare(languages);
-    if (!response) {
-        // set error message
-        return;
-    }
     return Promise.all(languages.map(async language => {
         const tokenId = await sendRequest(modal, language);
         if (!tokenId) {
@@ -142,16 +137,26 @@ function addListenerToButtonTranslate(modal) {
         checkedCheckboxes.forEach(checkbox => {
             languages.push(checkbox.id);
         });
-        modal.querySelector("#global-languages-section").remove();
         modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
-            if (checkbox.checked) {
-                checkbox.disabled = true;
-            } else {
-                checkbox.closest(".language").remove();
-            }
+            checkbox.disabled = true;
         });
         setButtonLoading('#translate-button')
-        await sendRequests(modal, languages);
+        const prepareIsSuccess = await sendRequestPrepare(modal, languages);
+        if (prepareIsSuccess) {
+            modal.querySelector("#global-languages-section").remove();
+            modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkbox.disabled = true;
+                } else {
+                    checkbox.closest(".language").remove();
+                }
+            });
+            await sendRequests(modal, languages);
+        } else {
+            modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
+                checkbox.disabled = false;
+            });
+        }
         stopButtonLoading('#translate-button')
     });
 }
@@ -180,7 +185,7 @@ async function sendRequest(modal, language) {
     return data.data.tokenId;
 }
 
-async function sendRequestPrepare(languages) {
+async function sendRequestPrepare(modal, languages) {
     const body = {
         post_id: getQuery("post"),
         languages
@@ -190,5 +195,9 @@ async function sendRequestPrepare(languages) {
         body: JSON.stringify(body),
     });
     const data = await fetchResponse.json();
+    if (!data.success) {
+        const alert = Alert.createNode("", data.error, "error");
+        modal.querySelector(".traduire-sans-migraine-modal__content-body-text").prepend(alert);
+    }
     return data.success;
 }

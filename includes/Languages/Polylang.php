@@ -77,6 +77,7 @@ class Polylang implements LanguageInterface
                 continue;
             }
             $cleanMap[$codeLanguage] = $postId;
+            pll_set_post_language($postId, $codeLanguage);
         }
         pll_save_post_translations($cleanMap);
     }

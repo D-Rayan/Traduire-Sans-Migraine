@@ -71,6 +71,12 @@ class TraduireSansMigraine {
     }
 
     public function init() {
+        if (empty($_POST)) {
+            $file_content_input = file_get_contents('php://input');
+            if (!empty($file_content_input)) {
+                $_POST = json_decode($file_content_input, true);
+            }
+        }
         $this->updater->init();
         $this->textDomain->loadTextDomain();
         $this->loadComponents();
