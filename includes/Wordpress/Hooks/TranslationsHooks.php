@@ -112,7 +112,7 @@ class TranslationsHooks {
         if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
         if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = $post->post_name; }
 
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
+        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $metaTitle = get_post_meta($postId, "_yoast_wpseo_title", true);
             if ($metaTitle && !empty($metaTitle) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_title"))) { $dataToTranslate["metaTitle"] = $metaTitle; }
             $metaDescription = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
@@ -121,7 +121,7 @@ class TranslationsHooks {
             if ($metaKeywords && !empty($metaKeywords) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_metakeywords"))) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
         }
 
-        if (is_plugin_active("seo-by-rank-math/rank-math.php")) {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             $rankMathDescription = get_post_meta($postId, "rank_math_description", true);
             if ($rankMathDescription && !empty($rankMathDescription) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_description"))) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
             $rankMathTitle = get_post_meta($postId, "rank_math_title", true);

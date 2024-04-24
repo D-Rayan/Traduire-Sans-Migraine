@@ -128,7 +128,7 @@ class Hooks
     }
 
     private function handleYoast() {
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
+        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             if (isset($this->dataToTranslate["metaTitle"])) {
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
             }
@@ -142,7 +142,7 @@ class Hooks
     }
 
     private function handleRankMath() {
-        if (is_plugin_active("seo-by-rank-math/rank-math.php")) {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             if (isset($this->dataToTranslate["rankMathDescription"])) {
                 update_post_meta($this->translatedPostId, "rank_math_description", $this->dataToTranslate["rankMathDescription"]);
             }

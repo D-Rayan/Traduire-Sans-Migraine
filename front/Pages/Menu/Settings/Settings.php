@@ -78,13 +78,13 @@ class Settings {
             "slug" => isset($_POST["slug"]) && $_POST["slug"] === "true",
         ];
 
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
+        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $settings["_yoast_wpseo_title"] = isset($_POST["_yoast_wpseo_title"]) && $_POST["_yoast_wpseo_title"] === "true";
             $settings["_yoast_wpseo_metadesc"] = isset($_POST["_yoast_wpseo_metadesc"]) && $_POST["_yoast_wpseo_metadesc"] === "true";
             $settings["_yoast_wpseo_metakeywords"] = isset($_POST["_yoast_wpseo_metakeywords"]) && $_POST["_yoast_wpseo_metakeywords"] === "true";
         }
 
-        if (is_plugin_active("rank-math/rank-math.php")) {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             $settings["rank_math_description"] = isset($_POST["rank_math_description"]) && $_POST["rank_math_description"] === "true";
             $settings["rank_math_title"] = isset($_POST["rank_math_title"]) && $_POST["rank_math_title"] === "true";
             $settings["rank_math_focus_keyword"] = isset($_POST["rank_math_focus_keyword"]) && $_POST["rank_math_focus_keyword"] === "true";
@@ -129,7 +129,7 @@ class Settings {
             Suggestions::render(TextDomain::__("Your otter 🦦"),
                 $step,
                 "<div class='suggestion-footer-settings'>
-                <div>".TextDomain::__("She will reset the %s", date("d/m/y", strtotime($quotaResetDate)))."</div>
+                <div>".TextDomain::__("She will reset the %s", date("d/m/Y", strtotime($quotaResetDate)))."</div>
                 <div class='right-footer'>
                     <img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />"
                     . Button::getHTML(TextDomain::__("Need more?"), "primary", "upgrade-quota", [
@@ -164,7 +164,7 @@ class Settings {
             ],
         ];
 
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php")) {
+        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $settings["_yoast_wpseo_title"] = [
                 "checked" => $settingsInstance->settingIsEnabled("_yoast_wpseo_title"),
                 "label" => TextDomain::__("SEO Title"),
@@ -179,7 +179,7 @@ class Settings {
             ];
         }
 
-        if (is_plugin_active("rank-math/rank-math.php")) {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             $settings["rank_math_description"] = [
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_description"),
                 "label" => TextDomain::__("SEO Title"),

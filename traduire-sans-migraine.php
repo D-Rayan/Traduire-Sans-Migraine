@@ -5,7 +5,7 @@
  * Plugin URI: https://www.seo-sans-migraine.com/translate-without-headache
  * Description: Translate Without Headache will help you translate your content within keeping good SEO practices.
  * Version: PLACEHOLDER_VERSION
- * Author: Seo Sans Migraine
+ * Author: Otter Corp
  * Author URI: https://www.seo-sans-migraine.com
  * Text Domain: traduire-sans-migraine
  * Domain Path: /languages
