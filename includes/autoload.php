@@ -1,5 +1,6 @@
 <?php
 
+require_once TSM__ABSOLUTE_PATH . "/includes/functions.php";
 require_once TSM__ABSOLUTE_PATH . "/includes/Settings.php";
 require_once TSM__ABSOLUTE_PATH . "/includes/Locker.php";
 // Will autoload all Components

@@ -75,15 +75,11 @@ class Products {
             <?php
             foreach ($products as $product) {
                 ?>
-                <div class="product">
+                <a class="product" href="<?php echo $product["link"]; ?>" target="_blank">
                     <div class="product-image">
-                        <img src="<?php echo $product["image"]; ?>" alt="seo-sans-migraine">
+                        <img src="<?php echo $product["image"]; ?>" alt="<?php echo $product["name"]; ?>">
                     </div>
-                    <div class="product-content">
-                        <p><?php echo $product["name"]; ?></p>
-                        <p><?php echo $product["description"]; ?></p>
-                    </div>
-                </div>
+                </a>
                 <?php
             }
             ?>

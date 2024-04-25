@@ -55,7 +55,7 @@ class Menu {
         $this->loadAdminHooks();
     }
 
-    static function render($title, $description, $content, $picture = "loutre_amandine.png") {
+    static function render($title, $description, $content, $picture = "") {
         ?>
         <div class="wrap">
             <div class="header">
@@ -70,7 +70,9 @@ class Menu {
                     </div>
                     <div class="cta">
                         <?php
-                        Button::render("Contactez-moi", "primary", "contact-me");
+                        Button::render("Contactez-moi", "primary", "contact-me", [
+                            "href" => TSM__CLIENT_LOGIN_DOMAIN . "?contact=1"
+                        ]);
                         Button::render("Voir mon compte", "primary", "my-account", [
                             "href" => TSM__CLIENT_LOGIN_DOMAIN
                         ]);
@@ -86,13 +88,15 @@ class Menu {
                             <?php echo $description; ?>
                         </div>
                     </div>
-                    <div class="right">
-                        <div>
+                    <?php if (!empty($picture)) { ?>
+                        <div class="right">
                             <div>
-                                <img src="<?php echo TSM__ASSETS_PATH; ?><?php echo $picture; ?>" />
+                                <div>
+                                    <img src="<?php echo TSM__ASSETS_PATH; ?><?php echo $picture; ?>" />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php } ?>
                 </div>
             </div>
             <div class="transition-dechirure"></div>

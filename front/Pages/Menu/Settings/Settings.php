@@ -123,7 +123,7 @@ class Settings {
             ;
             $step = Step::getHTML([
                 "classname" => "settings-step-progress",
-                "indicatorText" => TextDomain::_n("She have translated %s character on %s", "She have translated %s characters on %s", $quotaCurrent, $quotaCurrent, $quotaMax),
+                "indicatorText" => TextDomain::_n("She have translated %s character on %s", "She have translated %s characters on %s", $quotaCurrent, displayBigNumber($quotaCurrent), displayBigNumber($quotaMax)),
                 "percentage" => ($quotaCurrent / $quotaMax) * 100 . "%",
             ]);
             Suggestions::render(TextDomain::__("Your otter 🦦"),
@@ -243,7 +243,7 @@ class Settings {
         $content = self::getContent();
         $title = self::getTitle();
         $description = self::getDescription();
-        Menu::render($title, $description, $content, "loutre_docteur.png");
+        Menu::render($title, $description, $content);
     }
 }
 

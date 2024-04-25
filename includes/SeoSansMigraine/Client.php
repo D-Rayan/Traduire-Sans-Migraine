@@ -66,9 +66,12 @@ class Client
     }
 
     public function getProducts() {
-        return [
-            ["name" => "SEO Sans Migraine", "description" => "Un plugin pour traduire vos articles sans effort", "image" => "https://traduire-sans-migraine.com/wp-content/uploads/2021/07/seo-sans-migraine.png"],
-        ];
+        $response = $this->client->get("/products");
+        if (!$response["success"]) {
+            return [];
+        }
+
+        return $response["data"]["products"];
     }
 
     public function getAccount() {

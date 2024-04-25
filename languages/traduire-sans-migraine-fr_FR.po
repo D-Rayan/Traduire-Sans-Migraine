@@ -142,11 +142,13 @@ msgstr "Se Connecter"
 
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
-msgstr "Vous aimez nos produits ? Aidez nous avec quelques mots. ⭐️⭐️⭐️⭐️⭐️"
+msgstr ""
+"Satisfait de nos outils ? Donne nous un coup de pouce en nous laissant un "
+"avis ⭐️⭐️⭐️⭐️⭐️"
 
 # Products.php
 msgid "Explore all the tools"
-msgstr "Découvrez nos produits"
+msgstr "Découvrir tous les outils"
 
 # Author
 msgid "SEO sans migraine 💊"
@@ -156,8 +158,8 @@ msgid ""
 "Each tool aim to help you in your SEO strategy and you can find them all "
 "here."
 msgstr ""
-"Chaque outil vise à vous aider dans votre stratégie SEO. Voici tous nos "
-"produits."
+"Chaque outil à un but précis pour t’accompagner dans ta stratégie SEO et tu "
+"peux tous les découvrir ici."
 
 # Settings.php
 msgid "Your settings have been saved."

@@ -24,8 +24,9 @@
     margin-right: auto;
     display: flex;
     flex-direction: column;
-    gap: 5rem;
+    gap: 3rem;
     width: 90%;
+    padding-bottom: 2rem;
 }
 
 .wrap .header .header-content {
@@ -49,6 +50,9 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    width: min-content;
 }
 
 .wrap .header .header-content img {
@@ -57,15 +61,15 @@
 
 .wrap .header .title {
     color: #FFFFFF;
-    font-family: "Poppins", Sans-serif;
-    font-size: 60px;
-    font-weight: 700;
-    line-height: 120%;
-    letter-spacing: -2px;
+    font-family: "Poppins", sans-serif;
+    font-size: 50px;
+    font-weight: 600;
+    line-height: 100%;
     text-align: center;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: max-content;
 }
 
 .wrap .second-color {
@@ -74,9 +78,12 @@
 
 .wrap .header .description {
     color: #FFFFFF;
-    font-family: "Poppins", Sans-serif;
+    font-family: "Poppins", sans-serif;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 500;
+    text-align: center;
+    line-height: 130%;
+    max-width: 40vw;
 }
 
 .wrap .header .menu {
@@ -100,6 +107,7 @@
     line-height: 24px;
     gap: 1rem;
     align-items: center;
+    text-align: center;
 }
 
 .wrap .header .menu .cta {
@@ -131,9 +139,6 @@
 }
 
 .wrap .transition-dechirure {
-    position: relative;
-    top: -52px;
-    left: 0;
     background: url('/wp-content/plugins/traduire-sans-migraine/front/assets/dechirure_bleu.png') bottom -1px center repeat-x;
     background-size: auto;
     height: 52px;
@@ -143,6 +148,6 @@
     padding: 0;
     background-color: #F2F4FD;
     height: 100%;
-    margin: -53px 0 0;
+    margin: 0 0 0;
     min-height: 30vh;
 }
