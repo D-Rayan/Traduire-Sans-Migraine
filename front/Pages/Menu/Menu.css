@@ -12,6 +12,8 @@
 #wpbody-content {
     padding-bottom: 0;
     background: #7795EE;
+    max-width: calc(100% - 1px);
+    width: 100%;
 }
 
 .wrap {
