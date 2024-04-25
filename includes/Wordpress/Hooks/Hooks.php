@@ -51,7 +51,10 @@ class Hooks
                 update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                     "percentage" => 100,
                     "status" => Step::$STEP_STATE["ERROR"],
-                    "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                    "message" => [
+                        "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                        "args" => []
+                    ]
                 ]);
             }
             $translatedPost = get_post($this->translatedPostId);
@@ -59,7 +62,10 @@ class Hooks
                 update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                     "percentage" => 100,
                     "status" => Step::$STEP_STATE["ERROR"],
-                    "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                    "message" => [
+                        "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                        "args" => []
+                    ]
                 ]);
             }
             if (strstr($translatedPost->post_name, "-traduire-sans-migraine")) {
@@ -74,7 +80,10 @@ class Hooks
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["DONE"],
-                "html" => TextDomain::__("The otters have finished the translation 🦦, Check it right here %s", $htmlPost),
+                "message" => [
+                    "id" => "The otters have finished the translation 🦦, Check it right here %s",
+                    "args" => [$htmlPost]
+                ]
             ]);
 
             return new \WP_REST_Response($data, 200);
@@ -167,7 +176,10 @@ class Hooks
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["ERROR"],
-                "html" => TextDomain::__("Oops! The otters have lost the translation in the river. Please try again 🦦"),
+                "message" => [
+                    "id" => "Oops! The otters have lost the translation in the river. Please try again 🦦",
+                    "args" => []
+                ]
             ]);
             return new \WP_REST_Response(["success" => false, "error" => "Data to translate not found"], 400);
         }
@@ -175,13 +187,19 @@ class Hooks
         update_option("_seo_sans_migraine_state_" . $this->tokenId, [
             "percentage" => 75,
             "status" => Step::$STEP_STATE["PROGRESS"],
-            "html" => TextDomain::__("The otters works on your SEO optimization 🦦"),
+            "message" => [
+                "id" => "The otters works on your SEO optimization 🦦",
+                "args" => []
+            ]
         ]);
         if (!$postId) {
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["ERROR"],
-                "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                "message" => [
+                    "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                    "args" => []
+                ]
             ]);
             delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
             return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
@@ -191,7 +209,10 @@ class Hooks
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["ERROR"],
-                "html" => TextDomain::__("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                "message" => [
+                    "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                    "args" => []
+                ]
             ]);
             delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
             return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);

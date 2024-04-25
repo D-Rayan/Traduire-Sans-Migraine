@@ -152,7 +152,10 @@ class TranslationsHooks {
             update_option("_seo_sans_migraine_state_" . $tokenId, [
                 "percentage" => 50,
                 "status" => Step::$STEP_STATE["PROGRESS"],
-                "html" => TextDomain::__("The otters are translating your post 🦦"),
+                "message" => [
+                    "id" => "The otters are translating your post 🦦",
+                    "args" => []
+                ]
             ]);
             update_option("_seo_sans_migraine_postId_" . $tokenId, $postId);
         }
@@ -169,7 +172,10 @@ class TranslationsHooks {
         $state = get_option("_seo_sans_migraine_state_" . $tokenId, [
             "percentage" => 25,
             "status" => Step::$STEP_STATE["PROGRESS"],
-            "html" => TextDomain::__("We will create and translate your post 💡"),
+            "message" => [
+                "id" => "We will create and translate your post 💡",
+                "args" => []
+            ]
         ]);
         if (!$state) {
             echo json_encode(["success" => false, "error" => TextDomain::__("Token not found")]);
@@ -178,6 +184,9 @@ class TranslationsHooks {
         if (isset($state["status"]) && $state["status"] === Step::$STEP_STATE["DONE"]) {
             delete_option("_seo_sans_migraine_state_" . $tokenId);
             delete_option("_seo_sans_migraine_postId_" . $tokenId);
+        }
+        if (isset($state["message"])) {
+            $state["html"] = TextDomain::__($state["message"]["id"], ...$state["message"]["args"]);
         }
         echo json_encode(["success" => true, "data" => $state]);
         wp_die();
