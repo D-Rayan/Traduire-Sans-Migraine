@@ -12,6 +12,7 @@ interface LanguageInterface
     /**
      * @return string
      * @throws Exception
+     * @deprecated
      */
     public function getCurrentLanguage(): string;
 
@@ -56,6 +57,7 @@ interface LanguageInterface
      * @param string $translatedPostId
      * @param string $codeFrom
      * @throws Exception
+     * @deprecated
      */
     public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId, string $codeFrom);
 
