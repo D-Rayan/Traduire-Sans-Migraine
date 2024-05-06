@@ -66,7 +66,7 @@ class Menu {
                         </a>
                     </div>
                     <div class="content">
-                        <a href="https://fr.trustpilot.com/review/seo-sans-migraine.fr" target="_blank"><?php echo TextDomain::__("Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"); ?></a>
+                        <a class="no-decoration" href="https://fr.trustpilot.com/review/seo-sans-migraine.fr" target="_blank"><?php echo TextDomain::__("Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"); ?></a>
                     </div>
                     <div class="cta">
                         <?php
