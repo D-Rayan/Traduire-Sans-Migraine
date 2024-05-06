@@ -306,7 +306,7 @@ msgid ""
 "and follow the steps"
 msgstr ""
 "Vous ne savez pas par où commencer ? Pas de panique il te suffit de cliquer "
-"<a href=‘%s’>ici</a> et de suivre les instructions"
+"<a href='%s'>ici</a> et de suivre les instructions"
 
 # Plugin Name
 msgid "PLACEHOLDER_NAME"
