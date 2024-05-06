@@ -266,7 +266,7 @@ class Settings {
     private static function getHelpPlugin() {
         ob_start();
         ?>
-        <img style="width: 100%;" src="<?php echo TSM__ASSETS_PATH . TextDomain::__("tutoriel_screen_en.png"); ?>" alt="tutoriel_screen" />
+        <img style="width: 100%; max-width: 45vw;" src="<?php echo TSM__ASSETS_PATH . TextDomain::__("tutoriel_screen_en.png"); ?>" alt="tutoriel_screen" />
         <?php
         return ob_get_clean();
     }
