@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: [Test] Traduire Sans Migraine 0.6.000\n"
+"Project-Id-Version: Traduire Sans Migraine 0.6.505\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-23T13:25:180\n"
+"POT-Creation-Date: 2024-05-06T13:36:580\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Articles.php
@@ -156,16 +156,34 @@ msgstr ""
 msgid "Post's Excerpt"
 msgstr ""
 
+msgid "The excerpt is a short summary of your post. It is used by default in the search results."
+msgstr ""
+
 msgid "Post's slug"
+msgstr ""
+
+msgid "The slug is the URL of your post."
 msgstr ""
 
 msgid "SEO Title"
 msgstr ""
 
+msgid "The title is the title of your post. It is used in the search results."
+msgstr ""
+
 msgid "SEO Description"
 msgstr ""
 
+msgid "The description is a short summary of your post. It is used in the search results."
+msgstr ""
+
 msgid "Keywords"
+msgstr ""
+
+msgid "Keywords are used by yoast to help you to optimize your post."
+msgstr ""
+
+msgid "Keywords are used by rank math to help you to optimize your post."
 msgstr ""
 
 msgid "Settings"
@@ -175,6 +193,9 @@ msgid "What the otter should update when the post already exists?"
 msgstr ""
 
 msgid "Save"
+msgstr ""
+
+msgid "tutoriel_screen_en.png"
 msgstr ""
 
 msgid "Here you can configure the tool to make it perfect for your needs."
@@ -205,19 +226,6 @@ msgstr ""
 msgid "Missing required plugins"
 msgstr ""
 
-# Hooks.php
-msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
-msgstr ""
-
-msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr ""
-
-msgid "Oops! The otters have lost the translation in the river. Please try again 🦦"
-msgstr ""
-
-msgid "The otters works on your SEO optimization 🦦"
-msgstr ""
-
 # TranslationsHooks.php
 msgid "Post ID missing"
 msgstr ""
@@ -225,16 +233,13 @@ msgstr ""
 msgid "Token invalid"
 msgstr ""
 
+msgid "An error occurred during the creation of the translations"
+msgstr ""
+
 msgid "Post not found"
 msgstr ""
 
-msgid "The otters are translating your post 🦦"
-msgstr ""
-
 msgid "Token ID missing"
-msgstr ""
-
-msgid "We will create and translate your post 💡"
 msgstr ""
 
 msgid "Token not found"
@@ -243,8 +248,15 @@ msgstr ""
 msgid "Language missing"
 msgstr ""
 
+# traduire-sans-migraine.php
+msgid "Traduire Sans Migraine is enabled"
+msgstr ""
+
+msgid "You don't know where to start? Don't worry just click <a href='%s'>here</a> and follow the steps"
+msgstr ""
+
 # Plugin Name
-msgid "Traduire Sans Migraine"
+msgid "PLACEHOLDER_NAME"
 msgstr ""
 
 # Plugin URI
@@ -256,7 +268,7 @@ msgid "Translate Without Headache will help you translate your content within ke
 msgstr ""
 
 # Author
-msgid "Seo Sans Migraine"
+msgid "Otter Corp"
 msgstr ""
 
 # Author URI

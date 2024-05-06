@@ -1,5 +1,6 @@
 <?php
 include "../env.global.php";
+define("TSM__NAME", "Traduire Sans Migraine");
 $file = fopen(__DIR__ . "/../languages/traduire-sans-migraine.pot", "w");
 if (!$file) {
     die("Could not open file");

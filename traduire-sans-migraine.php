@@ -15,6 +15,7 @@
 namespace TraduireSansMigraine;
 
 
+use TraduireSansMigraine\Front\Components\Alert;
 use TraduireSansMigraine\Wordpress\Hooks\Hooks;
 use TraduireSansMigraine\Wordpress\Hooks\TranslationsHooks;
 use TraduireSansMigraine\Wordpress\Menu;
@@ -81,10 +82,29 @@ class TraduireSansMigraine {
         $this->textDomain->loadTextDomain();
         $this->loadComponents();
         $this->loadPages();
+        register_activation_hook(__FILE__, [$this, "prepareActivationPlugin"]);
         add_action("admin_init", [$this, "checkRequirements"]);
+        add_action("admin_init", [$this, "messageSuccessActivation"]);
         $this->menu->init();
         $this->hooks->init();
         $this->translationsHooks->init();
+    }
+
+    public function prepareActivationPlugin() {
+        add_option('tsm-has-been-activated', true);
+    }
+
+    public function messageSuccessActivation() {
+        if (get_option('tsm-has-been-activated', false)) {
+            delete_option('tsm-has-been-activated');
+            add_action("admin_notices", function () {
+                Alert::render(
+                    TextDomain::__("Traduire Sans Migraine is enabled"),
+                    TextDomain::__("You don't know where to start? Don't worry just click <a href='%s'>here</a> and follow the steps", admin_url("admin.php?page=traduire-sans-migraine")),
+                    "info"
+                );
+            });
+        }
     }
 }
 

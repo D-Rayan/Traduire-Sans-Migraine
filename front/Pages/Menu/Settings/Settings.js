@@ -28,3 +28,5 @@ if (buttonUpgrade) {
         window.open(href, "_blank");
     });
 }
+
+initTooltips();

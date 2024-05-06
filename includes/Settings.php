@@ -45,8 +45,6 @@ class Settings
         $pluginsLists = [
             [
                 "Polylang" => function_exists("pll_the_languages"),
-                "WPML" => function_exists("wpml_current_language"),
-                "MultilingualPress" => function_exists("mlp_get_interlinked_permalinks"),
             ]
         ];
 

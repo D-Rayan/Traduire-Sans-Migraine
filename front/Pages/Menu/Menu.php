@@ -61,12 +61,12 @@ class Menu {
             <div class="header">
                 <div class="menu">
                     <div class="logo">
-                        <a href="https://www.seo-sans-migraine.fr/">
-                            <img src="<?php echo TSM__ASSETS_PATH; ?>seo_sans_migraine_logo.png" />
+                        <a href="https://www.seo-sans-migraine.fr/" target="_blank">
+                            <img src="<?php echo TSM__ASSETS_PATH; ?>seo_sans_migraine_logo.png" alt="logo_seo_sans_migraine" />
                         </a>
                     </div>
                     <div class="content">
-                        <span><?php echo TextDomain::__("Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"); ?></span>
+                        <a href="https://fr.trustpilot.com/review/seo-sans-migraine.fr" target="_blank"><?php echo TextDomain::__("Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"); ?></a>
                     </div>
                     <div class="cta">
                         <?php

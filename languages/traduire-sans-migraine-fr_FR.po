@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-04-23T13:25:180\n"
+"POT-Creation-Date: 2024-05-06T13:36:580\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -63,8 +63,8 @@ msgid ""
 "The followings articles will not be translated cause we could not find "
 "them : %s"
 msgstr ""
-"Les liens des articles suivant ne seront pas traduit car nous n’avons pas "
-"réussi à les trouver : %s"
+"Les liens internes suivant ne sont pas accessibles (ils ont supprimés ou ne "
+"sont pas publiés) : %s"
 
 # Step.php
 msgid ""
@@ -78,8 +78,8 @@ msgid ""
 "The following links will not be translated because they doesn't exist or "
 "aren't published : %s"
 msgstr ""
-"Les liens des articles suivant ne seront pas traduit car ils n’existent pas "
-"ou ne sont pas publiés : %s"
+"Les liens internes suivant ne possèdent pas de traduction dans cette langue, "
+"ils ne seront donc pas remplacés. Nous vous conseillons de les traduire %s"
 
 msgid ""
 "Use the checkbox on the left to add this language to the list of "
@@ -189,17 +189,49 @@ msgstr "Titre de l’article"
 msgid "Post's Excerpt"
 msgstr "Extrait de l’article"
 
+msgid ""
+"The excerpt is a short summary of your post. It is used by default in the "
+"search results."
+msgstr ""
+"L’excerpt est un court résumé de votre article. Il est utilisé par défaut "
+"dans les résultats de recherche."
+
 msgid "Post's slug"
 msgstr "Slug de l’article"
+
+msgid "The slug is the URL of your post."
+msgstr "Le slug est l’url de votre article."
 
 msgid "SEO Title"
 msgstr "Titre SEO"
 
+msgid "The title is the title of your post. It is used in the search results."
+msgstr ""
+"Ceci est le titre de votre article. Il apparait dans les résultats de "
+"recherche."
+
 msgid "SEO Description"
 msgstr "Description SEO"
 
+msgid ""
+"The description is a short summary of your post. It is used in the search "
+"results."
+msgstr ""
+"La description est un court résumé de votre article. Il est utilisé dans les "
+"résultats de recherche."
+
 msgid "Keywords"
 msgstr "Mots clés"
+
+msgid "Keywords are used by yoast to help you to optimize your post."
+msgstr ""
+"Les mots clés sont utilisés par Yoast pour vous aider à optimiser votre "
+"article."
+
+msgid "Keywords are used by rank math to help you to optimize your post."
+msgstr ""
+"Les mots clés sont utilisés par Rank math pour vous aider à optimiser votre "
+"article."
 
 msgid "Settings"
 msgstr "Préférences"
@@ -209,6 +241,9 @@ msgstr "Que devra mettre à jour la loutre lorsque l’article existe déjà ?"
 
 msgid "Save"
 msgstr "Sauvegarder"
+
+msgid "tutoriel_screen_en.png"
+msgstr "tutoriel_screen_fr.png"
 
 msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
@@ -240,21 +275,6 @@ msgstr "%s requis au moins un des plugins suivants : %s"
 msgid "Missing required plugins"
 msgstr "Des plugins requis sont manquants"
 
-msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
-msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
-
-msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
-
-# Hooks.php
-msgid ""
-"Oops! The otters have lost the translation in the river. Please try again 🦦"
-msgstr ""
-"Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
-
-msgid "The otters works on your SEO optimization 🦦"
-msgstr "Les loutres peaufinent la mise en forme 🦦"
-
 # /front/Pages/Editor/OnSave/OnSave.php
 msgid "Post ID missing"
 msgstr "Post ID manquant"
@@ -262,17 +282,14 @@ msgstr "Post ID manquant"
 msgid "Token invalid"
 msgstr "Clé d’accès invalide"
 
+msgid "An error occurred during the creation of the translations"
+msgstr "Une erreur est survenue pendant la création des traductions"
+
 msgid "Post not found"
 msgstr "Le post n’existe pas"
 
-msgid "The otters are translating your post 🦦"
-msgstr "Les loutres traduisent ton article 🦦"
-
 msgid "Token ID missing"
 msgstr "Clés d’accès manquante"
-
-msgid "We will create and translate your post 💡"
-msgstr "On va créer et traduire ton article 💡"
 
 msgid "Token not found"
 msgstr "Clé d’accès n’existe pas"
@@ -281,8 +298,19 @@ msgid "Language missing"
 msgstr "Le langage est manquant"
 
 # Plugin Name
-msgid "Traduire Sans Migraine"
-msgstr "Traduire Sans Migraine"
+msgid "Traduire Sans Migraine is enabled"
+msgstr "Traduire Sans Migraine est activé"
+
+msgid ""
+"You don't know where to start? Don't worry just click <a href='%s'>here</a> "
+"and follow the steps"
+msgstr ""
+"Vous ne savez pas par où commencer ? Pas de panique il te suffit de cliquer "
+"<a href=‘%s’>ici</a> et de suivre les instructions"
+
+# Plugin Name
+msgid "PLACEHOLDER_NAME"
+msgstr "PLACEHOLDER_NAME"
 
 # Plugin URI
 msgid "https://www.seo-sans-migraine.com/translate-without-headache"
@@ -297,8 +325,8 @@ msgstr ""
 "gardant les bonnes pratiques SEO."
 
 # Author
-msgid "Seo Sans Migraine"
-msgstr "Seo Sans Migraine"
+msgid "Otter Corp"
+msgstr "Otter Corp"
 
 # Author URI
 msgid "https://www.seo-sans-migraine.com"
@@ -315,6 +343,34 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid ""
+#~ "Oops! The otters have lost the post in the river. Please try again 🦦"
+#~ msgstr ""
+#~ "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
+
+#~ msgid "The otters have finished the translation 🦦, Check it right here %s"
+#~ msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
+
+# Hooks.php
+#~ msgid ""
+#~ "Oops! The otters have lost the translation in the river. Please try again "
+#~ "🦦"
+#~ msgstr ""
+#~ "Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
+
+#~ msgid "The otters works on your SEO optimization 🦦"
+#~ msgstr "Les loutres peaufinent la mise en forme 🦦"
+
+#~ msgid "The otters are translating your post 🦦"
+#~ msgstr "Les loutres traduisent ton article 🦦"
+
+#~ msgid "We will create and translate your post 💡"
+#~ msgstr "On va créer et traduire ton article 💡"
+
+# Author
+#~ msgid "Seo Sans Migraine"
+#~ msgstr "Seo Sans Migraine"
 
 #~ msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
 #~ msgstr ""
@@ -360,9 +416,6 @@ msgstr "GPL2"
 #~ "Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
 #~ "traduire. Cependant certains des liens ne seront pas traduits car soit "
 #~ "ils n’existent pas en %s ou ne sont pas encore publiés : "
-
-#~ msgid "%s is already the language of your post."
-#~ msgstr "%s est la langue actuelle de votre article."
 
 #~ msgid "The followings articles are not translated : "
 #~ msgstr "Les articles suivants ne sont pas traduit : "

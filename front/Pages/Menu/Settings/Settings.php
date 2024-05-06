@@ -6,6 +6,7 @@ use TraduireSansMigraine\Front\Components\Button;
 use TraduireSansMigraine\Front\Components\Checkbox;
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Front\Components\Suggestions;
+use TraduireSansMigraine\Front\Components\Tooltip;
 use TraduireSansMigraine\Front\Pages\LogIn\LogIn;
 use TraduireSansMigraine\Front\Pages\Menu\Menu;
 use TraduireSansMigraine\SeoSansMigraine\Client;
@@ -105,17 +106,13 @@ class Settings {
         return ob_get_clean();
     }
 
-    private static function getStatePlugin() {
-        $client = new Client();
+    private static function getStatePlugin($account, $redirect) {
         $settingsInstance = new SettingsPlugin();
-        $client->fetchAccount();
-        $account = $client->getAccount();
-        $redirect = $client->getRedirect();
         ob_start();
         if ($account === null && $redirect === null) {
             Alert::render(TextDomain::__("An error occurred"), TextDomain::__("Could not fetch your account."), "error");
         } else if ($redirect !== null) {
-            LogIn::render($redirect["url"]);
+            LogIn::render();
         } else {
             $quotaMax = $account["quota"]["max"] + $account["quota"]["bonus"];
             $quotaCurrent = $account["quota"]["current"];
@@ -157,40 +154,50 @@ class Settings {
             "excerpt" => [
                 "checked" => $settingsInstance->settingIsEnabled("excerpt"),
                 "label" => TextDomain::__("Post's Excerpt"),
+                "tooltip" => TextDomain::__("The excerpt is a short summary of your post. It is used by default in the search results.")
             ],
             "slug" => [
                 "checked" => $settingsInstance->settingIsEnabled("slug"),
                 "label" => TextDomain::__("Post's slug"),
+                "tooltip" => TextDomain::__("The slug is the URL of your post.")
             ],
         ];
 
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $settings["_yoast_wpseo_title"] = [
+                "before" => "Yoast SEO",
                 "checked" => $settingsInstance->settingIsEnabled("_yoast_wpseo_title"),
                 "label" => TextDomain::__("SEO Title"),
+                "tooltip" => TextDomain::__("The title is the title of your post. It is used in the search results.")
             ];
             $settings["_yoast_wpseo_metadesc"] = [
                 "checked" => $settingsInstance->settingIsEnabled("_yoast_wpseo_metadesc"),
                 "label" => TextDomain::__("SEO Description"),
+                "tooltip" => TextDomain::__("The description is a short summary of your post. It is used in the search results.")
             ];
             $settings["_yoast_wpseo_metakeywords"] = [
                 "checked" => $settingsInstance->settingIsEnabled("_yoast_wpseo_metakeywords"),
                 "label" => TextDomain::__("Keywords"),
+                "tooltip" => TextDomain::__("Keywords are used by yoast to help you to optimize your post.")
             ];
         }
 
-        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math") || true) {
             $settings["rank_math_description"] = [
+                "before" => "Rank Math",
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_description"),
                 "label" => TextDomain::__("SEO Title"),
+                "tooltip" => TextDomain::__("The title is the title of your post. It is used in the search results.")
             ];
             $settings["rank_math_title"] = [
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_title"),
                 "label" => TextDomain::__("SEO Description"),
+                "tooltip" => TextDomain::__("The description is a short summary of your post. It is used in the search results.")
             ];
             $settings["rank_math_focus_keyword"] = [
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_focus_keyword"),
                 "label" => TextDomain::__("Keywords"),
+                "tooltip" => TextDomain::__("Keywords are used by rank math to help you to optimize your post.")
             ];
         }
         ?>
@@ -202,7 +209,20 @@ class Settings {
                     <?php
                         foreach ($settings as $key => $setting) {
                             echo "<div class='setting'>";
+                            if (isset($setting["before"])) {
+                                echo "<div class='before'>".$setting["before"]."</div>";
+                            }
+                            echo "<div class='row'>";
                             Checkbox::render($setting["label"], $key, $setting["checked"]);
+                            if (isset($setting["tooltip"])) {
+                                Tooltip::render(
+                                    '<svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg>',
+                                    Alert::getHTML(null, $setting["tooltip"], "info", [
+                                        "isDismissible" => false,
+                                    ])
+                                );
+                            }
+                            echo "</div>";
                             echo "</div>";
                         }
                     ?>
@@ -220,14 +240,33 @@ class Settings {
     }
 
     private static function getContent() {
+        $client = new Client();
+        $client->fetchAccount();
+        $account = $client->getAccount();
+        $redirect = $client->getRedirect();
         ob_start();
         ?>
         <div class="container">
-        <?php
-        echo self::getStatePlugin();
-        echo self::getParametersPlugin();
-        ?>
+            <div class="column">
+            <?php
+                echo self::getStatePlugin($account, $redirect);
+                echo self::getParametersPlugin();
+            ?>
+            </div>
+            <?php
+            if ($account !== null) {
+                echo self::getHelpPlugin();
+            }
+            ?>
         </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function getHelpPlugin() {
+        ob_start();
+        ?>
+        <img style="width: 100%;" src="<?php echo TSM__ASSETS_PATH . TextDomain::__("tutoriel_screen_en.png"); ?>" alt="tutoriel_screen" />
         <?php
         return ob_get_clean();
     }
