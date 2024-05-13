@@ -75,6 +75,7 @@ class Hooks
             }
             $this->handleYoast();
             $this->handleRankMath();
+            $this->handleElementor();
             $urlPost = get_admin_url(null, "post.php?post=" . $this->translatedPostId . "&action=edit");
             $htmlPost = "<a href='".$urlPost."' target='_blank'>".$urlPost."</a>";
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
@@ -160,6 +161,17 @@ class Hooks
             }
             if (isset($this->dataToTranslate["rankMathFocusKeyword"])) {
                 update_post_meta($this->translatedPostId, "rank_math_focus_keyword", $this->dataToTranslate["rankMathFocusKeyword"]);
+            }
+        }
+    }
+
+    private function handleElementor() {
+        if (is_plugin_active("elementor/elementor.php")) {
+            $postMetas = get_post_meta($this->originalPost->ID);
+            foreach ($postMetas as $key => $value) {
+                if (strstr($key, "elementor")) {
+                    update_post_meta($this->translatedPostId, $key, isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0]);
+                }
             }
         }
     }

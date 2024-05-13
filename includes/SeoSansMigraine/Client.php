@@ -27,6 +27,7 @@ class Client
     public function fetchAccount() {
         $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->get("/accounts");
+
         if (!$response["success"]) {
             return false;
         }

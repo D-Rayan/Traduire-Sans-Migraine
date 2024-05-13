@@ -126,22 +126,57 @@ class TranslationsHooks {
         if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
         if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = $post->post_name; }
 
+
+        $postMetas = get_post_meta($postId);
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
-            $metaTitle = get_post_meta($postId, "_yoast_wpseo_title", true);
+            $metaTitle = isset($postMetas["_yoast_wpseo_title"][0]) ? $postMetas["_yoast_wpseo_title"][0] : "";
             if ($metaTitle && !empty($metaTitle) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_title"))) { $dataToTranslate["metaTitle"] = $metaTitle; }
-            $metaDescription = get_post_meta($postId, "_yoast_wpseo_metadesc", true);
+            $metaDescription = isset($postMetas["_yoast_wpseo_metadesc"][0]) ? $postMetas["_yoast_wpseo_metadesc"][0] : "";
             if ($metaDescription && !empty($metaDescription) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_metadesc"))) { $dataToTranslate["metaDescription"] = $metaDescription; }
-            $metaKeywords = get_post_meta($postId, "_yoast_wpseo_metakeywords", true);
+            $metaKeywords = isset($postMetas["_yoast_wpseo_metakeywords"][0]) ? $postMetas["_yoast_wpseo_metakeywords"][0] : "";
             if ($metaKeywords && !empty($metaKeywords) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_metakeywords"))) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
         }
 
         if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
-            $rankMathDescription = get_post_meta($postId, "rank_math_description", true);
+            $rankMathDescription = isset($postMetas["rank_math_description"][0]) ? $postMetas["rank_math_description"][0] : "";
             if ($rankMathDescription && !empty($rankMathDescription) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_description"))) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
-            $rankMathTitle = get_post_meta($postId, "rank_math_title", true);
+            $rankMathTitle = isset($postMetas["rank_math_title"][0]) ? $postMetas["rank_math_title"][0] : "";
             if ($rankMathTitle && !empty($rankMathTitle) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_title"))) { $dataToTranslate["rankMathTitle"] = $rankMathTitle; }
-            $rankMathFocusKeyword = get_post_meta($postId, "rank_math_focus_keyword", true);
+            $rankMathFocusKeyword = isset($postMetas["rank_math_focus_keyword"][0]) ? $postMetas["rank_math_focus_keyword"][0] : "";
             if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_focus_keyword"))) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
+        }
+
+        if (is_plugin_active("elementor/elementor.php")) {
+            $noTranslateElementor = [
+                "_elementor_code" => true,
+                "_elementor_conditions" => true,
+                "_elementor_controls_usage" => true,
+                "_elementor_css" => true,
+                "_elementor_edit_mode" => true,
+                "_elementor_extra_options" => true,
+                "_elementor_inline_svg" => true,
+                "_elementor_location" => true,
+                "_elementor_page_assets" => true,
+                "_elementor_page_settings" => true,
+                "_elementor_popup_display_settings" => true,
+                "_elementor_priority" => true,
+                "_elementor_pro_version" => true,
+                "_elementor_screenshot_failed" => true,
+                "_elementor_source" => true,
+                "_elementor_source_image_hash" => true,
+                "_elementor_template_sub_type" => true,
+                "_elementor_template_type" => true,
+                "_elementor_version" => true,
+                "elementor_font_face" => true,
+                "elementor_font_files" => true,
+            ];
+            foreach ($postMetas as $key => $value) {
+                if (strstr($key, "elementor_") && !isset($noTranslateElementor[$key])) {
+                    if (isset($value[0])) {
+                        $dataToTranslate[$key] = $value[0];
+                    }
+                }
+            }
         }
 
 
