@@ -15,18 +15,20 @@ async function loadModalTraduireSansMigraine() {
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
-    const editor = window.wp.data.dispatch('core/editor')
-    const savePost = editor.savePost
-    editor.savePost = function (options) {
-        options = options || {}
+    if (tsm.autoOpen === "true") {
+        const editor = window.wp.data.dispatch('core/editor')
+        const savePost = editor.savePost
+        editor.savePost = function (options) {
+            options = options || {}
 
-        return savePost(options)
-            .then(() => {
-                if (!options.isAutosave) {
-                    loadModalTraduireSansMigraine();
-                }
-            })
-    };
+            return savePost(options)
+                .then(() => {
+                    if (!options.isAutosave) {
+                        loadModalTraduireSansMigraine();
+                    }
+                })
+        };
+    }
 
     const moveButtonToHeader =  () => {
         const headerElement = document.querySelector(".edit-post-header__settings");

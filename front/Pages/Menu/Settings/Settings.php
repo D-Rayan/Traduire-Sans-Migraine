@@ -90,6 +90,16 @@ class Settings {
             $settings["rank_math_title"] = isset($_POST["rank_math_title"]) && $_POST["rank_math_title"] === "true";
             $settings["rank_math_focus_keyword"] = isset($_POST["rank_math_focus_keyword"]) && $_POST["rank_math_focus_keyword"] === "true";
         }
+
+        if (is_plugin_active("wp-seopress/seopress.php")) {
+            $settings["seopress_titles_desc"] = isset($_POST["seopress_titles_desc"]) && $_POST["seopress_titles_desc"] === "true";
+            $settings["seopress_titles_title"] = isset($_POST["seopress_titles_title"]) && $_POST["seopress_titles_title"] === "true";
+            $settings["seopress_analysis_target_kw"] = isset($_POST["seopress_analysis_target_kw"]) && $_POST["seopress_analysis_target_kw"] === "true";
+        }
+
+        $settings["tsmOpenOnSave"] = isset($_POST["tsmOpenOnSave"]) && $_POST["tsmOpenOnSave"] === "true";
+
+
         $settingsInstance = new SettingsPlugin();
         $settingsInstance->saveSettings($settings);
 
@@ -219,6 +229,13 @@ class Settings {
                 "tooltip" => TextDomain::__("Keywords are used by SEOPress to help you to optimize your post.")
             ];
         }
+
+        $settings["tsmOpenOnSave"] = [
+            "before" => "Traduire Sans Migraine",
+            "checked" => $settingsInstance->settingIsEnabled("tsmOpenOnSave"),
+            "label" => TextDomain::__("Open the translation window on save"),
+            "tooltip" => TextDomain::__("Each time you're saving a post, the translation window will open.")
+        ];
         ?>
         <div class="preferences">
             <div class="title"><?php echo TextDomain::__("Settings"); ?></div>

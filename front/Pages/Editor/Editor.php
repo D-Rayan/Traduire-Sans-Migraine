@@ -5,6 +5,7 @@ namespace TraduireSansMigraine\Front\Pages\Editor;
 use TraduireSansMigraine\Front\Components\Button;
 use TraduireSansMigraine\Front\Components\Checkbox;
 use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Settings as SettingsPlugin;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 include "OnSave/OnSave.php";
@@ -17,10 +18,12 @@ class Editor {
     }
 
     public function enqueueScripts() {
+        $settingsInstance = new SettingsPlugin();
         wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Editor.js", [], TSM__VERSION, true);
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsm", [
             "url" => admin_url("admin-ajax.php") . "?action=traduire-sans-migraine_",
             "postUrl" => admin_url("post.php"),
+            "autoOpen" => $settingsInstance->settingIsEnabled("tsmOpenOnSave") ? "true" : "false",
         ]);
     }
 
@@ -60,8 +63,8 @@ class Editor {
     }
 
     public function redirectAfterUpdating( $location ) {
-
-        if ( isset( $_POST['save'] ) || isset( $_POST['publish'] ) ) {
+        $settingsInstance = new SettingsPlugin();
+        if ( isset( $_POST['save'] ) || isset( $_POST['publish'] ) && $settingsInstance->settingIsEnabled("tsmOpenOnSave") ) {
             $tsmShow = isset($_POST["traduire-sans-migraine–is-enable"]) ? $_POST["traduire-sans-migraine–is-enable"] : "off";
             return $location . "&tsmShow=" . $tsmShow;
         }
