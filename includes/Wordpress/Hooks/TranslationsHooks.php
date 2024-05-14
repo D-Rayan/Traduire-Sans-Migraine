@@ -146,6 +146,15 @@ class TranslationsHooks {
             if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_focus_keyword"))) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
         }
 
+        if (is_plugin_active("wp-seopress/seopress.php")) {
+            $seopress_titles_desc = isset($postMetas["seopress_titles_desc"][0]) ? $postMetas["seopress_titles_desc"][0] : "";
+            if ($seopress_titles_desc && !empty($seopress_titles_desc) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("seopress_titles_desc"))) { $dataToTranslate["seopress_titles_desc"] = $seopress_titles_desc; }
+            $seopress_titles_title = isset($postMetas["seopress_titles_title"][0]) ? $postMetas["seopress_titles_title"][0] : "";
+            if ($seopress_titles_title && !empty($seopress_titles_title) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("seopress_titles_title"))) { $dataToTranslate["seopress_titles_title"] = $seopress_titles_title; }
+            $seopress_analysis_target_kw = isset($postMetas["seopress_analysis_target_kw"][0]) ? $postMetas["seopress_analysis_target_kw"][0] : "";
+            if ($seopress_analysis_target_kw && !empty($seopress_analysis_target_kw) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("seopress_analysis_target_kw"))) { $dataToTranslate["seopress_analysis_target_kw"] = $seopress_analysis_target_kw; }
+        }
+
         if (is_plugin_active("elementor/elementor.php")) {
             $noTranslateElementor = [
                 "_elementor_code" => true,

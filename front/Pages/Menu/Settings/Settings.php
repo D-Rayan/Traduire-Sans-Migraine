@@ -182,7 +182,7 @@ class Settings {
             ];
         }
 
-        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math") || true) {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             $settings["rank_math_description"] = [
                 "before" => "Rank Math",
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_description"),
@@ -198,6 +198,25 @@ class Settings {
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_focus_keyword"),
                 "label" => TextDomain::__("Keywords"),
                 "tooltip" => TextDomain::__("Keywords are used by rank math to help you to optimize your post.")
+            ];
+        }
+
+        if (is_plugin_active("wp-seopress/seopress.php")) {
+            $settings["seopress_titles_desc"] = [
+                "before" => "SEOPress",
+                "checked" => $settingsInstance->settingIsEnabled("seopress_titles_desc"),
+                "label" => TextDomain::__("SEO Title"),
+                "tooltip" => TextDomain::__("The title is the title of your post. It is used in the search results.")
+            ];
+            $settings["seopress_titles_title"] = [
+                "checked" => $settingsInstance->settingIsEnabled("seopress_titles_title"),
+                "label" => TextDomain::__("SEO Description"),
+                "tooltip" => TextDomain::__("The description is a short summary of your post. It is used in the search results.")
+            ];
+            $settings["seopress_analysis_target_kw"] = [
+                "checked" => $settingsInstance->settingIsEnabled("seopress_analysis_target_kw"),
+                "label" => TextDomain::__("Keywords"),
+                "tooltip" => TextDomain::__("Keywords are used by SEOPress to help you to optimize your post.")
             ];
         }
         ?>

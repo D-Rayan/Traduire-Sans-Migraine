@@ -75,6 +75,7 @@ class Hooks
             }
             $this->handleYoast();
             $this->handleRankMath();
+            $this->handleSEOPress();
             $this->handleElementor();
             $urlPost = get_admin_url(null, "post.php?post=" . $this->translatedPostId . "&action=edit");
             $htmlPost = "<a href='".$urlPost."' target='_blank'>".$urlPost."</a>";
@@ -161,6 +162,20 @@ class Hooks
             }
             if (isset($this->dataToTranslate["rankMathFocusKeyword"])) {
                 update_post_meta($this->translatedPostId, "rank_math_focus_keyword", $this->dataToTranslate["rankMathFocusKeyword"]);
+            }
+        }
+    }
+
+    private function handleSEOPress() {
+        if (is_plugin_active("wp-seopress/seopress.php")) {
+            if (isset($this->dataToTranslate["seopress_titles_desc"])) {
+                update_post_meta($this->translatedPostId, "seopress_titles_desc", $this->dataToTranslate["seopress_titles_desc"]);
+            }
+            if (isset($this->dataToTranslate["seopress_titles_title"])) {
+                update_post_meta($this->translatedPostId, "seopress_titles_title", $this->dataToTranslate["seopress_titles_title"]);
+            }
+            if (isset($this->dataToTranslate["seopress_analysis_target_kw"])) {
+                update_post_meta($this->translatedPostId, "seopress_analysis_target_kw", $this->dataToTranslate["seopress_analysis_target_kw"]);
             }
         }
     }
