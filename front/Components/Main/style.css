@@ -38,6 +38,7 @@
 
 
     --traduire-sans-migraine-primary-suggestions-background: #7795ee57;
+    --traduire-sans-migraine-success-suggestions-background: rgb(196, 249, 212);
 }
 
 @-moz-keyframes spin-tsm {

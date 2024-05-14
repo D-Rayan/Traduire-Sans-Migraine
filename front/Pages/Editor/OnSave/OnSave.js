@@ -7,6 +7,9 @@ function getCheckboxesList(modal) {
 }
 
 function injectFunctionTranslationModal(modal) {
+    if (!modal.querySelector('#translate-button')) {
+        return;
+    }
     addListenerToCheckboxes(modal);
     displayCountCheckedToButton(modal);
     addListenerToButtonTranslate(modal);
@@ -20,6 +23,9 @@ function getStepList(modal, language) {
 function displayCountCheckedToButton(modal) {
     const checkedCheckboxes = getCheckboxesListChecked(modal);
     const buttonTranslate = modal.querySelector('#translate-button');
+    if (!buttonTranslate) {
+        return;
+    }
     if (checkedCheckboxes.length > 0) {
         buttonTranslate.disabled = false;
         buttonTranslate.classList.remove('disabled');
@@ -80,6 +86,9 @@ function addListenerToCheckboxes(modal) {
     };
     const allCheckboxes = getCheckboxesList(modal);
     const globalCheckbox = modal.querySelector("#global-languages");
+    if (!globalCheckbox) {
+        return;
+    }
     const updateDisplayGlobalCheckbox = () => {
         const checkedCheckboxes = getCheckboxesListChecked(modal).length;
         globalCheckbox.checked = (allCheckboxes.length === checkedCheckboxes);
@@ -151,6 +160,7 @@ function addListenerToButtonTranslate(modal) {
                     checkbox.closest(".language").remove();
                 }
             });
+            switchSuggestionsMessages(modal);
             await sendRequests(modal, languages);
         } else {
             modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
@@ -200,4 +210,15 @@ async function sendRequestPrepare(modal, languages) {
         modal.querySelector(".traduire-sans-migraine-modal__content-body-text").prepend(alert);
     }
     return data.success;
+}
+
+function switchSuggestionsMessages(modal) {
+    const suggestions = modal.querySelectorAll(".traduire-sans-migraine-suggestion");
+    suggestions.forEach(suggestion => {
+        if (suggestion.classList.contains("hidden")) {
+            suggestion.classList.remove("hidden");
+        } else {
+            suggestion.classList.add("hidden");
+        }
+    });
 }

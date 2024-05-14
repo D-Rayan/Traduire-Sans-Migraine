@@ -44,7 +44,7 @@ class Settings
     {
         $pluginsLists = [
             [
-                "Polylang" => function_exists("pll_the_languages"),
+                "Polylang" => function_exists("pll_the_languages") || defined( 'POLYLANG_VERSION' ),
             ]
         ];
 

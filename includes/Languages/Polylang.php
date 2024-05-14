@@ -32,7 +32,7 @@ class Polylang implements LanguageInterface
     public function getLanguageForPost(string $postId): string
     {
         if (!function_exists("pll_get_post_language")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post_language"));
+            throw new \Exception(TextDomain::__("Polylang seems to not be configured correctly.", "pll_get_post_language"));
         }
 
         return pll_get_post_language($postId, "slug");

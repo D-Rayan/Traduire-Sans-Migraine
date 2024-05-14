@@ -24,12 +24,8 @@ class LanguageManager
         /*
          * People can change the name of directory plugin so better check a function exists
          */
-        if (function_exists("pll_the_languages")) {
+        if (function_exists("pll_the_languages") || defined( 'POLYLANG_VERSION' )) {
             $this->manager = new Polylang();
-        } else if (function_exists("wpml_current_language")) {
-            $this->manager = new WPML();
-        } else if (function_exists("mlp_get_interlinked_permalinks")) {
-            $this->manager = new MultilingualPress();
         } else {
             throw new \Exception("Missing required plugin");
         }

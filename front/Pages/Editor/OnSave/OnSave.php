@@ -178,12 +178,47 @@ class OnSave {
         if (get_post_status( $localPostId ) === "trash") {
             return;
         }
+
         $currentPost = [
-            "id" => $localPostId,
-            "content" => get_post($localPostId)->post_content,
-            "language" => $this->getLanguageManager()->getLanguageForPost($localPostId)
+            "id" => $localPostId
         ];
+
         ob_start();
+        try {
+            $currentPost["content"] = get_post($localPostId)->post_content;
+            $currentPost["language"] = $this->getLanguageManager()->getLanguageForPost($localPostId);
+        } catch (\Exception $e) {
+            Suggestions::render(
+                TextDomain::__("It seems an error occurred!"),
+                TextDomain::__("Check your configuration of %s to be sure it is completely done.", $this->getLanguageManager()->getLanguageManagerName())
+                . "<br/>"
+                . TextDomain::__("You need at least to add two languages to your website. (The default language and the one you want to translate to)"),
+                "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
+            $htmlContent = ob_get_clean();
+            Modal::render(TSM__NAME, $htmlContent);
+            wp_die();
+        }
+
+        if (empty($currentPost["language"])) {
+            Alert::render(
+                TextDomain::__("It seems an error occurred!"),
+                TextDomain::__("The current post is not associated with a language."),
+        "error", [
+                "isDismissible" => false
+            ]);
+            $htmlContent = ob_get_clean();
+            Modal::render(TSM__NAME, $htmlContent);
+            wp_die();
+        }
+
+        Suggestions::render(
+            TextDomain::__("What's next?"),
+            TextDomain::__("The translations are in progress!") .
+            "<br/>" .
+            TextDomain::__("You can either wait for the end or just go do what ever you want."),
+            "", [
+                    "classname" => "hidden center success"
+        ]);
         ?>
         <div class="language" id="global-languages-section">
             <div class="left-column">
@@ -238,19 +273,19 @@ class OnSave {
         </div>
         <?php
         Suggestions::render(
-                TextDomain::__("You're not finding a specific language?"),
-                TextDomain::__("To translate you first need to add the language to your website.")
-                . "<br/>"
-                . TextDomain::__("Go to %s to add a new language.", $this->getLanguageManager()->getLanguageManagerName())
-                . "<br/>"
-                . TextDomain::__("Then come back here to translate your post."),
-                "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
+            TextDomain::__("You're not finding a specific language?"),
+            TextDomain::__("To translate you first need to add the language to your website.")
+            . "<br/>"
+            . TextDomain::__("Go to %s to add a new language.", $this->getLanguageManager()->getLanguageManagerName())
+            . "<br/>"
+            . TextDomain::__("Then come back here to translate your post."),
+            "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
         $htmlContent = ob_get_clean();
         Modal::render(TSM__NAME, $htmlContent, [
             Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button", [
                     "logged" => $this->clientSeoSansMigraine->checkCredential() ? "true" : "false",
             ]),
-            Button::getHTML(TextDomain::__("Translate later"), "ghost", "closing-button"),
+            Button::getHTML(TextDomain::__("Close"), "ghost", "closing-button"),
         ]);
         wp_die();
     }

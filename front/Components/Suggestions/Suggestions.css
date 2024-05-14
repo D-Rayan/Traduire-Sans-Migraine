@@ -1,6 +1,6 @@
 .traduire-sans-migraine-suggestion {
     border-radius: 24px;
-    padding: 2rem 2rem 0 2rem;
+    padding: 1rem 2rem 0;
     background: var(--traduire-sans-migraine-primary-suggestions-background);
     width: fit-content;
 }
@@ -23,3 +23,17 @@
     margin-top: 1rem;
 }
 
+
+
+.traduire-sans-migraine-suggestion.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.traduire-sans-migraine-suggestion.hidden {
+    display: none;
+}
+
+.traduire-sans-migraine-suggestion.success {
+    background: var(--traduire-sans-migraine-success-suggestions-background);
+}
