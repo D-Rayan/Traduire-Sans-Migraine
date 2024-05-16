@@ -7,11 +7,14 @@ function getQuery(queryName) {
 
 async function loadModalTraduireSansMigraine() {
     setButtonLoading("#display-traduire-sans-migraine-button");
-    const fetchResponse = await fetch(`${tsm.url}editor_onSave_render&post_id=${getQuery("post")}`);
-    const data = await fetchResponse.text();
-    const modal = addModalToBody(data);
-    injectFunctionTranslationModal(modal);
-    stopButtonLoading("#display-traduire-sans-migraine-button");
+    await tsmHandleRequestResponse(await fetch(`${tsm.url}editor_onSave_render&post_id=${getQuery("post")}`), (response) => {
+        stopButtonLoading("#display-traduire-sans-migraine-button");
+    }, async (response) => {
+        const data = await response.text();
+        const modal = addModalToBody(data);
+        injectFunctionTranslationModal(modal);
+        stopButtonLoading("#display-traduire-sans-migraine-button");
+    });
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {

@@ -302,7 +302,10 @@ class Settings {
     private static function getHelpPlugin() {
         ob_start();
         ?>
-        <img style="width: 100%; max-width: 45vw;" src="<?php echo TSM__ASSETS_PATH . TextDomain::__("tutoriel_screen_en.png"); ?>" alt="tutoriel_screen" />
+        <video style="max-width: 45vw;" width="100%" controls>
+            <source src="<?php echo TSM__URL_DOMAIN . "//wp-content/uploads/products/traduire-sans-migraine/server-assets/tutoriel.mov"; ?>" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         <?php
         return ob_get_clean();
     }

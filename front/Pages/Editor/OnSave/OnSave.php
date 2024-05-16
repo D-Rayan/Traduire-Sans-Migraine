@@ -170,7 +170,10 @@ class OnSave {
 
     public function render() {
         if (!isset($_GET["post_id"])) {
-            Modal::render(TSM__NAME, Alert::getHTML(TSM__NAME, TextDomain::__("Post ID is not set"), "danger"));
+            wp_send_json_error([
+                "message" => TextDomain::__("We could not find the post. Try again later..."),
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
             return;
         }
 
@@ -183,51 +186,33 @@ class OnSave {
             "id" => $localPostId
         ];
 
-        ob_start();
         try {
             $currentPost["content"] = get_post($localPostId)->post_content;
             $currentPost["language"] = $this->getLanguageManager()->getLanguageForPost($localPostId);
         } catch (\Exception $e) {
-            Suggestions::render(
-                TextDomain::__("It seems an error occurred!"),
-                TextDomain::__("Check your configuration of %s to be sure it is completely done.", $this->getLanguageManager()->getLanguageManagerName())
-                . "<br/>"
-                . TextDomain::__("You need at least to add two languages to your website. (The default language and the one you want to translate to)"),
-                "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
-            $htmlContent = ob_get_clean();
-            Modal::render(TSM__NAME, $htmlContent);
+            wp_send_json_error([
+                "message" => TextDomain::__("You need at least to add two languages to your website. (The default language and the one you want to translate to)"),
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
             wp_die();
         }
 
         if (empty($currentPost["language"])) {
-            Alert::render(
-                TextDomain::__("It seems an error occurred!"),
-                TextDomain::__("The current post is not associated with a language."),
-        "error", [
-                "isDismissible" => false
-            ]);
-            $htmlContent = ob_get_clean();
-            Modal::render(TSM__NAME, $htmlContent);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("This post is not associated with a language. Check the configuration and try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
-
-        Suggestions::render(
-            TextDomain::__("What's next?"),
-            TextDomain::__("The translations are in progress!") .
-            "<br/>" .
-            TextDomain::__("You can either wait for the end or just go do what ever you want."),
-            "", [
-                    "classname" => "hidden center success"
-        ]);
+        ob_start();
         ?>
         <div class="language" id="global-languages-section">
             <div class="left-column">
                 <?php
                 Checkbox::render(
                     TextDomain::__("Unselect/Select All"),
-                    "global-languages",
-                    false,
-                    false
+                    "global-languages"
                 );
                 ?>
             </div>

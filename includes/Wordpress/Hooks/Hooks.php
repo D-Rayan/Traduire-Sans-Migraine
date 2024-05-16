@@ -97,6 +97,8 @@ class Hooks
     private function updateTemporaryPostToRealOne() {
         global $wpdb;
 
+        $this->dataToTranslate["slug"] = sanitize_title($this->dataToTranslate["slug"]);
+
         $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $this->dataToTranslate["slug"]);
         $exists = $wpdb->get_var($query);
         if (!empty($exists)) {
@@ -133,7 +135,7 @@ class Hooks
             $updatePostData["post_excerpt"] = $this->dataToTranslate["excerpt"];
         }
         if (isset($this->dataToTranslate["slug"])) {
-            $updatePostData["post_name"] = $this->dataToTranslate["slug"];
+            $updatePostData["post_name"] = sanitize_title($this->dataToTranslate["slug"]);
         }
         wp_update_post($updatePostData);
     }

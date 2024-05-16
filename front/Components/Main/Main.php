@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Front\Components;
 
+use TraduireSansMigraine\Wordpress\TextDomain;
+
 class Main {
     private $path;
     public function __construct() {
@@ -9,7 +11,12 @@ class Main {
     }
 
     public function enqueueScripts() {
-        // nothing to load
+        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Main.js", [], TSM__VERSION, true);
+        wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmI18N", [
+            "Traduction en cours" => TextDomain::__("Traduction en cours"),
+            "Traduction terminée" => TextDomain::__("Traduction terminée"),
+            "La traduction est en cours, vous pouvez fermer cette fenêtre et continuer à travailler sur votre site." => TextDomain::__("La traduction est en cours, vous pouvez fermer cette fenêtre et continuer à travailler sur votre site."),
+        ]);
     }
 
     public function enqueueStyles() {

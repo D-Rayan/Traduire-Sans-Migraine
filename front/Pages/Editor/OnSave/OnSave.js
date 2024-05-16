@@ -36,40 +36,52 @@ function displayCountCheckedToButton(modal) {
     }
 }
 async function sendRequests(modal, languages) {
-    return Promise.all(languages.map(async language => {
+    const response = await Promise.all(languages.map(async language => {
         const tokenId = await sendRequest(modal, language);
         if (!tokenId) {
-            return;
+            return false;
         }
-        await fetchStateTranslateUntilOver(modal, tokenId, language);
+        return {
+            modal,
+            tokenId,
+            language
+        }
     }));
+    if (response.every(r => r === false)) {
+        return;
+    }
+    Notification.show("Translation in progress", "You can either wait for the end of the translation or close this window.", "loutre_docteur_no_shadow.png", "success");
+    await Promise.all(({modal, tokenId, language}) => {
+        return fetchStateTranslateUntilOver(modal, tokenId, language);
+    })
 }
 
 async function fetchStateTranslateUntilOver(modal, tokenId, language) {
     const stepDiv = getStepList(modal, language);
-    const fetchResponse = await fetch(`${tsm.url}editor_get_state_translate&tokenId=${tokenId}`);
-    const data = await fetchResponse.json();
-    if (!data.success || !("data" in data)) {
+    await tsmHandleRequestResponse(await fetch(`${tsm.url}editor_get_state_translate&tokenId=${tokenId}`), () => {}, async (fetchResponse) => {
+        const data = await fetchResponse.json();
+        if (!data.success || !("data" in data)) {
+            setStep({
+                percentage: 100,
+                div: stepDiv,
+                status: "error",
+                html: data.error,
+            });
+            return;
+        }
+        const {percentage, status, html} = data.data;
         setStep({
-            percentage: 100,
+            percentage,
             div: stepDiv,
-            status: "error",
-            html: data.error,
+            status,
+            html,
         });
-        return;
-    }
-    const {percentage, status, html} = data.data;
-    setStep({
-        percentage,
-        div: stepDiv,
-        status,
-        html,
-    });
-    if (status === "error" || +percentage === 100) {
-        return;
-    }
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    return fetchStateTranslateUntilOver(modal, tokenId, language);
+        if (status === "error" || +percentage === 100) {
+            return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return fetchStateTranslateUntilOver(modal, tokenId, language);
+    })
 }
 
 function addListenerToCheckboxes(modal) {
@@ -160,7 +172,6 @@ function addListenerToButtonTranslate(modal) {
                     checkbox.closest(".language").remove();
                 }
             });
-            switchSuggestionsMessages(modal);
             await sendRequests(modal, languages);
         } else {
             modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
@@ -180,19 +191,31 @@ function addListenerToButtonTranslateLater(modal) {
 }
 
 async function sendRequest(modal, language) {
-    const fetchResponse = await fetch(`${tsm.url}editor_start_translate&post_id=${getQuery("post")}&language=${language}`);
-    const data = await fetchResponse.json();
-    const stepDiv = getStepList(modal, language);
-    if (!data.success || !("data" in data) || !("tokenId" in data.data)) {
-        setStep({
-            percentage: 100,
-            div: stepDiv,
-            status: "error",
-            html: typeof data.error === "string" ? data.error : data.error.message.join("<br>"),
+    return tsmHandleRequestResponse(await fetch(`${tsm.url}editor_start_translate&post_id=${getQuery("post")}&language=${language}`),
+        (data) => {
+            const stepDiv = getStepList(modal, language);
+            setStep({
+                percentage: 100,
+                div: stepDiv,
+                status: "error",
+                html: typeof data.error === "string" ? data.error : data.error.message.join("<br>"),
+            });
+            return false;
+        }, async (fetchResponse) => {
+            const data = await fetchResponse.json();
+            console.log({data});
+            const stepDiv = getStepList(modal, language);
+            if (!data.success || !("data" in data) || !("tokenId" in data.data)) {
+                setStep({
+                    percentage: 100,
+                    div: stepDiv,
+                    status: "error",
+                    html: typeof data.error === "string" ? data.error : typeof data.error.message === "string" ? data.error.message : data.error.message.join("<br>"),
+                });
+                return false;
+            }
+            return data.data.tokenId;
         });
-        return false;
-    }
-    return data.data.tokenId;
 }
 
 async function sendRequestPrepare(modal, languages) {
@@ -200,16 +223,19 @@ async function sendRequestPrepare(modal, languages) {
         post_id: getQuery("post"),
         languages
     }
-    const fetchResponse = await fetch(`${tsm.url}editor_prepare_translate`, {
+    return tsmHandleRequestResponse(await fetch(`${tsm.url}editor_prepare_translate`, {
         method: "POST",
         body: JSON.stringify(body),
-    });
-    const data = await fetchResponse.json();
-    if (!data.success) {
-        const alert = Alert.createNode("", data.error, "error");
-        modal.querySelector(".traduire-sans-migraine-modal__content-body-text").prepend(alert);
-    }
-    return data.success;
+    }), () => {
+        return false;
+    }, async (fetchResponse) => {
+        const data = await fetchResponse.json();
+        if (!data.success) {
+            const alert = Alert.createNode("", data.error, "error");
+            modal.querySelector(".traduire-sans-migraine-modal__content-body-text").prepend(alert);
+        }
+        return data.success;
+    })
 }
 
 function switchSuggestionsMessages(modal) {

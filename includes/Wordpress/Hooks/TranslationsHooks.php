@@ -47,12 +47,20 @@ class TranslationsHooks {
     public function prepareTranslation() {
         global $wpdb;
         if (!isset($_POST["post_id"]) || !isset($_POST["languages"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing"), "data" => $_POST]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the post or the languages asked. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $result = $this->clientSeoSansMigraine->checkCredential();
         if (!$result) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $postId = $_POST["post_id"];
@@ -92,7 +100,11 @@ class TranslationsHooks {
             if (isset($translations[$slug])) { wp_delete_post($translations[$slug], true); }
         }
         if ($errorCreationTranslations) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("An error occurred during the creation of the translations")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not create all the translations. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         echo json_encode(["success" => true]);
@@ -101,19 +113,31 @@ class TranslationsHooks {
 
     public function startTranslate() {
         if (!isset($_GET["post_id"]) || !isset($_GET["language"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the post or the language asked. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $result = $this->clientSeoSansMigraine->checkCredential();
         if (!$result) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token invalid")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $postId = $_GET["post_id"];
         $codeTo = $_GET["language"];
         $post = get_post($postId);
         if (!$post) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post not found")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the post. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($postId);
@@ -124,7 +148,7 @@ class TranslationsHooks {
         if (!empty($post->post_content) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("content"))) { $dataToTranslate["content"] = $post->post_content; }
         if (!empty($post->post_title) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("title"))) { $dataToTranslate["title"] = $post->post_title; }
         if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
-        if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = $post->post_name; }
+        if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = str_replace("-", " ", $post->post_name); }
 
 
         $postMetas = get_post_meta($postId);
@@ -203,13 +227,20 @@ class TranslationsHooks {
             ]);
             update_option("_seo_sans_migraine_postId_" . $tokenId, $postId);
         }
+        if (isset($result["error"]) && $result["error"]["code"] === "U004403-001") {
+            $result["error"]["message"] = TextDomain::__("You have reached your monthly quota.");
+        }
         echo json_encode($result);
         wp_die();
     }
 
     public function getTranslateState() {
         if (!isset($_GET["tokenId"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token ID missing")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the request ID."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $tokenId = $_GET["tokenId"];
@@ -222,7 +253,11 @@ class TranslationsHooks {
             ]
         ]);
         if (!$state) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Token not found")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the state of the translation"),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         if (isset($state["status"]) && $state["status"] === Step::$STEP_STATE["DONE"]) {
@@ -238,11 +273,19 @@ class TranslationsHooks {
 
     public function getTranslatedPostId() {
         if (!isset($_GET["post_id"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Post ID missing")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find your post. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         if (!isset($_GET["language"])) {
-            echo json_encode(["success" => false, "error" => TextDomain::__("Language missing")]);
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the language. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
             wp_die();
         }
         $postId = $_GET["post_id"];

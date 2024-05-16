@@ -1,0 +1,49 @@
+.traduire-sans-migraine-notification-container {
+    position: absolute;
+    bottom: 2rem;
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 99999999;
+    max-width: 400px;
+}
+
+.traduire-sans-migraine-notification {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 30px;
+    gap: 1rem;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+}
+
+.traduire-sans-migraine-notification__body {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.traduire-sans-migraine-notification-error {
+    background-color: var(--traduire-sans-migraine-error-notification-background);
+}
+
+.traduire-sans-migraine-notification-success {
+    background-color: var(--traduire-sans-migraine-success-notification-background);
+}
+
+.traduire-sans-migraine-notification-info {
+    background-color: var(--traduire-sans-migraine-info-notification-background);
+}
+
+.traduire-sans-migraine-notification--hidden {
+    animation: fadeOut 0.5s;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
