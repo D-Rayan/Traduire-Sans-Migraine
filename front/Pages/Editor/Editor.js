@@ -17,6 +17,10 @@ async function loadModalTraduireSansMigraine() {
     });
 }
 
+if (window.tsm && window.tsm._tsm_first_visit_after_translation === "true") {
+    Notification.show('successTranslationFirstShowTitle', "successTranslationFirstShow", "loutre_docteur_no_shadow.png", "success");
+}
+
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
     if (tsm.autoOpen === "true") {
         const editor = window.wp.data.dispatch('core/editor')

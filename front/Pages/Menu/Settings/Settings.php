@@ -303,7 +303,7 @@ class Settings {
         ob_start();
         ?>
         <video style="max-width: 45vw;" width="100%" controls>
-            <source src="<?php echo TSM__URL_DOMAIN . "//wp-content/uploads/products/traduire-sans-migraine/server-assets/tutoriel.mov"; ?>" type="video/mp4">
+            <source src="<?php echo TSM__URL_DOMAIN . "/wp-content/uploads/products/traduire-sans-migraine/server-assets/tutoriel.mov"; ?>" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <?php

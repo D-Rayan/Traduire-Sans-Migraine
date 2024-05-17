@@ -57,6 +57,10 @@ class Client
         ]);
     }
 
+    public function getTranslation($tokenId) {
+        return $this->client->get("/translations/$tokenId");
+    }
+
     public function getLanguages() {
         $response = $this->client->get("/languages");
         if (!$response["success"]) {

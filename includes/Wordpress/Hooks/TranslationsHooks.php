@@ -212,8 +212,6 @@ class TranslationsHooks {
             }
         }
 
-
-
         $result = $this->clientSeoSansMigraine->startTranslation($dataToTranslate, $codeFrom, $codeTo);
         if ($result["success"]) {
             $tokenId = $result["data"]["tokenId"];

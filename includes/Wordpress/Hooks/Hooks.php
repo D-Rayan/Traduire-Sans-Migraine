@@ -118,6 +118,8 @@ class Hooks
         if (!empty($thumbnailId)) {
             update_post_meta($this->translatedPostId, '_thumbnail_id', $thumbnailId);
         }
+        update_post_meta($this->translatedPostId, '_has_been_translated_by_tsm', "true");
+        update_post_meta($this->translatedPostId, '_tsm_first_visit_after_translation', "true");
     }
 
     private function updatePost() {
