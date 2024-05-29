@@ -108,7 +108,7 @@ class Articles {
         }
         ob_start();
         echo TextDomain::__("You have moved to the trash one publication.");
-        echo TextDomain::_n("Do you wish to also set the translation into the trash?", "Do you wish to also set the %n translations into the trash?", $countArticlesTranslated);
+        echo TextDomain::_n("Do you wish to also set the translation into the trash?", "Do you wish to also set the %n translations into the trash?", $countArticlesTranslated, $countArticlesTranslated);
         ?>
         <div class="buttons-actions">
             <?php

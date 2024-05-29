@@ -24,11 +24,11 @@ class Editor {
             "url" => admin_url("admin-ajax.php") . "?action=traduire-sans-migraine_",
             "postUrl" => admin_url("post.php"),
             "autoOpen" => $settingsInstance->settingIsEnabled("tsmOpenOnSave") ? "true" : "false",
-            "_has_been_translated_by_tsm" => isset($_GET["post_id"]) ? get_post_meta($_GET["post_id"], "_has_been_translated_by_tsm", true) : false,
-            "_tsm_first_visit_after_translation" => isset($_GET["post_id"]) ? get_post_meta($_GET["post_id"], "_tsm_first_visit_after_translation", true) : false,
+            "_has_been_translated_by_tsm" => isset($_GET["post"]) ? get_post_meta($_GET["post"], "_has_been_translated_by_tsm", true) : false,
+            "_tsm_first_visit_after_translation" => isset($_GET["post"]) ? get_post_meta($_GET["post"], "_tsm_first_visit_after_translation", true) : false,
         ]);
-        if (isset($_GET["post_id"])) {
-            delete_post_meta($_GET["post_id"], "_tsm_first_visit_after_translation");
+        if (isset($_GET["post"])) {
+            delete_post_meta($_GET["post"], "_tsm_first_visit_after_translation");
         }
     }
 
