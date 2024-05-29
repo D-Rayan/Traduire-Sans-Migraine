@@ -7,7 +7,7 @@ function getQuery(queryName) {
 
 async function loadModalTraduireSansMigraine() {
     setButtonLoading("#display-traduire-sans-migraine-button");
-    await tsmHandleRequestResponse(await fetch(`${tsm.url}editor_onSave_render&post_id=${getQuery("post")}`), (response) => {
+    await tsmHandleRequestResponse(await fetch(`${tsmEditor.url}editor_onSave_render&post_id=${getQuery("post")}`), (response) => {
         stopButtonLoading("#display-traduire-sans-migraine-button");
     }, async (response) => {
         const data = await response.text();
@@ -17,12 +17,12 @@ async function loadModalTraduireSansMigraine() {
     });
 }
 
-if (window.tsm && window.tsm._tsm_first_visit_after_translation === "true") {
+if (window.tsmEditor && window.tsmEditor._tsm_first_visit_after_translation === "true") {
     Notification.show('successTranslationFirstShowTitle', "successTranslationFirstShow", "loutre_docteur_no_shadow.png", "success");
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
-    if (tsm.autoOpen === "true") {
+    if (tsmEditor.autoOpen === "true") {
         const editor = window.wp.data.dispatch('core/editor')
         const savePost = editor.savePost
         editor.savePost = function (options) {

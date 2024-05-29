@@ -20,7 +20,7 @@ class Editor {
     public function enqueueScripts() {
         $settingsInstance = new SettingsPlugin();
         wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Editor.js", [], TSM__VERSION, true);
-        wp_localize_script(TSM__SLUG . "-" . get_class(), "tsm", [
+        wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmEditor", [
             "url" => admin_url("admin-ajax.php") . "?action=traduire-sans-migraine_",
             "postUrl" => admin_url("post.php"),
             "autoOpen" => $settingsInstance->settingIsEnabled("tsmOpenOnSave") ? "true" : "false",
