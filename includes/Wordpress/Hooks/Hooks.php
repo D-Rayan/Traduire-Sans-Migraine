@@ -53,7 +53,7 @@ class Hooks
                     "percentage" => 100,
                     "status" => Step::$STEP_STATE["ERROR"],
                     "message" => [
-                        "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                        "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
                         "args" => []
                     ]
                 ]);
@@ -64,7 +64,7 @@ class Hooks
                     "percentage" => 100,
                     "status" => Step::$STEP_STATE["ERROR"],
                     "message" => [
-                        "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                        "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
                         "args" => []
                     ]
                 ]);
@@ -84,7 +84,7 @@ class Hooks
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["DONE"],
                 "message" => [
-                    "id" => "The otters have finished the translation 🦦, Check it right here %s",
+                    "id" => TextDomain::_f("The otters have finished the translation 🦦, Check it right here %s"),
                     "args" => [$htmlPost]
                 ]
             ]);
@@ -215,7 +215,7 @@ class Hooks
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["ERROR"],
                 "message" => [
-                    "id" => "Oops! The otters have lost the translation in the river. Please try again 🦦",
+                    "id" => TextDomain::_f("Oops! The otters have lost the translation in the river. Please try again 🦦"),
                     "args" => []
                 ]
             ]);
@@ -226,7 +226,7 @@ class Hooks
             "percentage" => 75,
             "status" => Step::$STEP_STATE["PROGRESS"],
             "message" => [
-                "id" => "The otters works on your SEO optimization 🦦",
+                "id" => TextDomain::_f("The otters works on your SEO optimization 🦦"),
                 "args" => []
             ]
         ]);
@@ -235,7 +235,7 @@ class Hooks
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["ERROR"],
                 "message" => [
-                    "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
                     "args" => []
                 ]
             ]);
@@ -248,7 +248,7 @@ class Hooks
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["ERROR"],
                 "message" => [
-                    "id" => "Oops! The otters have lost the post in the river. Please try again 🦦",
+                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
                     "args" => []
                 ]
             ]);

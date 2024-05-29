@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-05-29T13:15:370\n"
+"POT-Creation-Date: 2024-05-29T13:49:120\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -373,6 +373,21 @@ msgstr "%s requis au moins un des plugins suivants : %s"
 msgid "Missing required plugins"
 msgstr "Des plugins requis sont manquants"
 
+msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
+msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
+
+msgid "The otters have finished the translation 🦦, Check it right here %s"
+msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
+
+# Hooks.php
+msgid ""
+"Oops! The otters have lost the translation in the river. Please try again 🦦"
+msgstr ""
+"Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
+
+msgid "The otters works on your SEO optimization 🦦"
+msgstr "Les loutres peaufinent la mise en forme 🦦"
+
 # TranslationsHooks.php
 msgid "We could not find the post or the languages asked. Please try again."
 msgstr ""
@@ -410,6 +425,12 @@ msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
 
 msgid "We could not find the language. Please try again."
 msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
+
+msgid "The otters are translating your post 🦦"
+msgstr "Les loutres traduisent ton article 🦦"
+
+msgid "We will create and translate your post 💡"
+msgstr "On va créer et traduire ton article 💡"
 
 # Plugin Name
 msgid "Traduire Sans Migraine is enabled"
@@ -482,30 +503,6 @@ msgstr "GPL2"
 
 #~ msgid "Language missing"
 #~ msgstr "Le langage est manquant"
-
-#~ msgid ""
-#~ "Oops! The otters have lost the post in the river. Please try again 🦦"
-#~ msgstr ""
-#~ "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
-
-#~ msgid "The otters have finished the translation 🦦, Check it right here %s"
-#~ msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
-
-# Hooks.php
-#~ msgid ""
-#~ "Oops! The otters have lost the translation in the river. Please try again "
-#~ "🦦"
-#~ msgstr ""
-#~ "Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
-
-#~ msgid "The otters works on your SEO optimization 🦦"
-#~ msgstr "Les loutres peaufinent la mise en forme 🦦"
-
-#~ msgid "The otters are translating your post 🦦"
-#~ msgstr "Les loutres traduisent ton article 🦦"
-
-#~ msgid "We will create and translate your post 💡"
-#~ msgstr "On va créer et traduire ton article 💡"
 
 # Author
 #~ msgid "Seo Sans Migraine"

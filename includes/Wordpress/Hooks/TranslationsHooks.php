@@ -246,7 +246,7 @@ class TranslationsHooks {
                 "percentage" => 50,
                 "status" => Step::$STEP_STATE["PROGRESS"],
                 "message" => [
-                    "id" => "The otters are translating your post 🦦",
+                    "id" => TextDomain::_f("The otters are translating your post 🦦"),
                     "args" => []
                 ]
             ]);
@@ -279,7 +279,7 @@ class TranslationsHooks {
             "percentage" => 25,
             "status" => Step::$STEP_STATE["PROGRESS"],
             "message" => [
-                "id" => "We will create and translate your post 💡",
+                "id" => TextDomain::_f("We will create and translate your post 💡"),
                 "args" => []
             ]
         ]);

@@ -34,4 +34,9 @@ class TextDomain
         }
         return $number > 1 ? self::__($plural, ...$args) : self::__($single, ...$args);
     }
+
+    // fake use for CLI
+    public static function _f($text) {
+        return $text;
+    }
 }
