@@ -50,7 +50,7 @@ async function sendRequests(modal, languages) {
     if (response.every(r => r === false)) {
         return;
     }
-    Notification.show("Translation in progress", "You can either wait for the end of the translation or close this window.", "loutre_docteur_no_shadow.png", "success");
+    Notification.show("Traduction en cours", "La traduction est en cours, vous pouvez fermer cette fenêtre et continuer à travailler sur votre site.", "loutre_docteur_no_shadow.png", "success");
     await Promise.all(response.map(({modal, tokenId, language}) => {
         return fetchStateTranslateUntilOver(modal, tokenId, language);
     }));
