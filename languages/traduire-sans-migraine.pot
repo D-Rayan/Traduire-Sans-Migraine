@@ -1,15 +1,34 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.6.505\n"
+"Project-Id-Version: Traduire Sans Migraine 0.7.101\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-05-06T13:36:580\n"
+"POT-Creation-Date: 2024-05-29T13:15:370\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
+# Main.php
+msgid "https://seosansmigraine.crisp.help/fr/article/bonnes-pratiques-de-traduction-seo-k3cmvy/"
+msgstr ""
+
+msgid "Translation in progress"
+msgstr ""
+
+msgid "Translation is done"
+msgstr ""
+
+msgid "The translation is in progress. You can close this window if you want."
+msgstr ""
+
+msgid "You are on a post translated by Traduire Sans Migraine. If you want to know what are the best SEO practices you can click <a target='_blank' href='%s'>here</a>"
+msgstr ""
+
+msgid "You may want to know this"
+msgstr ""
+
 # Articles.php
 msgid "Post ID is not set"
 msgstr ""
@@ -69,6 +88,18 @@ msgstr ""
 msgid "Use the checkbox on the left to add this language to the list of translations. It will overwrite the current translation in %s"
 msgstr ""
 
+msgid "We could not find the post. Try again later..."
+msgstr ""
+
+msgid "You need at least to add two languages to your website. (The default language and the one you want to translate to)"
+msgstr ""
+
+msgid "An error occurred"
+msgstr ""
+
+msgid "This post is not associated with a language. Check the configuration and try again."
+msgstr ""
+
 msgid "Unselect/Select All"
 msgstr ""
 
@@ -90,7 +121,7 @@ msgstr ""
 msgid "Translate now"
 msgstr ""
 
-msgid "Translate later"
+msgid "Close"
 msgstr ""
 
 # OnSave.php
@@ -114,6 +145,39 @@ msgstr ""
 msgid "Log-in"
 msgstr ""
 
+# Bulk.php
+msgid "Votre contenu international à portée de main 💊"
+msgstr ""
+
+msgid "Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir l'avancé de la traduction du contenu en cours ci-dessous."
+msgstr ""
+
+msgid "Traduction en cours"
+msgstr ""
+
+msgid "Rechercher"
+msgstr ""
+
+msgid "Traduire les %var% contenus sélectionnés"
+msgstr ""
+
+msgid "Traduire le contenu sélectionné"
+msgstr ""
+
+msgid "Sélectionner au moins un contenu à traduire"
+msgstr ""
+
+msgid "Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un seul clic."
+msgstr ""
+
+# Bulk.php
+msgid "%s traduction est en cours"
+msgstr ""
+
+# Bulk.php
+msgid "%s des traductions sont en cours"
+msgstr ""
+
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
 msgstr ""
@@ -133,9 +197,6 @@ msgid "Your settings have been saved."
 msgstr ""
 
 msgid "⚙️ Settings"
-msgstr ""
-
-msgid "An error occurred"
 msgstr ""
 
 msgid "Could not fetch your account."
@@ -186,6 +247,15 @@ msgstr ""
 msgid "Keywords are used by rank math to help you to optimize your post."
 msgstr ""
 
+msgid "Keywords are used by SEOPress to help you to optimize your post."
+msgstr ""
+
+msgid "Open the translation window on save"
+msgstr ""
+
+msgid "Each time you're saving a post, the translation window will open."
+msgstr ""
+
 msgid "Settings"
 msgstr ""
 
@@ -193,9 +263,6 @@ msgid "What the otter should update when the post already exists?"
 msgstr ""
 
 msgid "Save"
-msgstr ""
-
-msgid "tutoriel_screen_en.png"
 msgstr ""
 
 msgid "Here you can configure the tool to make it perfect for your needs."
@@ -213,6 +280,9 @@ msgstr ""
 msgid "%s not existing."
 msgstr ""
 
+msgid "Polylang seems to not be configured correctly."
+msgstr ""
+
 # Settings.php
 msgid "PHP version is too low"
 msgstr ""
@@ -227,25 +297,34 @@ msgid "Missing required plugins"
 msgstr ""
 
 # TranslationsHooks.php
-msgid "Post ID missing"
+msgid "We could not find the post or the languages asked. Please try again."
 msgstr ""
 
-msgid "Token invalid"
+msgid "We could not authenticate you. Please check the plugin settings."
 msgstr ""
 
-msgid "An error occurred during the creation of the translations"
+msgid "We could not create all the translations. Please try again."
 msgstr ""
 
-msgid "Post not found"
+msgid "We could not find the post or the language asked. Please try again."
 msgstr ""
 
-msgid "Token ID missing"
+msgid "We could not find the post. Please try again."
 msgstr ""
 
-msgid "Token not found"
+msgid "You have reached your monthly quota."
 msgstr ""
 
-msgid "Language missing"
+msgid "We could not find the request ID."
+msgstr ""
+
+msgid "We could not find the state of the translation"
+msgstr ""
+
+msgid "We could not find your post. Please try again."
+msgstr ""
+
+msgid "We could not find the language. Please try again."
 msgstr ""
 
 # traduire-sans-migraine.php

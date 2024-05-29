@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-05-06T13:36:580\n"
+"POT-Creation-Date: 2024-05-29T13:15:370\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -14,11 +14,41 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 "X-Domain: traduire-sans-migraine\n"
 
+# Main.php
+msgid ""
+"https://seosansmigraine.crisp.help/fr/article/bonnes-pratiques-de-traduction-"
+"seo-k3cmvy/"
+msgstr ""
+"https://seosansmigraine.crisp.help/fr/article/bonnes-pratiques-de-traduction-"
+"seo-k3cmvy/"
+
+msgid "Translation in progress"
+msgstr "Traduction en cours"
+
+msgid "Translation is done"
+msgstr "Traduction terminée"
+
+msgid "The translation is in progress. You can close this window if you want."
+msgstr ""
+"La traduction est en cours. Tu peux fermer cette fenêtre si tu le souhaites."
+
+msgid ""
+"You are on a post translated by Traduire Sans Migraine. If you want to know "
+"what are the best SEO practices you can click <a target='_blank' "
+"href='%s'>here</a>"
+msgstr ""
+"Tu es sur un article traduit par Traduire Sans Migraine. Si tu veux "
+"connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
+"href='%s'>ici</a>"
+
+msgid "You may want to know this"
+msgstr "Ça pourrait t’intéresser"
+
 msgid "Post ID is not set"
 msgstr "L’ID du post est manquant"
 
 msgid "You have moved to the trash one publication."
-msgstr "Vous avez déplacé un article à la corbeille."
+msgstr "Tu as déplacé un article à la corbeille."
 
 msgid "No"
 msgstr "Non"
@@ -34,14 +64,14 @@ msgstr "Aucune traduction à supprimer."
 
 # Articles.php
 msgid "Do you wish to also set the translation into the trash?"
-msgstr "Souhaitez-vous aussi mettre la traduction à la corbeille ?"
+msgstr "Souhaites-tu aussi mettre la traduction à la corbeille ?"
 
 msgid "The translation has been moved to the trash."
 msgstr "La traduction a été déplacé dans la corbeille."
 
 # Articles.php
 msgid "Do you wish to also set the %n translations into the trash?"
-msgstr "Souhaitez-vous aussi mettre les %n traductions dans la corbeille ?"
+msgstr "Souhaites-tu aussi mettre les %n traductions dans la corbeille ?"
 
 msgid "The %n translations have been moved to the trash."
 msgstr "Les %n traductions ont été déplacées dans la corbeille."
@@ -53,8 +83,8 @@ msgid ""
 "That's the last version of your post that will be translated. If you have "
 "done any modification don't forget to save it before the translation!"
 msgstr ""
-"C’est la dernière version de votre article qui sera traduite. Si vous avez "
-"fait des modifications n’oubliez pas de sauvegarder avant de traduire !"
+"C’est la dernière version de ton article qui sera traduite. Si tu as fait "
+"des modifications n’oublies pas de sauvegarder avant de traduire !"
 
 msgid "Oops! Something wrong"
 msgstr "Il y a un petit couac…"
@@ -71,8 +101,8 @@ msgid ""
 "We are impatient to help you with your translations! Just click the "
 "translate button."
 msgstr ""
-"On est impatient de vous aidez avec votre traduction ! Vous n’avez plus qu’à "
-"cliquer sur le bouton traduire."
+"On est impatient de t’aider avec ta traduction ! Tu n’as plus qu’à cliquer "
+"sur le bouton traduire."
 
 msgid ""
 "The following links will not be translated because they doesn't exist or "
@@ -85,15 +115,35 @@ msgid ""
 "Use the checkbox on the left to add this language to the list of "
 "translations, it will create a new article in %s"
 msgstr ""
-"Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
-"traduire, cela créera un nouvel article en %s"
+"Utilise la case à cocher sur la gauche pour ajouter cette langue à traduire, "
+"cela créera un nouvel article en %s"
 
 msgid ""
 "Use the checkbox on the left to add this language to the list of "
 "translations. It will overwrite the current translation in %s"
 msgstr ""
-"Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
-"traduire. Cela remplacera l’article déjà existant en %s"
+"Utilise la case à cocher sur la gauche pour ajouter cette langue à traduire. "
+"Cela remplacera l’article déjà existant en %s"
+
+msgid "We could not find the post. Try again later..."
+msgstr "Nous ne pouvons pas trouver ton contenu. Réessaie plus tard…"
+
+msgid ""
+"You need at least to add two languages to your website. (The default "
+"language and the one you want to translate to)"
+msgstr ""
+"Tu as besoin d’au moins deux langues sur ton site. (La langue par défaut "
+"ainsi que la langue que tu souhaites traduire)"
+
+msgid "An error occurred"
+msgstr "Une erreur est survenue"
+
+msgid ""
+"This post is not associated with a language. Check the configuration and try "
+"again."
+msgstr ""
+"Ce contenu n’est associé à aucune langue. Vérifies ta configuration puis "
+"réessaie."
 
 msgid "Unselect/Select All"
 msgstr "Sélectionner/Désélectionner tous"
@@ -102,23 +152,22 @@ msgid "At the moment none of our otters are able to write in this language."
 msgstr "Pour le moment aucune de nos loutres ne sait écrire dans cette langue."
 
 msgid "You're not finding a specific language?"
-msgstr "Vous ne trouvez pas la langue que vous souhaitez ?"
+msgstr "Tu ne trouves pas la langue que tu souhaites ?"
 
 msgid "To translate you first need to add the language to your website."
-msgstr ""
-"Pour traduire vous devez en premier lieu ajouter la langue à votre site."
+msgstr "Pour traduire tu dois en premier lieu ajouter la langue à ton site."
 
 msgid "Go to %s to add a new language."
-msgstr "Utilisez %s pour ajouter une nouvelle langue."
+msgstr "Utilises %s pour ajouter une nouvelle langue."
 
 msgid "Then come back here to translate your post."
-msgstr "Puis revenez ici pour traduire votre article."
+msgstr "Puis reviens ici pour traduire ton article."
 
 msgid "Translate now"
 msgstr "Lancer la traduction"
 
-msgid "Translate later"
-msgstr "Traduire plus tard"
+msgid "Close"
+msgstr "Fermer"
 
 msgid "🔎 We found %s issue"
 msgstr "🔎 Nous avons trouvé %s problème"
@@ -127,18 +176,59 @@ msgid "🔎 We found %s issues"
 msgstr "🔎 Nous avons trouvé %s problèmes"
 
 msgid "Your otter 🦦"
-msgstr "Votre loutre 🦦"
+msgstr "Ta loutre 🦦"
 
 msgid "You're already logged in. You can start translating your content."
-msgstr "Vous êtes déjà connecté. N’attendez plus et traduisez votre contenu."
+msgstr "Tu es déjà connecté. N’attends plus et traduit ton contenu."
 
 msgid "You're not logged in. Please log-in to continue."
 msgstr ""
-"Votre compte n’est pas encore relié ! Pas de panique, cela ne prends que "
+"Ton compte n’est pas encore relié ! Pas de panique, cela ne prends que "
 "quelques secondes."
 
 msgid "Log-in"
 msgstr "Se Connecter"
+
+# Bulk.php
+msgid "Votre contenu international à portée de main 💊"
+msgstr "Votre contenu international à portée de main 💊"
+
+msgid ""
+"Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir "
+"l'avancé de la traduction du contenu en cours ci-dessous."
+msgstr ""
+"Vous n’avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir "
+"l’avancé de la traduction du contenu en cours ci-dessous."
+
+msgid "Traduction en cours"
+msgstr "Traduction en cours"
+
+msgid "Rechercher"
+msgstr "Rechercher"
+
+msgid "Traduire les %var% contenus sélectionnés"
+msgstr "Traduire les %var% contenus sélectionnés"
+
+msgid "Traduire le contenu sélectionné"
+msgstr "Traduire le contenu sélectionné"
+
+msgid "Sélectionner au moins un contenu à traduire"
+msgstr "Sélectionner au moins un contenu à traduire"
+
+msgid ""
+"Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un "
+"seul clic."
+msgstr ""
+"Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un "
+"seul clic."
+
+# Bulk.php
+msgid "%s traduction est en cours"
+msgstr "%s traduction est en cours"
+
+# Bulk.php
+msgid "%s des traductions sont en cours"
+msgstr "%s des traductions sont en cours"
 
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
@@ -163,16 +253,13 @@ msgstr ""
 
 # Settings.php
 msgid "Your settings have been saved."
-msgstr "Vos préférences ont été sauvegardés."
+msgstr "Tes préférences ont été sauvegardés."
 
 msgid "⚙️ Settings"
 msgstr "⚙️ Préférences"
 
-msgid "An error occurred"
-msgstr "Une erreur est survenue"
-
 msgid "Could not fetch your account."
-msgstr "Impossible de récupérer votre compte."
+msgstr "Impossible de récupérer ton compte."
 
 msgid "She will reset the %s"
 msgstr "Elle repartira de zéro le %s"
@@ -193,21 +280,21 @@ msgid ""
 "The excerpt is a short summary of your post. It is used by default in the "
 "search results."
 msgstr ""
-"L’excerpt est un court résumé de votre article. Il est utilisé par défaut "
-"dans les résultats de recherche."
+"L’excerpt est un court résumé de ton article. Il est utilisé par défaut dans "
+"les résultats de recherche."
 
 msgid "Post's slug"
 msgstr "Slug de l’article"
 
 msgid "The slug is the URL of your post."
-msgstr "Le slug est l’url de votre article."
+msgstr "Le slug est l’url de ton article."
 
 msgid "SEO Title"
 msgstr "Titre SEO"
 
 msgid "The title is the title of your post. It is used in the search results."
 msgstr ""
-"Ceci est le titre de votre article. Il apparait dans les résultats de "
+"Ceci est le titre de ton article. Il apparait dans les résultats de "
 "recherche."
 
 msgid "SEO Description"
@@ -217,7 +304,7 @@ msgid ""
 "The description is a short summary of your post. It is used in the search "
 "results."
 msgstr ""
-"La description est un court résumé de votre article. Il est utilisé dans les "
+"La description est un court résumé de ton article. Il est utilisé dans les "
 "résultats de recherche."
 
 msgid "Keywords"
@@ -225,13 +312,25 @@ msgstr "Mots clés"
 
 msgid "Keywords are used by yoast to help you to optimize your post."
 msgstr ""
-"Les mots clés sont utilisés par Yoast pour vous aider à optimiser votre "
-"article."
+"Les mots clés sont utilisés par Yoast pour t’aider à optimiser ton article."
 
 msgid "Keywords are used by rank math to help you to optimize your post."
 msgstr ""
-"Les mots clés sont utilisés par Rank math pour vous aider à optimiser votre "
+"Les mots clés sont utilisés par Rank math pour t’aider à optimiser ton "
 "article."
+
+msgid "Keywords are used by SEOPress to help you to optimize your post."
+msgstr ""
+"Lets mots clés sont utilisés par SEOpress pour t’aider à optimiser ton "
+"article."
+
+msgid "Open the translation window on save"
+msgstr "Ouvrir la fenêtre de traduction lors de la sauvegarde"
+
+msgid "Each time you're saving a post, the translation window will open."
+msgstr ""
+"A chaque fois que tu sauvegardes ton contenu, la fenêtre de traduction "
+"s’ouvrira."
 
 msgid "Settings"
 msgstr "Préférences"
@@ -242,13 +341,9 @@ msgstr "Que devra mettre à jour la loutre lorsque l’article existe déjà ?"
 msgid "Save"
 msgstr "Sauvegarder"
 
-msgid "tutoriel_screen_en.png"
-msgstr "tutoriel_screen_fr.png"
-
 msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
-"Ici vous pouvez configurer sans migraine pour qu’il corresponde à vos "
-"besoins."
+"Ici tu peux configurer sans migraine pour qu’il corresponde à tes besoins."
 
 # Settings.php
 msgid "She have translated %s character on %s"
@@ -262,9 +357,12 @@ msgstr "Elle a traduit %s caractères sur %s"
 msgid "%s not existing."
 msgstr "%s n’existe pas."
 
+msgid "Polylang seems to not be configured correctly."
+msgstr "Polylang semble être mal configuré."
+
 # /includes/Settings.php
 msgid "PHP version is too low"
-msgstr "Votre version PHP est trop basse"
+msgstr "Ta version PHP est trop basse"
 
 msgid "%s required at least PHP %s"
 msgstr "%s nécessite au moins la version %s de PHP"
@@ -275,27 +373,43 @@ msgstr "%s requis au moins un des plugins suivants : %s"
 msgid "Missing required plugins"
 msgstr "Des plugins requis sont manquants"
 
-# /front/Pages/Editor/OnSave/OnSave.php
-msgid "Post ID missing"
-msgstr "Post ID manquant"
+# TranslationsHooks.php
+msgid "We could not find the post or the languages asked. Please try again."
+msgstr ""
+"Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
+"plus tard."
 
-msgid "Token invalid"
-msgstr "Clé d’accès invalide"
+msgid "We could not authenticate you. Please check the plugin settings."
+msgstr "Nous n’arrivons pas à t’authentifier. Vérifies tes paramètres."
 
-msgid "An error occurred during the creation of the translations"
-msgstr "Une erreur est survenue pendant la création des traductions"
+msgid "We could not create all the translations. Please try again."
+msgstr ""
+"Nous n’avons pas réussi à créer toutes les traductions. Réessaye plus tard."
 
-msgid "Post not found"
-msgstr "Le post n’existe pas"
+msgid "We could not find the post or the language asked. Please try again."
+msgstr ""
+"Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
+"plus tard."
 
-msgid "Token ID missing"
-msgstr "Clés d’accès manquante"
+msgid "We could not find the post. Please try again."
+msgstr ""
+"Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
+"plus tard."
 
-msgid "Token not found"
-msgstr "Clé d’accès n’existe pas"
+msgid "You have reached your monthly quota."
+msgstr "Tu as atteint ton quota mensuel."
 
-msgid "Language missing"
-msgstr "Le langage est manquant"
+msgid "We could not find the request ID."
+msgstr "Nous ne trouvons plus l’identifiant de la requête."
+
+msgid "We could not find the state of the translation"
+msgstr "Nous ne trouvons plus l’état de ta traduction."
+
+msgid "We could not find your post. Please try again."
+msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
+
+msgid "We could not find the language. Please try again."
+msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
 
 # Plugin Name
 msgid "Traduire Sans Migraine is enabled"
@@ -305,8 +419,8 @@ msgid ""
 "You don't know where to start? Don't worry just click <a href='%s'>here</a> "
 "and follow the steps"
 msgstr ""
-"Vous ne savez pas par où commencer ? Pas de panique il te suffit de cliquer "
-"<a href='%s'>ici</a> et de suivre les instructions"
+"Tu ne sais pas par où commencer ? Pas de panique il te suffit de cliquer <a "
+"href='%s'>ici</a> et de suivre les instructions"
 
 # Plugin Name
 msgid "PLACEHOLDER_NAME"
@@ -321,8 +435,8 @@ msgid ""
 "Translate Without Headache will help you translate your content within "
 "keeping good SEO practices."
 msgstr ""
-"Traduire Sans Migraine va vous aider à traduire votre contenu tout en "
-"gardant les bonnes pratiques SEO."
+"Traduire Sans Migraine va t’aider à traduire ton contenu tout en gardant les "
+"bonnes pratiques SEO."
 
 # Author
 msgid "Otter Corp"
@@ -343,6 +457,31 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid "Translate later"
+#~ msgstr "Traduire plus tard"
+
+#~ msgid "tutoriel_screen_en.png"
+#~ msgstr "tutoriel_screen_fr.png"
+
+# /front/Pages/Editor/OnSave/OnSave.php
+#~ msgid "Post ID missing"
+#~ msgstr "Post ID manquant"
+
+#~ msgid "Token invalid"
+#~ msgstr "Clé d’accès invalide"
+
+#~ msgid "Post not found"
+#~ msgstr "Le post n’existe pas"
+
+#~ msgid "Token ID missing"
+#~ msgstr "Clés d’accès manquante"
+
+#~ msgid "Token not found"
+#~ msgstr "Clé d’accès n’existe pas"
+
+#~ msgid "Language missing"
+#~ msgstr "Le langage est manquant"
 
 #~ msgid ""
 #~ "Oops! The otters have lost the post in the river. Please try again 🦦"
@@ -371,11 +510,6 @@ msgstr "GPL2"
 # Author
 #~ msgid "Seo Sans Migraine"
 #~ msgstr "Seo Sans Migraine"
-
-#~ msgid "Oops! The otters couldn't create the new post. Please try again 🦦"
-#~ msgstr ""
-#~ "Oops ! Les loutres ont n’ont pas réussi à créer le nouvel article. "
-#~ "Réessayer 🦦"
 
 #~ msgid "Open my translate tab"
 #~ msgstr "Ouvrir ma console de traduction"
@@ -445,9 +579,6 @@ msgstr "GPL2"
 
 #~ msgid "Sending content"
 #~ msgstr "Envoie du contenu"
-
-#~ msgid "Translation"
-#~ msgstr "Traduction"
 
 #~ msgid "Retrieve translation"
 #~ msgstr "Téléchargement de la traduction"
