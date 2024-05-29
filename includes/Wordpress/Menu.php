@@ -2,6 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
+use TraduireSansMigraine\Front\Pages\Menu\Bulk\Bulk;
 use TraduireSansMigraine\Front\Pages\Menu\Products\Products;
 use TraduireSansMigraine\Front\Pages\Menu\Settings\Settings;
 
@@ -60,6 +61,14 @@ class Menu {
             "traduire-sans-migraine",
             [$this, "renderSubMenu"]
         );
+        /*add_submenu_page(
+            "sans-migraine",
+            "⚙️ Traduire Sans Migraine",
+            "x️ Traduire",
+            "manage_options",
+            "traduire-sans-migraine-bulk",
+            [$this, "renderBulkMenu"]
+        );*/
     }
 
     public function renderMenu() {
@@ -68,5 +77,9 @@ class Menu {
 
     public function renderSubMenu() {
         Settings::render();
+    }
+
+    public function renderBulkMenu() {
+        Bulk::render();
     }
 }

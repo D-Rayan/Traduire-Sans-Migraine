@@ -20,6 +20,8 @@ class Polylang implements LanguageInterface
         $results = [];
         foreach ($languages as $language) {
             $results[$language->slug] = [
+                "id" => $language->term_id,
+                "default" => $language->is_default,
                 "name" => $language->name,
                 "flag" => $language->flag,
                 "code" => $language->slug,
@@ -106,6 +108,19 @@ class Polylang implements LanguageInterface
         }
 
         return pll_current_language("slug");
+    }
+
+    public function getDefaultLanguage()
+    {
+        $languages = $this->getLanguages();
+
+        foreach ($languages as $language) {
+            if ($language["default"]) {
+                return $language;
+            }
+        }
+
+        return false;
     }
 
     public function getLanguageManagerName(): string

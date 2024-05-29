@@ -52,7 +52,8 @@
 }
 
 .traduire-sans-migraine-button--ghost:hover {
-    color: var(--traduire-sans-migraine-ghost-border);
+    color: var(--traduire-sans-migraine-ghost-color-hover);
+    border-color: var(--traduire-sans-migraine-ghost-color-hover);
 }
 
 .traduire-sans-migraine-button:disabled {

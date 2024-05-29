@@ -54,17 +54,28 @@ class TranslationsHooks {
             ], 400);
             wp_die();
         }
+        $result = $this->prepareTranslationExecute($_POST["post_id"], $_POST["languages"]);
+        if ($result["success"]) {
+            wp_send_json_success($result["data"]);
+        } else {
+            wp_send_json_error($result["data"], 400);
+        }
+        wp_die();
+    }
+
+    public function prepareTranslationExecute($postId, $languages) {
+        global $wpdb;
         $result = $this->clientSeoSansMigraine->checkCredential();
         if (!$result) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
-                "logo" => "loutre_triste.png"
-            ], 400);
-            wp_die();
+            return [
+                "success" => false,
+                "data" => [
+                    "title" => TextDomain::__("An error occurred"),
+                    "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
+                    "logo" => "loutre_triste.png"
+                ]
+            ];
         }
-        $postId = $_POST["post_id"];
-        $languages = $_POST["languages"];
         $originalTranslations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
         $translations = [];
         $originalPost = get_post($postId);
@@ -100,15 +111,16 @@ class TranslationsHooks {
             if (isset($translations[$slug])) { wp_delete_post($translations[$slug], true); }
         }
         if ($errorCreationTranslations) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not create all the translations. Please try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
-            wp_die();
+            return [
+                "success" => false,
+                "data" => [
+                    "title" => TextDomain::__("An error occurred"),
+                    "message" => TextDomain::__("We could not create all the translations. Please try again."),
+                    "logo" => "loutre_triste.png"
+                ]
+            ];
         }
-        echo json_encode(["success" => true]);
-        wp_die();
+        return ["success" => true, "data" => []];
     }
 
     public function startTranslate() {
@@ -116,15 +128,6 @@ class TranslationsHooks {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("We could not find the post or the language asked. Please try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
-            wp_die();
-        }
-        $result = $this->clientSeoSansMigraine->checkCredential();
-        if (!$result) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
                 "logo" => "loutre_triste.png"
             ], 400);
             wp_die();
@@ -140,8 +143,16 @@ class TranslationsHooks {
             ], 400);
             wp_die();
         }
-        $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($postId);
-        $translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($postId, $codeTo);
+        $result = $this->startTranslateExecute($post, $codeTo);
+        if ($result["success"]) {
+            wp_send_json_success($result["data"]);
+        } else {
+            wp_send_json_error($result["data"], 400);
+        }
+    }
+
+    private function getDataToTranslate($post, $codeTo) {
+        $translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($post->ID, $codeTo);
         $translatedPost = $translatedPostId ? get_post($translatedPostId) : null;
         $willBeAnUpdate = $translatedPost !== null && !strstr($translatedPost->post_name, "-traduire-sans-migraine");
         $dataToTranslate = [];
@@ -151,7 +162,7 @@ class TranslationsHooks {
         if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = str_replace("-", " ", $post->post_name); }
 
 
-        $postMetas = get_post_meta($postId);
+        $postMetas = get_post_meta($post->ID);
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $metaTitle = isset($postMetas["_yoast_wpseo_title"][0]) ? $postMetas["_yoast_wpseo_title"][0] : "";
             if ($metaTitle && !empty($metaTitle) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_title"))) { $dataToTranslate["metaTitle"] = $metaTitle; }
@@ -211,6 +222,22 @@ class TranslationsHooks {
                 }
             }
         }
+        return $dataToTranslate;
+    }
+    public function startTranslateExecute($post, $codeTo) {
+        $result = $this->clientSeoSansMigraine->checkCredential();
+        if (!$result) {
+            return [
+                "success" => false,
+                "data" => [
+                    "title" => TextDomain::__("An error occurred"),
+                    "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
+                    "logo" => "loutre_triste.png"
+                ]
+            ];
+        }
+        $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($post->ID);
+        $dataToTranslate = $this->getDataToTranslate($post, $codeTo);
 
         $result = $this->clientSeoSansMigraine->startTranslation($dataToTranslate, $codeFrom, $codeTo);
         if ($result["success"]) {
@@ -223,13 +250,19 @@ class TranslationsHooks {
                     "args" => []
                 ]
             ]);
-            update_option("_seo_sans_migraine_postId_" . $tokenId, $postId);
+            update_option("_seo_sans_migraine_postId_" . $tokenId, $post->ID);
         }
         if (isset($result["error"]) && $result["error"]["code"] === "U004403-001") {
-            $result["error"]["message"] = TextDomain::__("You have reached your monthly quota.");
+            $result["data"] = [
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("You have reached your monthly quota."),
+                "logo" => "loutre_triste.png"
+            ];
         }
-        echo json_encode($result);
-        wp_die();
+        return [
+            "success" => $result["success"],
+            "data" => $result["data"]
+        ];
     }
 
     public function getTranslateState() {
@@ -291,5 +324,13 @@ class TranslationsHooks {
         $translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($postId, $language);
         echo json_encode(["success" => true, "data" => $translatedPostId]);
         wp_die();
+    }
+
+    public static function getInstance() {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
     }
 }

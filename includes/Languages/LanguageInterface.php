@@ -52,16 +52,6 @@ interface LanguageInterface
     public function saveAllTranslationsPost(array $translationsMap);
 
     /**
-     * @param string $postId
-     * @param string $codeLanguage
-     * @param string $translatedPostId
-     * @param string $codeFrom
-     * @throws Exception
-     * @deprecated
-     */
-    public function setTranslationPost(string $postId, string $codeLanguage, string $translatedPostId, string $codeFrom);
-
-    /**
      * @param array $categories
      * @param string $codeLanguage
      * @throws Exception
@@ -69,4 +59,6 @@ interface LanguageInterface
     public function getTranslationCategories(array $categories, string $codeLanguage): array;
 
     public function getLanguageManagerName(): string;
+
+    public function getDefaultLanguage();
 }

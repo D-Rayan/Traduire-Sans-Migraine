@@ -26,6 +26,7 @@
     --traduire-sans-migraine-ghost-background: rgb(255, 255, 255);
     --traduire-sans-migraine-ghost-border: #e1e1e1;
     --traduire-sans-migraine-ghost-color: black;
+    --traduire-sans-migraine-ghost-color-hover: #7795ee;
 
     --traduire-sans-migraine-primary-step-background: rgb(0,122,175);
     --traduire-sans-migraine-primary-step-background-gradient: linear-gradient(90deg, rgb(1, 154, 221) 0%, rgb(6, 178, 213) 50%, rgb(142, 234, 255) 100%);

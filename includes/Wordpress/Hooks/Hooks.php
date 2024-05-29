@@ -6,6 +6,7 @@ namespace TraduireSansMigraine\Wordpress\Hooks;
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\Wordpress\LinkManager;
+use TraduireSansMigraine\Wordpress\Queue;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -91,6 +92,12 @@ class Hooks
             return new \WP_REST_Response($data, 200);
         } catch (\Exception $e) {
             return new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
+        } finally {
+            if (Queue::getInstance()->isFromQueue($this->originalPost->ID)) {
+                Queue::getInstance()->stopQueue();
+                Queue::getInstance()->remove($this->originalPost->ID);
+                Queue::getInstance()->startNextProcess();
+            }
         }
     }
 

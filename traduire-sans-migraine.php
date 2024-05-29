@@ -50,7 +50,7 @@ class TraduireSansMigraine {
         $this->textDomain = new TextDomain();
         $this->menu = new Menu();
         $this->hooks = new Hooks();
-        $this->translationsHooks = new TranslationsHooks();
+        $this->translationsHooks = TranslationsHooks::getInstance();
         $this->init();
     }
 

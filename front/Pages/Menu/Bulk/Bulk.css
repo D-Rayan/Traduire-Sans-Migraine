@@ -1,0 +1,85 @@
+.traduire-sans-migraine-table {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.traduire-sans-migraine-table thead th {
+    background-color: #7795ee;
+}
+
+.traduire-sans-migraine-table thead th:first-child {
+    border-top-left-radius: 18px;
+}
+
+.traduire-sans-migraine-table thead th:last-child {
+    border-top-right-radius: 18px;
+}
+
+.traduire-sans-migraine-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 18px;
+}
+
+.traduire-sans-migraine-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 18px;
+}
+
+.traduire-sans-migraine-table th {
+  text-align: center;
+}
+
+.traduire-sans-migraine-table th, .traduire-sans-migraine-table td {
+  padding: 10px;
+}
+
+.traduire-sans-migraine-table tbody tr:nth-child(odd) td {
+  background-color: #f2f4fd;
+}
+
+.traduire-sans-migraine-table tbody tr:nth-child(even) td {
+    background-color: #7795ee9c;
+}
+
+.traduire-sans-migraine-table tbody tr td {
+  text-align: center;
+}
+
+.traduire-sans-migraine-table .traduire-sans-migraine-checkbox {
+    width: min-content;
+    margin: 0 auto;
+}
+
+.bulk-content {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.actions button {
+  width: max-content;
+}
+
+.actions form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 1248px) {
+  .actions {
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 782px) {
+  .actions form {
+    flex-wrap: wrap;
+  }
+}
