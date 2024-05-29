@@ -51,9 +51,9 @@ async function sendRequests(modal, languages) {
         return;
     }
     Notification.show("Translation in progress", "You can either wait for the end of the translation or close this window.", "loutre_docteur_no_shadow.png", "success");
-    await Promise.all(({modal, tokenId, language}) => {
+    await Promise.all(response.map(({modal, tokenId, language}) => {
         return fetchStateTranslateUntilOver(modal, tokenId, language);
-    })
+    }));
 }
 
 async function fetchStateTranslateUntilOver(modal, tokenId, language) {

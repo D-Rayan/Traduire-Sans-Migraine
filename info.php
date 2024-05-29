@@ -25,7 +25,6 @@ $update = array(
             <li>Ajout d'une vidéo tutorielle dans la page paramètres</li>
             <li>[TEST] Intégration d'Elementor</li>
             <li>Ajout d'un message pour guider l'utilisateur après une traduction</li>
-            <li>Ajout d'un système pour traduire plusieurs articles !</li>
         </ul>",
     ]
 );
