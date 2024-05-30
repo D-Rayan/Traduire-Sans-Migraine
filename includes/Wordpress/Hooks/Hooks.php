@@ -196,6 +196,10 @@ class Hooks
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
+    private function is_serialized($string) {
+        return ($string == serialize(false) || @unserialize($string) !== false);
+    }
+
     private function handleElementor() {
         if (is_plugin_active("elementor/elementor.php")) {
             $postMetas = get_post_meta($this->originalPost->ID);
@@ -204,6 +208,9 @@ class Hooks
                     $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
                     if ($this->is_json($valueKey)) {
                         $valueKey = wp_slash($valueKey);
+                    }
+                    if ($this->is_serialized($valueKey)) {
+                        $valueKey = unserialize($valueKey);
                     }
                     update_post_meta($this->translatedPostId, $key, $valueKey);
                 }
