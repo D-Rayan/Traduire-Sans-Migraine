@@ -377,13 +377,14 @@ msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
 msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
 
 msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr "Les loutres ont fini la traduction 🦦. Vous pouvez y accéder ici %s"
+msgstr "Les loutres ont fini la traduction 🦦. Tu peux y accéder ici %s"
 
 # Hooks.php
 msgid ""
 "Oops! The otters have lost the translation in the river. Please try again 🦦"
 msgstr ""
-"Oops ! Les loutres ont perdu la traduction dans la rivière. Réessayer 🦦"
+"Oops ! Les loutres ont perdu la traduction dans la rivière. N’hésites pas à "
+"réessayer 🦦"
 
 msgid "The otters works on your SEO optimization 🦦"
 msgstr "Les loutres peaufinent la mise en forme 🦦"
