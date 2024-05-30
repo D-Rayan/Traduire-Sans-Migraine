@@ -191,12 +191,21 @@ class Hooks
         }
     }
 
+    private function is_json($string) {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+
     private function handleElementor() {
         if (is_plugin_active("elementor/elementor.php")) {
             $postMetas = get_post_meta($this->originalPost->ID);
             foreach ($postMetas as $key => $value) {
                 if (strstr($key, "elementor")) {
-                    update_post_meta($this->translatedPostId, $key, isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0]);
+                    $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
+                    if ($this->is_json($valueKey)) {
+                        $valueKey = wp_slash($valueKey);
+                    }
+                    update_post_meta($this->translatedPostId, $key, $valueKey);
                 }
             }
         }
