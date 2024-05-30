@@ -18,7 +18,7 @@ async function loadModalTraduireSansMigraine() {
 }
 
 if (window.tsmEditor && window.tsmEditor._tsm_first_visit_after_translation === "true") {
-    Notification.show('successTranslationFirstShowTitle', "successTranslationFirstShow", "loutre_docteur_no_shadow.png", "success");
+    Notification.show('successTranslationFirstShowTitle', "successTranslationFirstShow", "loutre_docteur_no_shadow.png", "success", true);
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
