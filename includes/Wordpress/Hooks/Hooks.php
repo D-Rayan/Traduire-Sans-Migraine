@@ -206,6 +206,7 @@ class Hooks
             foreach ($postMetas as $key => $value) {
                 if (strstr($key, "elementor")) {
                     $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
+                    $valueKey = $this->linkManager->translateInternalLinks($valueKey, $this->codeFrom, $this->codeTo);
                     if ($this->is_json($valueKey)) {
                         $valueKey = wp_slash($valueKey);
                     }
