@@ -30,7 +30,7 @@ msgstr "Traduction terminée"
 
 msgid "The translation is in progress. You can close this window if you want."
 msgstr ""
-"La traduction est en cours. Tu peux fermer cette fenêtre si tu le souhaites."
+"La traduction est en cours. Tu peux fermer la fenêtre si tu le souhaites."
 
 msgid ""
 "You are on a post translated by Traduire Sans Migraine. If you want to know "
