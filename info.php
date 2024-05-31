@@ -15,7 +15,7 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 20 mai 2024</h4><ul>
+        "changelog" => "<h4>Mise à jour du 31 mai 2024</h4><ul>
             <li>Amélioration de l'utilisation de Polylang lors de la première installation avec l'ajout de messages explicatifs.</li>
             <li>Notification ajoutée pour informer que la traduction est en cours et que l'utilisateur peut quitter</li>
             <li>Suppression du bouton 'traduire plus tard' jugé non essentiel</li>
