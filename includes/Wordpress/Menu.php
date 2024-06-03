@@ -61,14 +61,14 @@ class Menu {
             "traduire-sans-migraine",
             [$this, "renderSubMenu"]
         );
-        /*add_submenu_page(
+        add_submenu_page(
             "sans-migraine",
             "⚙️ Traduire Sans Migraine",
             "x️ Traduire",
             "manage_options",
             "traduire-sans-migraine-bulk",
             [$this, "renderBulkMenu"]
-        );*/
+        );
     }
 
     public function renderMenu() {

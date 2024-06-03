@@ -53,6 +53,8 @@ class Bulk {
     }
 
     public function loadAdminHooks() {
+        add_action("wp_ajax_traduire-sans-migraine_add_items", [$this, "addItemsToQueue"]);
+        add_action("wp_ajax_traduire-sans-migraine_display_queue", [$this, "displayQueue"]);
     }
 
     public function loadClientHooks() {
@@ -63,12 +65,154 @@ class Bulk {
         $this->loadAdminHooks();
     }
 
+    public function addItemsToQueue() {
+        $queue = Queue::getInstance();
+        $postIds = $_POST["ids"];
+        $languageTo = $_POST["languageTo"];
+        $items = [];
+        foreach ($postIds as $postId) {
+            $items[] = [
+                "ID" => $postId,
+                "languageTo" => $languageTo,
+            ];
+        }
+        $queue->add($items);
+        wp_send_json_success();
+    }
+
     private static function getTitle() {
         ob_start();
         ?>
         <span><?php echo TSM__NAME; ?></span>
         <span class="second-color"><?php echo TextDomain::__("Votre contenu international à portée de main 💊"); ?></span>
         <?php
+        return ob_get_clean();
+    }
+
+    public function displayQueue() {
+        self::renderQueueProgress();
+        wp_die();
+    }
+
+    private static function renderQueueProgress() {
+        echo self::getHTMLQueueProgress();
+    }
+
+    private static function getHTMLQueueProgress() {
+        ob_start();
+        $queue = Queue::getInstance()->getQueue();
+        $languageManager = new LanguageManager();
+        $languages = $languageManager->getLanguageManager()->getLanguages();
+        $flagsMap = [];
+        foreach ($languages as $language) {
+            $flagsMap[$language["code"]] = $language["flag"];
+        }
+        if (!empty($queue)) {
+            $translatedDone = 0;
+            foreach ($queue as $item) {
+                if (isset($item["processed"])) {
+                    $translatedDone++;
+                }
+            }
+            ?>
+            <div class="bulk-queue">
+                <div class="bulk-queue-title"><?php echo TextDomain::_n("%s traduction est en cours", "%s traductions sont en cours", count($queue), count($queue)); ?></div>
+                <div class="bulk-queue-description"><?php echo TextDomain::__("Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir l'avancé de la traduction du contenu en cours ci-dessous."); ?></div>
+                <?php
+                Step::render([
+                    "percentage" => $translatedDone / count($queue) * 100,
+                    "classname" => "success",
+                    "indicatorText" => Button::getHTML(TextDomain::__("Voir la file d'attente"), "primary", "traduire-sans-migraine-bulk-queue-display"),
+                ]);
+                ?>
+                <div class="bulk-queue-items">
+                    <?php
+                    foreach ($queue as $index => $item) {
+                        ?>
+                        <div class="bulk-queue-item">
+                            <div class="bulk-queue-item-post"><?php echo get_the_title($item["ID"]); ?></div>
+                            <div class="bulk-queue-item-language"><?php echo $flagsMap[$item["languageTo"]]; ?></div>
+                            <div class="bulk-queue-item-state">
+                                <?php
+                                    if (isset($item["processed"])) {
+                                        if ($item["error"]) {
+                                            $state = [
+                                                "percentage" => 100,
+                                                "status" => Step::$STEP_STATE["ERROR"],
+                                                "message" => [
+                                                    "id" => TextDomain::_f("Une erreur est survenue lors de la traduction de votre contenu 🚨"),
+                                                    "args" => []
+                                                ]
+                                            ];
+                                        } else {
+                                            if (isset($item["data"]["tokenId"])) {
+                                                $tokenId = $item["data"]["tokenId"];
+                                                $state = get_option("_seo_sans_migraine_state_" . $tokenId, [
+                                                    "percentage" => 100,
+                                                    "status" => Step::$STEP_STATE["DONE"],
+                                                    "message" => [
+                                                        "id" => TextDomain::_f("Votre contenu a été traduit avec succès 🎉"),
+                                                        "args" => []
+                                                    ]
+                                                ]);
+                                            } else {
+                                                $state = [
+                                                    "percentage" => 100,
+                                                    "status" => Step::$STEP_STATE["DONE"],
+                                                    "message" => [
+                                                        "id" => TextDomain::_f("Votre contenu a été traduit avec succès 🎉"),
+                                                        "args" => []
+                                                    ]
+                                                ];
+                                            }
+                                        }
+                                    } else {
+                                        if (isset($item["data"])) {
+                                            if (isset($item["data"]["tokenId"])) {
+                                                $tokenId = $item["data"]["tokenId"];
+                                                $state = get_option("_seo_sans_migraine_state_" . $tokenId, [
+                                                    "percentage" => 25,
+                                                    "status" => Step::$STEP_STATE["PROGRESS"],
+                                                    "message" => [
+                                                        "id" => TextDomain::_f("We will create and translate your post 💡"),
+                                                        "args" => []
+                                                    ]
+                                                ]);
+                                            } else {
+                                                $state = [
+                                                    "percentage" => 25,
+                                                    "status" => Step::$STEP_STATE["PROGRESS"],
+                                                    "message" => [
+                                                        "id" => TextDomain::_f("We will create and translate your post 💡"),
+                                                        "args" => []
+                                                    ]
+                                                ];
+                                            }
+                                        } else {
+                                            $state = [
+                                                "percentage" => 0,
+                                                "status" => Step::$STEP_STATE["PROGRESS"],
+                                                "message" => [
+                                                    "id" => TextDomain::_f("En attente"),
+                                                    "args" => []
+                                                ]
+                                            ];
+                                        }
+                                    }
+                                    if (isset($state["message"]) || $index === 3) {
+                                        $state["indicatorText"] = TextDomain::__($state["message"]["id"], ...$state["message"]["args"]);
+                                    }
+                                    Step::render($state);
+                                ?>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
+            </div>
+            <?php
+        }
         return ob_get_clean();
     }
 
@@ -137,24 +281,12 @@ class Bulk {
 
         $posts = $wpdb->get_results($queryFetchPosts);
 
-        $queue = Queue::getInstance();
-        $nextItem = $queue->getNextItem();
-        if ($nextItem !== null) {
-            ?>
-            <div class="bulk-queue">
-                <div class="bulk-queue-title"><?php echo TextDomain::_n("%s traduction est en cours", "%s des traductions sont en cours", 1, 1); ?></div>
-                <div class="bulk-queue-description"><?php echo TextDomain::__("Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir l'avancé de la traduction du contenu en cours ci-dessous."); ?></div>
-                <?php
-                Step::render([
-                    "percentage" => 50,
-                    "classname" => "success",
-                    "indicatorText" => TextDomain::__("Traduction en cours")
-                ]);
-                ?>
-            </div>
-            <?php
-        }
         ?>
+        <div id="queue-container">
+        <?php
+            self::renderQueueProgress();
+        ?>
+        </div>
         <div class="actions">
             <form method="get">
                 <input type="hidden" name="page" id="page" value="<?php echo $_GET["page"]; ?>"/>
@@ -180,6 +312,7 @@ class Bulk {
                     }
                     ?>
                 </select>
+                <input type="hidden" id="languageToHidden" name="languageToHidden" value="<?php echo $selectedLanguageTo; ?>"/>
                 <?php
                     Button::render(TextDomain::__("Rechercher"), "ghost", "traduire-sans-migraine-bulk-filter");
                 ?>
@@ -203,7 +336,11 @@ class Bulk {
             </thead>
             <tbody>
             <?php
+            $Queue = Queue::getInstance();
             foreach ($posts as $post) {
+                if ($Queue->isFromQueue($post->ID)) {
+                    continue;
+                }
                 ?>
                 <tr>
                     <td><?php Checkbox::render("", "post-" . $post->ID); ?></td>

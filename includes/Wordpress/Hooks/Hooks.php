@@ -95,7 +95,7 @@ class Hooks
         } finally {
             if (Queue::getInstance()->isFromQueue($this->originalPost->ID)) {
                 Queue::getInstance()->stopQueue();
-                Queue::getInstance()->remove($this->originalPost->ID);
+                Queue::getInstance()->updateItem(["processed" => true, "ID" => $this->originalPost->ID]);
                 Queue::getInstance()->startNextProcess();
             }
         }

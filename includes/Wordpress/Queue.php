@@ -5,7 +5,7 @@ namespace TraduireSansMigraine\Wordpress;
 use TraduireSansMigraine\Wordpress\Hooks\TranslationsHooks;
 
 class Queue {
-    private $queue;
+    private $queue = [];
     const QUEUE_OPTION = "traduire_sans_migraine_queue";
     const QUEUE_OPTION_STATE = "traduire_sans_migraine_queue_state";
     public function __construct() {
@@ -23,10 +23,17 @@ class Queue {
         return $this->queue;
     }
 
-    public function add(...$items) {
+    public function add($items) {
         $validItems = array_filter($items, function ($item) {
             return isset($item["ID"]);
         });
+        $allItemsAreCompleted = true;
+        foreach ($this->queue as $item) {
+            $allItemsAreCompleted = $allItemsAreCompleted && $item["processed"];
+        }
+        if ($allItemsAreCompleted) {
+            $this->queue = [];
+        }
         $this->queue = array_merge($this->queue, $validItems);
         $this->saveQueue();
         if ($this->getState() === "idle") {
@@ -85,6 +92,7 @@ class Queue {
         if (!$result["success"]) {
             $nextItem["processed"] = true;
             $nextItem["data"] = $result["data"];
+            $nextItem["error"] = true;
             $this->updateItem($nextItem);
             $this->updateState("idle");
             $this->startNextProcess();
@@ -95,6 +103,7 @@ class Queue {
         if (!$result["success"]) {
             $nextItem["processed"] = true;
             $nextItem["data"] = $result["data"];
+            $nextItem["error"] = true;
             $this->updateItem($nextItem);
             $this->updateState("idle");
             $this->startNextProcess();

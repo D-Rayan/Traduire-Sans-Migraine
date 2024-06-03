@@ -70,6 +70,56 @@ allCheckboxes.forEach(checkbox => {
 });
 updateDisplayGlobalCheckbox();
 
+async function translatePosts(ids) {
+    await fetch(`${tsm.url}add_items`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids, languageTo: document.querySelector("#languageToHidden").value }),
+    });
+}
+async function getQueueHTML() {
+    const response = await fetch(`${tsm.url}display_queue`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    return response.text();
+}
+let queueRefreshingInterval = null;
+function initQueueRefreshing() {
+    queueRefreshingInterval = setInterval(async () => {
+        const queueHTML = await getQueueHTML();
+        const isCurrentlyDisplayed = document.querySelector(".bulk-queue-items").classList.contains("visible");
+        document.querySelector("#queue-container").innerHTML = queueHTML;
+        if (isCurrentlyDisplayed) {
+            document.querySelector(".bulk-queue-items").classList.add("visible");
+        }
+        addListenerToButtonDisplayQueue();
+    }, 5000);
+}
+
+function addListenerToButtonDisplayQueue() {
+    const buttonDisplayQueue = document.querySelector('#traduire-sans-migraine-bulk-queue-display');
+    if (buttonDisplayQueue) {
+        buttonDisplayQueue.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const isCurrentlyDisplayed = document.querySelector(".bulk-queue-items").classList.contains("visible");
+            if (isCurrentlyDisplayed) {
+                document.querySelector(".bulk-queue-items").classList.remove("visible");
+            } else {
+                document.querySelector(".bulk-queue-items").classList.add("visible");
+            }
+        });
+    }
+}
+function stopQueueRefreshing() {
+    clearInterval(queueRefreshingInterval);
+}
+// initQueueRefreshing();
+
 buttonTranslate.addEventListener('click', async (e) => {
     e.preventDefault();
     const checkedCheckboxes = getCheckboxesListChecked();
@@ -79,5 +129,8 @@ buttonTranslate.addEventListener('click', async (e) => {
     const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
     setButtonLoading(buttonTranslate);
     await translatePosts(ids);
+    stopQueueRefreshing();
+    initQueueRefreshing();
     stopButtonLoading(buttonTranslate);
 });
+addListenerToButtonDisplayQueue();
