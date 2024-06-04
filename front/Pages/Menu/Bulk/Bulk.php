@@ -274,7 +274,7 @@ class Bulk {
                         ?>
                         <div class="bulk-queue-item">
                             <div class="bulk-queue-item-post">
-                                <?php if (!isset($item["processed"])) { ?>
+                                <?php if (!isset($item["processed"]) && !$onGoing) { ?>
                                 <div class="actions-queue">
                                     <?php
                                     Tooltip::render(

@@ -94,10 +94,15 @@ class Hooks
             $response = new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
         }
 
-        if (Queue::getInstance()->isFromQueue($this->originalPost->ID)) {
-            Queue::getInstance()->stopQueue();
-            Queue::getInstance()->updateItem(["processed" => true, "ID" => $this->originalPost->ID]);
-            Queue::getInstance()->startNextProcess();
+        $Queue = Queue::getInstance();
+        if ($Queue->isFromQueue($this->originalPost->ID)) {
+            $Queue->stopQueue();
+            if ($response->is_error()) {
+                $Queue->updateItem(["processed" => true, "ID" => $this->originalPost->ID, "data" => $response->data, "error" => true]);
+            } else {
+                $Queue->updateItem(["processed" => true, "ID" => $this->originalPost->ID, "data" => $response->data]);
+            }
+            $Queue->startNextProcess();
         }
 
         return $response;

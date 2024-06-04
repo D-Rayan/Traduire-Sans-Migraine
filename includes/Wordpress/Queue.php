@@ -48,7 +48,7 @@ class Queue {
 
     public function getFromQueue($postId) {
         foreach ($this->queue as $queueItem) {
-            if (isset($queueItem["ID"]) && $queueItem["ID"] === $postId) {
+            if (isset($queueItem["ID"]) && intval($queueItem)["ID"] === intval($postId)) {
                 return $queueItem;
             }
         }
@@ -64,7 +64,7 @@ class Queue {
 
     public function updateItem($item) {
         $this->queue = array_map(function ($queueItem) use ($item) {
-            if ($queueItem["ID"] !== $item["ID"]) {
+            if (intval($queueItem["ID"]) !== intval($item["ID"])) {
                 return $queueItem;
             }
             return $item;
