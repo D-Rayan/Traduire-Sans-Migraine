@@ -14,7 +14,9 @@ function initTooltips() {
                 return;
             }
             const rect = realContent.getBoundingClientRect();
-            copy = createDOMAtTheEnd(tooltipContent, rect.x, rect.y + rect.height);
+            const positionX = rect.x + window.scrollX;
+            const positionY = rect.y + rect.height + window.scrollY;
+            copy = createDOMAtTheEnd(tooltipContent, positionX, positionY);
             copy.addEventListener('mouseleave', functionToRemoveTooltip);
         });
         const functionToRemoveTooltip = async () => {

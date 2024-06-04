@@ -110,7 +110,7 @@ class Settings {
     private static function getTitle() {
         ob_start();
         ?>
-        <span><?php echo TSM__NAME; ?></span><br/>
+        <span><?php echo TSM__NAME; ?></span>
         <span class="second-color"><?php echo TextDomain::__("⚙️ Settings"); ?></span>
         <?php
         return ob_get_clean();
@@ -249,15 +249,16 @@ class Settings {
                                 echo "<div class='before'>".$setting["before"]."</div>";
                             }
                             echo "<div class='row'>";
-                            Checkbox::render($setting["label"], $key, $setting["checked"]);
+                            $tooltipHTML = "";
                             if (isset($setting["tooltip"])) {
-                                Tooltip::render(
+                                $tooltipHTML = Tooltip::getHTML(
                                     '<svg viewBox="64 64 896 896" focusable="false" data-icon="info-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg>',
                                     Alert::getHTML(null, $setting["tooltip"], "info", [
                                         "isDismissible" => false,
                                     ])
                                 );
                             }
+                            Checkbox::render($setting["label"] . $tooltipHTML, $key, $setting["checked"]);
                             echo "</div>";
                             echo "</div>";
                         }
