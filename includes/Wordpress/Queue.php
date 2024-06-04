@@ -48,7 +48,7 @@ class Queue {
 
     public function getFromQueue($postId) {
         foreach ($this->queue as $queueItem) {
-            if (isset($queueItem["ID"]) && intval($queueItem)["ID"] === intval($postId)) {
+            if (isset($queueItem["ID"]) && intval($queueItem["ID"]) === intval($postId)) {
                 return $queueItem;
             }
         }
