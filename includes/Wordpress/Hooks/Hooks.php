@@ -95,13 +95,15 @@ class Hooks
         }
 
         $Queue = Queue::getInstance();
-        if ($Queue->isFromQueue($this->originalPost->ID)) {
+        $nextItem = $Queue->getNextItem();
+        if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
             $Queue->stopQueue();
+            $nextItem["processed"] = true;
+            $nextItem["data"] = $response->data;
             if ($response->is_error()) {
-                $Queue->updateItem(["processed" => true, "ID" => $this->originalPost->ID, "data" => $response->data, "error" => true]);
-            } else {
-                $Queue->updateItem(["processed" => true, "ID" => $this->originalPost->ID, "data" => $response->data]);
+                $nextItem["error"] = true;
             }
+            $Queue->updateItem($nextItem);
             $Queue->startNextProcess();
         }
 
