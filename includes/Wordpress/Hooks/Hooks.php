@@ -89,23 +89,33 @@ class Hooks
                 ]
             ]);
 
+            $Queue = Queue::getInstance();
+            $nextItem = $Queue->getNextItem();
+            if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
+                $Queue->stopQueue();
+                $nextItem["processed"] = true;
+                $nextItem["data"] = $data;
+                $Queue->updateItem($nextItem);
+                $Queue->startNextProcess();
+            }
+
+
             $response = new \WP_REST_Response($data, 200);
         } catch (\Exception $e) {
+
+            $Queue = Queue::getInstance();
+            $nextItem = $Queue->getNextItem();
+            if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
+                $Queue->stopQueue();
+                $nextItem["processed"] = true;
+                $nextItem["data"] = ["message" => $e->getMessage(), "title" => "error", "logo" => "loutre_triste.png"];
+                $nextItem["error"] = true;
+                $Queue->updateItem($nextItem);
+                $Queue->startNextProcess();
+            }
             $response = new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
         }
 
-        $Queue = Queue::getInstance();
-        $nextItem = $Queue->getNextItem();
-        if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
-            $Queue->stopQueue();
-            $nextItem["processed"] = true;
-            $nextItem["data"] = $response->data;
-            if ($response->is_error()) {
-                $nextItem["error"] = true;
-            }
-            $Queue->updateItem($nextItem);
-            $Queue->startNextProcess();
-        }
 
         return $response;
     }
