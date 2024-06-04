@@ -284,6 +284,7 @@ class Bulk {
                                 </div>
                                 <?php } ?>
                                 <?php echo get_the_title($postId); ?>
+                                <?php print_r($item); ?>
                             </div>
                             <div class="bulk-queue-item-language"><?php echo $flagsMap[$item["languageTo"]]; ?></div>
                             <div class="bulk-queue-item-state">

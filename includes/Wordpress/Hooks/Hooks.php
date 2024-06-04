@@ -89,16 +89,18 @@ class Hooks
                 ]
             ]);
 
-            return new \WP_REST_Response($data, 200);
+            $response = new \WP_REST_Response($data, 200);
         } catch (\Exception $e) {
-            return new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
-        } finally {
-            if (Queue::getInstance()->isFromQueue($this->originalPost->ID)) {
-                Queue::getInstance()->stopQueue();
-                Queue::getInstance()->updateItem(["processed" => true, "ID" => $this->originalPost->ID]);
-                Queue::getInstance()->startNextProcess();
-            }
+            $response = new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
         }
+
+        if (Queue::getInstance()->isFromQueue($this->originalPost->ID)) {
+            Queue::getInstance()->stopQueue();
+            Queue::getInstance()->updateItem(["processed" => true, "ID" => $this->originalPost->ID]);
+            Queue::getInstance()->startNextProcess();
+        }
+
+        return $response;
     }
 
     private function updateTemporaryPostToRealOne() {
