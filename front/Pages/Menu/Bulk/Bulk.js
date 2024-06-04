@@ -79,8 +79,16 @@ async function translatePosts(ids) {
         body: JSON.stringify({ ids, languageTo: document.querySelector("#languageToHidden").value }),
     });
 }
-async function getQueueHTML() {
-    const response = await fetch(`${tsm.url}display_queue`, {
+async function getQueueHTML(page = undefined) {
+    if (!page) {
+        const pageActive = document.querySelector(".bulk-queue-pagination-item.active");
+        if (pageActive) {
+            page = pageActive.dataset.page;
+        } else {
+            page = 1;
+        }
+    }
+    const response = await fetch(`${tsm.url}display_queue&page=${page}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -90,15 +98,18 @@ async function getQueueHTML() {
 }
 let queueRefreshingInterval = null;
 function initQueueRefreshing() {
-    queueRefreshingInterval = setInterval(async () => {
-        const queueHTML = await getQueueHTML();
-        const isCurrentlyDisplayed = document.querySelector(".bulk-queue-items").classList.contains("visible");
-        document.querySelector("#queue-container").innerHTML = queueHTML;
-        if (isCurrentlyDisplayed) {
-            document.querySelector(".bulk-queue-items").classList.add("visible");
-        }
-        addListenerToButtonDisplayQueue();
-    }, 5000);
+    queueRefreshingInterval = setInterval(loadQueue, 5000);
+}
+
+async function loadQueue(page = undefined) {
+    const queueHTML = await getQueueHTML(page);
+    const bulkQueueItems = document.querySelector(".bulk-queue-items");
+    const isCurrentlyDisplayed = bulkQueueItems ? bulkQueueItems.classList.contains("visible") : false;
+    document.querySelector("#queue-container").innerHTML = queueHTML;
+    if (isCurrentlyDisplayed && document.querySelector(".bulk-queue-items")) {
+        document.querySelector(".bulk-queue-items").classList.add("visible");
+    }
+    addListenerToQueue();
 }
 
 function addListenerToButtonDisplayQueue() {
@@ -119,7 +130,7 @@ function stopQueueRefreshing() {
     clearInterval(queueRefreshingInterval);
 }
 // initQueueRefreshing();
-
+addListenerToQueue();
 buttonTranslate.addEventListener('click', async (e) => {
     e.preventDefault();
     const checkedCheckboxes = getCheckboxesListChecked();
@@ -129,8 +140,104 @@ buttonTranslate.addEventListener('click', async (e) => {
     const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
     setButtonLoading(buttonTranslate);
     await translatePosts(ids);
-    stopQueueRefreshing();
-    initQueueRefreshing();
+    await loadQueue();
     stopButtonLoading(buttonTranslate);
 });
-addListenerToButtonDisplayQueue();
+
+function addListenerToQueue() {
+    initTooltips();
+    addListenerToButtonDisplayQueue();
+    addListenerToActionsItems();
+    addListenerToPages();
+}
+
+function addListenerToPages() {
+    document.querySelectorAll(".bulk-queue-pagination-item").forEach(item => {
+        if (item.classList.contains("active") || item.classList.contains("disable")) {
+            return;
+        }
+        item.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const page = item.dataset.page;
+            await loadQueue(page);
+        });
+    });
+}
+
+function addListenerToActionsItems() {
+    document.querySelectorAll("span[data-action]").forEach(span => {
+        span.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const action = span.dataset.action;
+            if (span.classList.contains("disable")) {
+                return;
+            }
+            span.classList.add("disable");
+            let response = null;
+
+            if (action === "remove-from-queue") {
+                const postId = span.dataset.postId;
+                if (!postId) {
+                    return;
+                }
+                response = await removeItemFromQueue(postId);
+            } else if (action === "play-queue") {
+                response = await playQueue();
+            } else if (action === "pause-queue") {
+                response = await pauseQueue();
+            } else if (action === "delete-queue") {
+                response = await deleteQueue();
+            }
+            if (response) {
+                if (await tsmHandleRequestResponse(response, () => {
+                    return false;
+                }, async (r) => {
+                    const {data, success} = await response.json();
+                    Notification.show(data.title, data.message, data.logo, success ? "success" : "error");
+                    if (success) {
+                        await loadQueue();
+                    }
+                    return success;
+                }) === false) {
+                    span.classList.remove("disable");
+                }
+            }
+        });
+    });
+}
+
+async function removeItemFromQueue(postId) {
+    return fetch(`${tsm.url}remove_item&postId=${postId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+async function playQueue() {
+    return fetch(`${tsm.url}restart_queue`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+async function pauseQueue() {
+    return fetch(`${tsm.url}pause_queue`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+async function deleteQueue() {
+    return fetch(`${tsm.url}delete_queue`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}

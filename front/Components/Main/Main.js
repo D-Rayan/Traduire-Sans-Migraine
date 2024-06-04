@@ -2,7 +2,7 @@ async function tsmHandleRequestResponse(response, onError, onSuccess) {
     if (response.status >= 400) {
         const {data} = await response.json();
         if (!data) {
-            return onError(response);
+            return onError(response, data);
         }
         Notification.show(data.title, data.message, data.logo, "error");
         return onError(response);

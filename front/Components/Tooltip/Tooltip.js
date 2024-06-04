@@ -1,5 +1,6 @@
+const TSMTooltips = {};
 function initTooltips() {
-    console.log("initTooltips");
+
     const tooltips = document.querySelectorAll('.traduire-sans-migraine-tooltip');
     tooltips.forEach(tooltip => {
         if (tooltip.dataset.initilized === "true") {
@@ -18,6 +19,7 @@ function initTooltips() {
             const positionY = rect.y + rect.height + window.scrollY;
             copy = createDOMAtTheEnd(tooltipContent, positionX, positionY);
             copy.addEventListener('mouseleave', functionToRemoveTooltip);
+            TSMTooltips[copy.id] = realContent;
         });
         const functionToRemoveTooltip = async () => {
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -28,11 +30,24 @@ function initTooltips() {
             if (realContent.matches(':hover') || tooltipContent.matches(':hover') || copy.matches(':hover')) {
                 return;
             }
+            const copyId = copy.id;
+            delete TSMTooltips[copyId];
             copy.remove();
             copy = null;
         }
         realContent.addEventListener('mouseleave', functionToRemoveTooltip);
     });
+
+    for (const copyId of Object.keys(TSMTooltips)) {
+        const realContent = TSMTooltips[copyId];
+        if (document.contains(realContent) === false) {
+            const copy = document.querySelector(`#${copyId}`);
+            if (copy) {
+                copy.remove();
+                delete TSMTooltips[copyId];
+            }
+        }
+    }
 }
 
 function createDOMAtTheEnd(div, positionX, positionY) {

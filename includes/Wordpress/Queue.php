@@ -43,14 +43,16 @@ class Queue {
 
     // item should be in format array with ID
     public function isFromQueue($postId) {
-        $isFromQueue = false;
+        return $this->getFromQueue($postId) !== false;
+    }
+
+    public function getFromQueue($postId) {
         foreach ($this->queue as $queueItem) {
             if (isset($queueItem["ID"]) && $queueItem["ID"] === $postId) {
-                $isFromQueue = true;
-                break;
+                return $queueItem;
             }
         }
-        return $isFromQueue;
+        return false;
     }
 
     public function remove($item) {
@@ -74,7 +76,8 @@ class Queue {
         $validQueue = array_filter($this->queue, function ($item) {
             return isset($item["ID"]) && !isset($item["processed"]);
         });
-        return isset($validQueue[0]) ? $validQueue[0] : null;
+        $firstItem = reset($validQueue);
+        return $firstItem ?: null;
     }
 
     public function stopQueue() {
@@ -95,8 +98,7 @@ class Queue {
             $nextItem["error"] = true;
             $this->updateItem($nextItem);
             $this->updateState("idle");
-            $this->startNextProcess();
-            return false;
+            return $this->startNextProcess();
         }
         $post = get_post($nextItem["ID"]);
         $result = TranslationsHooks::getInstance()->startTranslateExecute($post, $nextItem["language"]);
@@ -106,8 +108,7 @@ class Queue {
             $nextItem["error"] = true;
             $this->updateItem($nextItem);
             $this->updateState("idle");
-            $this->startNextProcess();
-            return false;
+            return $this->startNextProcess();
         }
         $nextItem["data"] = $result["data"];
         $this->updateItem($nextItem);
@@ -122,11 +123,16 @@ class Queue {
         return $instance;
     }
 
+    public function deleteQueue() {
+        delete_option(self::QUEUE_OPTION);
+        $this->updateState("idle");
+    }
+
     private function updateState($state) {
         update_option(self::QUEUE_OPTION_STATE, $state);
     }
 
-    private function getState() {
+    public function getState() {
         return get_option(self::QUEUE_OPTION_STATE, "idle");
     }
 }
