@@ -14,7 +14,9 @@ function injectFunctionTranslationModal(modal) {
     displayCountCheckedToButton(modal);
     addListenerToButtonTranslate(modal);
     addListenerToButtonTranslateLater(modal);
+    addListenerToButtonDebug(modal);
     initTooltips();
+
 }
 
 function getStepList(modal, language) {
@@ -238,13 +240,29 @@ async function sendRequestPrepare(modal, languages) {
     })
 }
 
-function switchSuggestionsMessages(modal) {
-    const suggestions = modal.querySelectorAll(".traduire-sans-migraine-suggestion");
-    suggestions.forEach(suggestion => {
-        if (suggestion.classList.contains("hidden")) {
-            suggestion.classList.remove("hidden");
-        } else {
-            suggestion.classList.add("hidden");
+
+
+function addListenerToButtonDebug(modal) {
+    const debugButton = modal.querySelector('#debug-button');
+    if (!debugButton) {
+        return;
+    }
+    const handleClickDebugButton = async (e) => {
+        e.preventDefault();
+        const code = prompt("Un code vous a été fournis par notre équipe, veuillez le copier et le coller ici :");
+        if (!code) {
+            return;
         }
-    });
+        setButtonLoading(debugButton);
+        await tsmHandleRequestResponse(await fetch(`${tsm.url}editor_debug&post_id=${getQuery("post")}&code=${code}`), () => {
+
+        }, async (fetchResponse) => {
+            const data = await fetchResponse.json();
+            if (data.success) {
+                Notification.show(data.data.title, data.data.message, data.data.logo, "success");
+            }
+        });
+        stopButtonLoading(debugButton);
+    }
+    debugButton.addEventListener('click', handleClickDebugButton);
 }

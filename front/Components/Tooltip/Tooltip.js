@@ -8,18 +8,38 @@ function initTooltips() {
         tooltip.dataset.initilized = "true";
         const realContent = tooltip.querySelector('.traduire-sans-migraine-tooltip-hoverable');
         const tooltipContent = tooltip.querySelector('.traduire-sans-migraine-tooltip-content');
+        let copy = null;
         realContent.addEventListener('mouseenter', () => {
-            tooltipContent.classList.add("traduire-sans-migraine-tooltip-content--visible");
+            if (copy) {
+                return;
+            }
+            const rect = realContent.getBoundingClientRect();
+            copy = createDOMAtTheEnd(tooltipContent, rect.x, rect.y + rect.height);
+            copy.addEventListener('mouseleave', functionToRemoveTooltip);
         });
         const functionToRemoveTooltip = async () => {
             await new Promise(resolve => setTimeout(resolve, 100));
-            // check if we are still out of the tooltip
-            if (realContent.matches(':hover') || tooltipContent.matches(':hover')) {
+            if (!copy) {
                 return;
             }
-            tooltipContent.classList.remove("traduire-sans-migraine-tooltip-content--visible");
+            // check if we are still out of the tooltip
+            if (realContent.matches(':hover') || tooltipContent.matches(':hover') || copy.matches(':hover')) {
+                return;
+            }
+            copy.remove();
+            copy = null;
         }
         realContent.addEventListener('mouseleave', functionToRemoveTooltip);
-        tooltipContent.addEventListener('mouseleave', functionToRemoveTooltip);
     });
+}
+
+function createDOMAtTheEnd(div, positionX, positionY) {
+    const copy = div.cloneNode(true);
+    copy.id = `tooltip-${Date.now()}${Math.floor(Math.random() * 10000)}`;
+    copy.style.position = "absolute";
+    copy.style.left = `${positionX}px`;
+    copy.style.top = `${positionY}px`;
+    copy.classList.add('traduire-sans-migraine-tooltip-content--visible');
+    document.body.appendChild(copy);
+    return document.body.querySelector(`#${copy.id}`);
 }

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-05-29T13:49:120\n"
+"POT-Creation-Date: 2024-06-04T08:42:260\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -158,7 +158,7 @@ msgid "To translate you first need to add the language to your website."
 msgstr "Pour traduire tu dois en premier lieu ajouter la langue à ton site."
 
 msgid "Go to %s to add a new language."
-msgstr "Utilises %s pour ajouter une nouvelle langue."
+msgstr "Utilise %s pour ajouter une nouvelle langue."
 
 msgid "Then come back here to translate your post."
 msgstr "Puis reviens ici pour traduire ton article."
@@ -168,6 +168,17 @@ msgstr "Lancer la traduction"
 
 msgid "Close"
 msgstr "Fermer"
+
+msgid "Debug Helper"
+msgstr "Aide Debug"
+
+msgid ""
+"This button is only for debug purpose. It will send the data of your content "
+"to our service. The data will be deleted after analysis."
+msgstr ""
+"Ce bouton est uniquement pour aider lors d’un débug technique. Il va envoyer "
+"les données de ton contenu à notre service. Les données ne sont conservés "
+"que pendant l’analyse."
 
 msgid "🔎 We found %s issue"
 msgstr "🔎 Nous avons trouvé %s problème"
@@ -200,8 +211,8 @@ msgstr ""
 "Vous n’avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir "
 "l’avancé de la traduction du contenu en cours ci-dessous."
 
-msgid "Traduction en cours"
-msgstr "Traduction en cours"
+msgid "Voir la file d'attente"
+msgstr ""
 
 msgid "Rechercher"
 msgstr "Rechercher"
@@ -223,12 +234,25 @@ msgstr ""
 "seul clic."
 
 # Bulk.php
+msgid "Une erreur est survenue lors de la traduction de votre contenu 🚨"
+msgstr ""
+
+msgid "Votre contenu a été traduit avec succès 🎉"
+msgstr ""
+
+msgid "We will create and translate your post 💡"
+msgstr "On va créer et traduire ton article 💡"
+
+msgid "En attente"
+msgstr ""
+
+# Bulk.php
 msgid "%s traduction est en cours"
 msgstr "%s traduction est en cours"
 
 # Bulk.php
-msgid "%s des traductions sont en cours"
-msgstr "%s des traductions sont en cours"
+msgid "%s traductions sont en cours"
+msgstr "%s traductions sont en cours"
 
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
@@ -395,8 +419,25 @@ msgstr ""
 "Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
 "plus tard."
 
+msgid "We could not find the post asked. Please try again."
+msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
+
 msgid "We could not authenticate you. Please check the plugin settings."
 msgstr "Nous n’arrivons pas à t’authentifier. Vérifies tes paramètres."
+
+msgid "Debug data sent"
+msgstr "Données de début sont envoyées"
+
+msgid ""
+"The debug data has been sent to the developers. Thank you for your help!"
+msgstr "Les données ont bien été envoyées à notre équipe. Merci de ton aide !"
+
+msgid ""
+"We could not send the debug data. Please try again. Verify the code you "
+"entered."
+msgstr ""
+"Nous n’avons pas pu envoyer les données. Vérifie ton code de débug et "
+"réessaye."
 
 msgid "We could not create all the translations. Please try again."
 msgstr ""
@@ -429,9 +470,6 @@ msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
 
 msgid "The otters are translating your post 🦦"
 msgstr "Les loutres traduisent ton article 🦦"
-
-msgid "We will create and translate your post 💡"
-msgstr "On va créer et traduire ton article 💡"
 
 # Plugin Name
 msgid "Traduire Sans Migraine is enabled"
@@ -479,6 +517,9 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+#~ msgid "Traduction en cours"
+#~ msgstr "Traduction en cours"
 
 #~ msgid "Translate later"
 #~ msgstr "Traduire plus tard"

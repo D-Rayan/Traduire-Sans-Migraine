@@ -65,11 +65,9 @@ class Notification {
                 if (timeOutId) {
                     clearTimeout(timeOutId);
                 }
-                notification.classList.add('traduire-sans-migraine-notification--hiddenAnimation');
-                setTimeout(() => {
-                    notification.parentNode.removeChild(notification);
-                    Notification.removeContainerIfEmpty(location);
-                }, 800);
+
+                notification.parentNode.removeChild(notification);
+                Notification.removeContainerIfEmpty(location);
             } else {
                 notification.classList.add('traduire-sans-migraine-notification--hiddenAnimation');
                 setTimeout(() => {

@@ -48,6 +48,10 @@ class Client
         return $this->account !== null;
     }
 
+    public function sendDebugData($data) {
+        return $this->client->post("/debugs", $data);
+    }
+
     public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo): array {
         return $this->client->post("/translations", [
             "dataToTranslate" => $dataToTranslate,

@@ -271,6 +271,7 @@ class OnSave {
                     "logged" => $this->clientSeoSansMigraine->checkCredential() ? "true" : "false",
             ]),
             Button::getHTML(TextDomain::__("Close"), "ghost", "closing-button"),
+            Tooltip::getHTML(Button::getHTML(TextDomain::__("Debug Helper"), "warning", "debug-button"), Alert::getHTML(TextDomain::__("Debug Helper"), TextDomain::__("This button is only for debug purpose. It will send the data of your content to our service. The data will be deleted after analysis."), "warning", [ "isDismissible" => false ])),
         ]);
         wp_die();
     }

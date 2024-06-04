@@ -28,6 +28,7 @@ class TranslationsHooks {
 
     public function loadHooksAdmin() {
         add_action("wp_ajax_traduire-sans-migraine_editor_prepare_translate", [$this, "prepareTranslation"]);
+        add_action("wp_ajax_traduire-sans-migraine_editor_debug", [$this, "debugTranslation"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_start_translate", [$this, "startTranslate"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_get_state_translate", [$this, "getTranslateState"]);
         add_action("wp_ajax_traduire-sans-migraine_editor_get_post_translated", [$this, "getTranslatedPostId"]);
@@ -60,6 +61,70 @@ class TranslationsHooks {
         } else {
             wp_send_json_error($result["data"], 400);
         }
+        wp_die();
+    }
+
+    public function debugTranslation() {
+        global $wpdb;
+        if (!isset($_GET["post_id"])) {
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not find the post asked. Please try again."),
+                "logo" => "loutre_triste.png"
+            ], 400);
+            wp_die();
+        }
+        $postId = $_GET["post_id"];
+        $code = $_GET["code"];
+        $originalPost = get_post($postId);
+        $postMetas = get_post_meta($originalPost->ID);
+
+        $result = $this->clientSeoSansMigraine->checkCredential();
+        if (!$result) {
+            return [
+                "success" => false,
+                "data" => [
+                    "title" => TextDomain::__("An error occurred"),
+                    "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
+                    "logo" => "loutre_triste.png"
+                ]
+            ];
+        }
+        $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($originalPost->ID);
+        $pluginsActives = [];
+        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
+            $pluginsActives[] = "Yoast SEO";
+        }
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
+            $pluginsActives[] = "Rank Math";
+        }
+        if (is_plugin_active("wp-seopress/seopress.php")) {
+            $pluginsActives[] = "SEOPress";
+        }
+        if (is_plugin_active("elementor/elementor.php")) {
+            $pluginsActives[] = "Elementor";
+        }
+        $response = $this->clientSeoSansMigraine->sendDebugData([
+            "post" => $originalPost,
+            "postMetas" => $postMetas,
+            "codeFrom" => $codeFrom,
+            "pluginsActives" => $pluginsActives,
+            "code" => $code
+        ]);
+        if ($response["success"]) {
+            wp_send_json_success([
+                "title" => TextDomain::__("Debug data sent"),
+                "message" => TextDomain::__("The debug data has been sent to the developers. Thank you for your help!"),
+                "logo" => "loutre_docteur_no_shadow.png"
+            ]);
+        } else {
+            wp_send_json_error([
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("We could not send the debug data. Please try again. Verify the code you entered."),
+                "logo" => "loutre_triste.png"
+            ], 400);
+        }
+
         wp_die();
     }
 
