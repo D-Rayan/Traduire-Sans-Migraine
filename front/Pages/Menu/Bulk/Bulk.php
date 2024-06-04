@@ -266,6 +266,8 @@ class Bulk {
                             $state["percentage"] = 100;
                             if (isset($data["message"])) {
                                 $state["message"]["id"] = TextDomain::__($data["message"]);
+                            } else if (isset($data["tokenId"])) {
+                                $state = get_option("_seo_sans_migraine_state_" . $data["tokenId"], $state);
                             }
                         } else if ($onGoing) {
                             $state = get_option("_seo_sans_migraine_state_" . $data["tokenId"], $state);

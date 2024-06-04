@@ -94,7 +94,6 @@ class Hooks
             if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
                 $Queue->stopQueue();
                 $nextItem["processed"] = true;
-                $nextItem["data"] = $data;
                 $Queue->updateItem($nextItem);
                 $Queue->startNextProcess();
             }
