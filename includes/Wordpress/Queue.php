@@ -91,7 +91,7 @@ class Queue {
         }
         $this->updateState("processing");
         // start Translation
-        $result = TranslationsHooks::getInstance()->prepareTranslationExecute($nextItem["ID"], [$nextItem["language"]]);
+        $result = TranslationsHooks::getInstance()->prepareTranslationExecute($nextItem["ID"], [$nextItem["languageTo"]]);
         if (!$result["success"]) {
             $nextItem["processed"] = true;
             $nextItem["data"] = $result["data"];
@@ -101,7 +101,7 @@ class Queue {
             return $this->startNextProcess();
         }
         $post = get_post($nextItem["ID"]);
-        $result = TranslationsHooks::getInstance()->startTranslateExecute($post, $nextItem["language"]);
+        $result = TranslationsHooks::getInstance()->startTranslateExecute($post, $nextItem["languageTo"]);
         if (!$result["success"]) {
             $nextItem["processed"] = true;
             $nextItem["data"] = $result["data"];
