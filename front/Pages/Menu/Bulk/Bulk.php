@@ -286,7 +286,6 @@ class Bulk {
                                 </div>
                                 <?php } ?>
                                 <?php echo get_the_title($postId); ?>
-                                <?php print_r($item); ?>
                             </div>
                             <div class="bulk-queue-item-language"><?php echo $flagsMap[$item["languageTo"]]; ?></div>
                             <div class="bulk-queue-item-state">
@@ -380,6 +379,7 @@ class Bulk {
                         WHERE 
                             post_type IN ('post', 'page') AND 
                             post_status!='trash' AND 
+                            post_status!='auto-draft' AND 
                             trFrom.term_taxonomy_id = %d AND
                             (
                                 (SELECT COUNT(*) FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
