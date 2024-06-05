@@ -78,6 +78,7 @@ class Hooks
             $this->handleRankMath();
             $this->handleSEOPress();
             $this->handleElementor();
+            $this->handleACF();
             $urlPost = get_admin_url(null, "post.php?post=" . $this->translatedPostId . "&action=edit");
             $htmlPost = "<a href='".$urlPost."' target='_blank'>".$urlPost."</a>";
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
@@ -177,6 +178,28 @@ class Hooks
             }
             if (isset($this->dataToTranslate["metaKeywords"])) {
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
+            }
+        }
+    }
+
+    private function handleACF() {
+        if (is_plugin_active("advanced-custom-fields/acf.php")) {
+            $postMetas = get_post_meta($this->originalPost->ID);
+            foreach ($this->dataToTranslate as $key => $value) {
+                if (strstr($key, "acf_")) {
+                    $key = substr($key, 4);
+                    if (isset($postMetas[$key]) && isset($postMetas["_" . $key])) {
+                        if ($this->is_json($value)) {
+                            $value = wp_slash($value);
+                        }
+                        if ($this->is_serialized($value)) {
+                            $value = unserialize($value);
+                        }
+
+                        update_post_meta($this->translatedPostId, $key, $value);
+                        update_post_meta($this->translatedPostId, "_" . $key, $postMetas["_" . $key][0]);
+                    }
+                }
             }
         }
     }

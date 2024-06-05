@@ -216,18 +216,7 @@ class TranslationsHooks {
         }
     }
 
-    private function getDataToTranslate($post, $codeTo) {
-        $translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($post->ID, $codeTo);
-        $translatedPost = $translatedPostId ? get_post($translatedPostId) : null;
-        $willBeAnUpdate = $translatedPost !== null && !strstr($translatedPost->post_name, "-traduire-sans-migraine");
-        $dataToTranslate = [];
-        if (!empty($post->post_content) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("content"))) { $dataToTranslate["content"] = $post->post_content; }
-        if (!empty($post->post_title) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("title"))) { $dataToTranslate["title"] = $post->post_title; }
-        if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
-        if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = str_replace("-", " ", $post->post_name); }
-
-
-        $postMetas = get_post_meta($post->ID);
+    private function handleYoast($postMetas, &$dataToTranslate, $willBeAnUpdate) {
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $metaTitle = isset($postMetas["_yoast_wpseo_title"][0]) ? $postMetas["_yoast_wpseo_title"][0] : "";
             if ($metaTitle && !empty($metaTitle) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_title"))) { $dataToTranslate["metaTitle"] = $metaTitle; }
@@ -236,7 +225,9 @@ class TranslationsHooks {
             $metaKeywords = isset($postMetas["_yoast_wpseo_metakeywords"][0]) ? $postMetas["_yoast_wpseo_metakeywords"][0] : "";
             if ($metaKeywords && !empty($metaKeywords) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_metakeywords"))) { $dataToTranslate["metaKeywords"] = $metaKeywords; }
         }
+    }
 
+    private function handleRankMath($postMetas, &$dataToTranslate, $willBeAnUpdate) {
         if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             $rankMathDescription = isset($postMetas["rank_math_description"][0]) ? $postMetas["rank_math_description"][0] : "";
             if ($rankMathDescription && !empty($rankMathDescription) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_description"))) { $dataToTranslate["rankMathDescription"] = $rankMathDescription; }
@@ -245,7 +236,8 @@ class TranslationsHooks {
             $rankMathFocusKeyword = isset($postMetas["rank_math_focus_keyword"][0]) ? $postMetas["rank_math_focus_keyword"][0] : "";
             if ($rankMathFocusKeyword && !empty($rankMathFocusKeyword) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("rank_math_focus_keyword"))) { $dataToTranslate["rankMathFocusKeyword"] = $rankMathFocusKeyword; }
         }
-
+    }
+    private function handleSeoPress($postMetas, &$dataToTranslate, $willBeAnUpdate) {
         if (is_plugin_active("wp-seopress/seopress.php")) {
             $seopress_titles_desc = isset($postMetas["seopress_titles_desc"][0]) ? $postMetas["seopress_titles_desc"][0] : "";
             if ($seopress_titles_desc && !empty($seopress_titles_desc) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("seopress_titles_desc"))) { $dataToTranslate["seopress_titles_desc"] = $seopress_titles_desc; }
@@ -254,7 +246,10 @@ class TranslationsHooks {
             $seopress_analysis_target_kw = isset($postMetas["seopress_analysis_target_kw"][0]) ? $postMetas["seopress_analysis_target_kw"][0] : "";
             if ($seopress_analysis_target_kw && !empty($seopress_analysis_target_kw) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("seopress_analysis_target_kw"))) { $dataToTranslate["seopress_analysis_target_kw"] = $seopress_analysis_target_kw; }
         }
+    }
 
+
+    private function handleElementor($postMetas, &$dataToTranslate, $willBeAnUpdate) {
         if (is_plugin_active("elementor/elementor.php")) {
             $noTranslateElementor = [
                 "_elementor_code" => true,
@@ -287,6 +282,36 @@ class TranslationsHooks {
                 }
             }
         }
+    }
+
+    private function handleACF($postMetas, &$dataToTranslate, $willBeAnUpdate) {
+        if (is_plugin_active("advanced-custom-fields/acf.php")) {
+            foreach ($postMetas as $key => $value) {
+                if (isset($postMetas["_" . $key])) {
+                    $dataToTranslate["acf_" . $key] = $value[0];
+                }
+            }
+        }
+    }
+
+    private function getDataToTranslate($post, $codeTo) {
+        $translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($post->ID, $codeTo);
+        $translatedPost = $translatedPostId ? get_post($translatedPostId) : null;
+        $willBeAnUpdate = $translatedPost !== null && !strstr($translatedPost->post_name, "-traduire-sans-migraine");
+        $dataToTranslate = [];
+        if (!empty($post->post_content) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("content"))) { $dataToTranslate["content"] = $post->post_content; }
+        if (!empty($post->post_title) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("title"))) { $dataToTranslate["title"] = $post->post_title; }
+        if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("excerpt"))) { $dataToTranslate["excerpt"] = $post->post_excerpt; }
+        if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) { $dataToTranslate["slug"] = str_replace("-", " ", $post->post_name); }
+
+        $postMetas = get_post_meta($post->ID);
+        $this->handleYoast($postMetas, $dataToTranslate, $willBeAnUpdate);
+        $this->handleRankMath($postMetas, $dataToTranslate, $willBeAnUpdate);
+        $this->handleSeoPress($postMetas, $dataToTranslate, $willBeAnUpdate);
+        $this->handleElementor($postMetas, $dataToTranslate, $willBeAnUpdate);
+        $this->handleACF($postMetas, $dataToTranslate, $willBeAnUpdate);
+
+
         return $dataToTranslate;
     }
     public function startTranslateExecute($post, $codeTo) {
