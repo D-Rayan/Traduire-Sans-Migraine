@@ -23,8 +23,10 @@ function displayCountCheckedToButton()  {
 
 const updateDisplayGlobalCheckbox = () => {
     const checkedCheckboxes = getCheckboxesListChecked().length;
-    globalCheckbox.checked = (allCheckboxes.length === checkedCheckboxes);
-    globalCheckbox.indeterminate = checkedCheckboxes > 0 && !globalCheckbox.checked;
+    if (globalCheckbox) {
+        globalCheckbox.checked = (allCheckboxes.length === checkedCheckboxes);
+        globalCheckbox.indeterminate = checkedCheckboxes > 0 && !globalCheckbox.checked;
+    }
     displayCountCheckedToButton();
 };
 
