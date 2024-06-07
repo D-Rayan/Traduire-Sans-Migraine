@@ -209,12 +209,15 @@ async function deleteQueue() {
 const allCheckboxes = getCheckboxesList();
 const globalCheckbox = document.querySelector("#all-posts");
 const buttonTranslate = document.querySelector('#traduire-sans-migraine-bulk-translate');
-globalCheckbox.addEventListener('change', () => {
-    allCheckboxes.forEach(checkbox => {
-        checkbox.checked = globalCheckbox.checked;
-        displayCountCheckedToButton();
-    });
-})
+
+if (globalCheckbox) {
+    globalCheckbox.addEventListener('change', () => {
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = globalCheckbox.checked;
+            displayCountCheckedToButton();
+        });
+    })
+}
 
 
 let lastChecked = null;
@@ -240,17 +243,20 @@ allCheckboxes.forEach(checkbox => {
     });
 });
 updateDisplayGlobalCheckbox();
-buttonTranslate.addEventListener('click', async (e) => {
-    e.preventDefault();
-    const checkedCheckboxes = getCheckboxesListChecked();
-    if (checkedCheckboxes.length === 0) {
-        return;
-    }
-    const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
-    setButtonLoading(buttonTranslate);
-    await translatePosts(ids);
-    await loadQueue();
-    stopButtonLoading(buttonTranslate);
-});
+
+if (buttonTranslate) {
+    buttonTranslate.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const checkedCheckboxes = getCheckboxesListChecked();
+        if (checkedCheckboxes.length === 0) {
+            return;
+        }
+        const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
+        setButtonLoading(buttonTranslate);
+        await translatePosts(ids);
+        await loadQueue();
+        stopButtonLoading(buttonTranslate);
+    });
+}
 addListenerToQueue();
 handleAutoRefreshQueue();
