@@ -30,7 +30,7 @@ class Menu {
         }
         $this->loadMenuIcon();
         add_menu_page(
-            "Nos Produits",
+            TextDomain::__("Our Products"),
             "Traduire sans migraine",
             "manage_options",
             "sans-migraine",
@@ -46,7 +46,7 @@ class Menu {
             ?>
             <script style="text/javascript">
                 const menuSanMigraine = document.querySelector("a[href*='page=sans-migraine'].wp-first-item");
-                menuSanMigraine.innerHTML = "Nos produits";
+                menuSanMigraine.innerHTML = "<?php echo TextDomain::__("Our Products"); ?>";
             </script>
             <?php
         });
@@ -56,7 +56,7 @@ class Menu {
         add_submenu_page(
             "sans-migraine",
             "⚙️ Traduire Sans Migraine",
-            "⚙️ Paramètres",
+            TextDomain::__("⚙️ Settings"),
             "manage_options",
             "traduire-sans-migraine",
             [$this, "renderSubMenu"]
@@ -64,7 +64,7 @@ class Menu {
         add_submenu_page(
             "sans-migraine",
             "⚙️ Traduire Sans Migraine",
-            "x️ Traduire",
+            TextDomain::__("💊 Bulk Translation"),
             "manage_options",
             "traduire-sans-migraine-bulk",
             [$this, "renderBulkMenu"]

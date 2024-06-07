@@ -1,47 +1,53 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress;
 
 
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\LanguageManager;
-use TraduireSansMigraine\Wordpress\LinkManager;
-use TraduireSansMigraine\Wordpress\Queue;
-use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class Hooks
+class TranslateHelper
 {
-    private $languageManager;
     private $tokenId;
     private $dataToTranslate;
     private $codeTo;
     private $codeFrom;
     private $originalPost;
-
     private $translatedPostId;
 
+
+    private $error;
+    private $success;
+
+    private $languageManager;
     private $linkManager;
 
-    public function __construct() {
+    public function __construct($tokenId, $translationData, $codeTo)
+    {
+        $this->tokenId = $tokenId;
+        $this->dataToTranslate = $translationData;
+        $this->codeTo = $codeTo;
         $this->languageManager = new LanguageManager();
         $this->linkManager = new LinkManager();
+        $this->success = true;
     }
 
-    public function init() {
-        add_action( 'rest_api_init', [$this, "registerEndpoints"]);
+    public function handleTranslationResult()
+    {
+        $this->checkRequirements();
+        if (!$this->success) {
+            return;
+        }
+        $this->startTranslate();
     }
 
-    public function setTranslations($data) {
-        set_time_limit(0); // Can be a long process cause of the lock system
+    private function startTranslate()
+    {
         try {
-            $response = $this->checkRequirements($data);
-            if ($response !== true) {
-                return $response;
-            }
             $this->codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($this->originalPost->ID);
             if (isset($this->dataToTranslate["content"])) {
                 $this->dataToTranslate["content"] = $this->linkManager->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
@@ -57,6 +63,8 @@ class Hooks
                         "args" => []
                     ]
                 ]);
+                $this->success = false;
+                return;
             }
             $translatedPost = get_post($this->translatedPostId);
             if (!$translatedPost) {
@@ -68,6 +76,8 @@ class Hooks
                         "args" => []
                     ]
                 ]);
+                $this->success = false;
+                return;
             }
             if (strstr($translatedPost->post_name, "-traduire-sans-migraine")) {
                 $this->updateTemporaryPostToRealOne();
@@ -80,7 +90,7 @@ class Hooks
             $this->handleElementor();
             $this->handleACF();
             $urlPost = get_admin_url(null, "post.php?post=" . $this->translatedPostId . "&action=edit");
-            $htmlPost = "<a href='".$urlPost."' target='_blank'>".$urlPost."</a>";
+            $htmlPost = "<a href='" . $urlPost . "' target='_blank'>" . $urlPost . "</a>";
             update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                 "percentage" => 100,
                 "status" => Step::$STEP_STATE["DONE"],
@@ -89,23 +99,19 @@ class Hooks
                     "args" => [$htmlPost]
                 ]
             ]);
-
+            $this->success = true;
             $Queue = Queue::getInstance();
             $nextItem = $Queue->getNextItem();
-            if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
+            if (intval($nextItem["ID"]) === intval($this->originalPost->ID)) {
                 $Queue->stopQueue();
                 $nextItem["processed"] = true;
                 $Queue->updateItem($nextItem);
                 $Queue->startNextProcess();
             }
-
-
-            $response = new \WP_REST_Response($data, 200);
         } catch (\Exception $e) {
-
             $Queue = Queue::getInstance();
             $nextItem = $Queue->getNextItem();
-            if (intval($nextItem["ID"])  === intval($this->originalPost->ID)) {
+            if (intval($nextItem["ID"]) === intval($this->originalPost->ID)) {
                 $Queue->stopQueue();
                 $nextItem["processed"] = true;
                 $nextItem["data"] = ["message" => $e->getMessage(), "title" => "error", "logo" => "loutre_triste.png"];
@@ -113,12 +119,68 @@ class Hooks
                 $Queue->updateItem($nextItem);
                 $Queue->startNextProcess();
             }
-            $response = new \WP_REST_Response(["success" => false, "error" => $e->getMessage()], 500);
+            $this->success = false;
+            $this->error = $e->getMessage();
         }
-
-
-        return $response;
     }
+
+    private function checkRequirements()
+    {
+        if ($this->dataToTranslate === false) {
+            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
+                "percentage" => 100,
+                "status" => Step::$STEP_STATE["ERROR"],
+                "message" => [
+                    "id" => TextDomain::_f("Oops! The otters have lost the translation in the river. Please try again 🦦"),
+                    "args" => []
+                ]
+            ]);
+            $this->success = false;
+            $this->error = "Data to translate not found";
+            return;
+        }
+        $postId = get_option("_seo_sans_migraine_postId_" . $this->tokenId);
+        update_option("_seo_sans_migraine_state_" . $this->tokenId, [
+            "percentage" => 75,
+            "status" => Step::$STEP_STATE["PROGRESS"],
+            "message" => [
+                "id" => TextDomain::_f("The otters works on your SEO optimization 🦦"),
+                "args" => []
+            ]
+        ]);
+        if (!$postId) {
+            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
+                "percentage" => 100,
+                "status" => Step::$STEP_STATE["ERROR"],
+                "message" => [
+                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                    "args" => []
+                ]
+            ]);
+            delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
+
+            $this->success = false;
+            $this->error = "Post not found";
+            return;
+        }
+        $this->originalPost = get_post($postId);
+        if (!$this->originalPost) {
+            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
+                "percentage" => 100,
+                "status" => Step::$STEP_STATE["ERROR"],
+                "message" => [
+                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
+                    "args" => []
+                ]
+            ]);
+            delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
+            $this->success = false;
+            $this->error = "Post not found";
+            return;
+        }
+    }
+
+
 
     private function updateTemporaryPostToRealOne() {
         global $wpdb;
@@ -260,87 +322,13 @@ class Hooks
         }
     }
 
-    private function checkRequirements($data) {
-        if (!isset($data["id"]) || !isset($data["dataToTranslate"]) || !isset($data["codeTo"])) {
-            return new \WP_REST_Response(["success" => false, "error" => "Missing parameters"], 400);
-        }
-        $this->tokenId = $data["id"];
-        $this->dataToTranslate = $data["dataToTranslate"];
-        $this->codeTo = $data["codeTo"];
-
-        if ($this->dataToTranslate === false) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "message" => [
-                    "id" => TextDomain::_f("Oops! The otters have lost the translation in the river. Please try again 🦦"),
-                    "args" => []
-                ]
-            ]);
-            return new \WP_REST_Response(["success" => false, "error" => "Data to translate not found"], 400);
-        }
-        $postId = get_option("_seo_sans_migraine_postId_" . $this->tokenId);
-        update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-            "percentage" => 75,
-            "status" => Step::$STEP_STATE["PROGRESS"],
-            "message" => [
-                "id" => TextDomain::_f("The otters works on your SEO optimization 🦦"),
-                "args" => []
-            ]
-        ]);
-        if (!$postId) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "message" => [
-                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
-                    "args" => []
-                ]
-            ]);
-            delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
-            return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
-        }
-        $this->originalPost = get_post($postId);
-        if (!$this->originalPost) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "message" => [
-                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
-                    "args" => []
-                ]
-            ]);
-            delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
-            return new \WP_REST_Response(["success" => false, "error" => "Post not found"], 404);
-        }
-
-        return true;
+    public function getError()
+    {
+        return $this->error;
     }
 
-    public function registerEndpoints() {
-        register_rest_route( 'seo-sans-migraine', '/translations/(?P<id>\d+)', [
-            'methods' => 'POST',
-            'callback' => [$this, "setTranslations"],
-            'permission_callback' => function () {
-                return true;
-            },
-            'args' => [
-                'id' => [
-                    'validate_callback' => function($param, $request, $key) {
-                        return true;
-                    }
-                ],
-                'dataToTranslate' => [
-                    'validate_callback' => function($param, $request, $key) {
-                        return true;
-                    }
-                ],
-                'codeTo' => [
-                    'validate_callback' => function($param, $request, $key) {
-                        return true;
-                    }
-                ],
-            ],
-        ]);
+    public function isSuccess()
+    {
+        return $this->success;
     }
 }

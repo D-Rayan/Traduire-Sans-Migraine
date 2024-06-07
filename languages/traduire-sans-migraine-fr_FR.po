@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-06-04T08:42:260\n"
+"POT-Creation-Date: 2024-06-07T09:17:280\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -200,59 +200,122 @@ msgstr ""
 msgid "Log-in"
 msgstr "Se Connecter"
 
-# Bulk.php
-msgid "Votre contenu international à portée de main 💊"
-msgstr "Votre contenu international à portée de main 💊"
+msgid "The item has been removed from the queue"
+msgstr "La traduction a été retirée de la file d’attente"
+
+msgid "%s will not be translated into %s"
+msgstr "%s ne sera pas traduit en %s"
+
+msgid "The item could not be removed from the queue"
+msgstr "Cette traduction ne peut pas être retiré de la file d’attente"
+
+msgid "The item is currently being processed or has already been processed."
+msgstr "La traduction est en cours ou a déjà été effectuée."
+
+msgid "The queue has been restarted"
+msgstr "La file d’attente a redémarré"
+
+msgid "The next item in the queue has been started."
+msgstr "La prochaine traduction dans la file d’attente a démarrée."
+
+msgid "The queue could not be restarted"
+msgstr "La file d’attente ne peut pas être relancée"
+
+msgid "The queue is currently processing or is empty."
+msgstr "Une traduction est en cours ou la file d’attente est vide."
+
+msgid "The queue has been paused"
+msgstr "La file d’attente a été mis en pause"
+
+msgid "The queue is no longer processing."
+msgstr "Les traductions ont été mis en pause."
+
+msgid "The queue has been deleted"
+msgstr "La file d’attente a été vidée"
+
+msgid "All the translations in the queue have been removed."
+msgstr "Toutes les traductions dans la file d’attente ont été retirées."
+
+msgid "Translate all your content in few seconds 💊"
+msgstr "Traduisez tout vos contenus en un instant 💊"
+
+msgid "Restart the Queue"
+msgstr "Redémarrer la file d’attente"
+
+msgid "Pause the Queue"
+msgstr "Mettre en pause la file d’attente"
+
+msgid "Delete the Queue"
+msgstr "Vider la file d’attente"
 
 msgid ""
-"Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir "
-"l'avancé de la traduction du contenu en cours ci-dessous."
+"You don't have to do anything, it's all in background. You can check the "
+"progress just below."
 msgstr ""
-"Vous n’avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir "
-"l’avancé de la traduction du contenu en cours ci-dessous."
+"Tu n’as rien besoin de faire, tout se déroule en arrière plan. Tu peux "
+"regarder la progression juste en dessous."
 
-msgid "Voir la file d'attente"
-msgstr ""
+msgid "See the translations progression"
+msgstr "Voir l’état des traductions"
 
-msgid "Rechercher"
-msgstr "Rechercher"
+msgid "Waiting for the translation to start 🕐"
+msgstr "En attente que la traduction démarre 🕐"
 
-msgid "Traduire les %var% contenus sélectionnés"
+msgid "Remove from the Queue"
+msgstr "Retirer de la file d’attente"
+
+msgid "Translate the %var% content selected"
 msgstr "Traduire les %var% contenus sélectionnés"
 
-msgid "Traduire le contenu sélectionné"
+msgid "Translate the content selected"
 msgstr "Traduire le contenu sélectionné"
 
-msgid "Sélectionner au moins un contenu à traduire"
-msgstr "Sélectionner au moins un contenu à traduire"
+msgid "Select at least one content to translate"
+msgstr "Sélectionne au moins un contenu à traduire"
+
+msgid "Display the content in"
+msgstr "Afficher les contenus en"
+
+msgid "that are not translated in"
+msgstr "Qui ne sont pas traduits en"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Oops!"
+msgstr "Oh oh !"
+
+msgid "There is no content to translate with this search."
+msgstr "Il n’y a pas de contenu correspondant à cette recherche."
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "Author"
+msgstr "Auteur/Autrice"
+
+msgid "State"
+msgstr "État"
+
+msgid "Unknown (ID: %s)"
+msgstr "Inconnu (ID: %s)"
 
 msgid ""
-"Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un "
-"seul clic."
+"Want to go the the next step? Translate all your content in few seconds?"
 msgstr ""
-"Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un "
-"seul clic."
+"Envie de passer l’étape supérieure ? Traduis tout tes contenus en un instant!"
 
-# Bulk.php
-msgid "Une erreur est survenue lors de la traduction de votre contenu 🚨"
-msgstr ""
+msgid "%s translation in progress"
+msgstr "%s traduction en cours"
 
-msgid "Votre contenu a été traduit avec succès 🎉"
-msgstr ""
+msgid "The translation is done"
+msgstr "La traduction est terminée"
 
-msgid "We will create and translate your post 💡"
-msgstr "On va créer et traduire ton article 💡"
+msgid "%s translations in progress"
+msgstr "%s traductions en cours"
 
-msgid "En attente"
-msgstr ""
-
-# Bulk.php
-msgid "%s traduction est en cours"
-msgstr "%s traduction est en cours"
-
-# Bulk.php
-msgid "%s traductions sont en cours"
-msgstr "%s traductions sont en cours"
+msgid "%s translations are done"
+msgstr "%s traductions sont terminées"
 
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
@@ -296,16 +359,6 @@ msgstr "Contenu de l’article"
 
 msgid "Post's title"
 msgstr "Titre de l’article"
-
-msgid "Post's Excerpt"
-msgstr "Extrait de l’article"
-
-msgid ""
-"The excerpt is a short summary of your post. It is used by default in the "
-"search results."
-msgstr ""
-"L’excerpt est un court résumé de ton article. Il est utilisé par défaut dans "
-"les résultats de recherche."
 
 msgid "Post's slug"
 msgstr "Slug de l’article"
@@ -397,28 +450,6 @@ msgstr "%s requis au moins un des plugins suivants : %s"
 msgid "Missing required plugins"
 msgstr "Des plugins requis sont manquants"
 
-msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
-msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
-
-msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr "Les loutres ont fini la traduction 🦦. Tu peux y accéder ici %s"
-
-# Hooks.php
-msgid ""
-"Oops! The otters have lost the translation in the river. Please try again 🦦"
-msgstr ""
-"Oops ! Les loutres ont perdu la traduction dans la rivière. N’hésites pas à "
-"réessayer 🦦"
-
-msgid "The otters works on your SEO optimization 🦦"
-msgstr "Les loutres peaufinent la mise en forme 🦦"
-
-# TranslationsHooks.php
-msgid "We could not find the post or the languages asked. Please try again."
-msgstr ""
-"Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
-"plus tard."
-
 msgid "We could not find the post asked. Please try again."
 msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
 
@@ -439,9 +470,37 @@ msgstr ""
 "Nous n’avons pas pu envoyer les données. Vérifie ton code de débug et "
 "réessaye."
 
+msgid "We could not find your post. Please try again."
+msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
+
+msgid "We could not find the language. Please try again."
+msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
+
+# TranslationsHooks.php
+msgid "We could not find the post or the languages asked. Please try again."
+msgstr ""
+"Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
+"plus tard."
+
 msgid "We could not create all the translations. Please try again."
 msgstr ""
 "Nous n’avons pas réussi à créer toutes les traductions. Réessaye plus tard."
+
+msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
+msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
+
+msgid "The otters have finished the translation 🦦, Check it right here %s"
+msgstr "Les loutres ont fini la traduction 🦦. Tu peux y accéder ici %s"
+
+# Hooks.php
+msgid ""
+"Oops! The otters have lost the translation in the river. Please try again 🦦"
+msgstr ""
+"Oops ! Les loutres ont perdu la traduction dans la rivière. N’hésites pas à "
+"réessayer 🦦"
+
+msgid "The otters works on your SEO optimization 🦦"
+msgstr "Les loutres peaufinent la mise en forme 🦦"
 
 msgid "We could not find the post or the language asked. Please try again."
 msgstr ""
@@ -456,20 +515,24 @@ msgstr ""
 msgid "You have reached your monthly quota."
 msgstr "Tu as atteint ton quota mensuel."
 
+msgid "The otters are translating your post 🦦"
+msgstr "Les loutres traduisent ton article 🦦"
+
 msgid "We could not find the request ID."
 msgstr "Nous ne trouvons plus l’identifiant de la requête."
 
 msgid "We could not find the state of the translation"
-msgstr "Nous ne trouvons plus l’état de ta traduction."
+msgstr "Nous ne trouvons plus l’état de ta traduction"
 
-msgid "We could not find your post. Please try again."
-msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
+msgid "We will create and translate your post 💡"
+msgstr "On va créer et traduire ton article 💡"
 
-msgid "We could not find the language. Please try again."
-msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
+# Products.php
+msgid "Our Products"
+msgstr "Nos produits"
 
-msgid "The otters are translating your post 🦦"
-msgstr "Les loutres traduisent ton article 🦦"
+msgid "💊 Bulk Translation"
+msgstr "💊 Traduction Groupée"
 
 # Plugin Name
 msgid "Traduire Sans Migraine is enabled"
@@ -518,6 +581,51 @@ msgstr "/languages"
 msgid "GPL2"
 msgstr "GPL2"
 
+#~ msgid "Traduire le contenu sélectionné"
+#~ msgstr "Traduire le contenu sélectionné"
+
+#~ msgid "Sélectionner au moins un contenu à traduire"
+#~ msgstr "Sélectionner au moins un contenu à traduire"
+
+#~ msgid "Rechercher"
+#~ msgstr "Rechercher"
+
+#~ msgid "Post's Excerpt"
+#~ msgstr "Extrait de l’article"
+
+#~ msgid ""
+#~ "The excerpt is a short summary of your post. It is used by default in the "
+#~ "search results."
+#~ msgstr ""
+#~ "L’excerpt est un court résumé de ton article. Il est utilisé par défaut "
+#~ "dans les résultats de recherche."
+
+# Bulk.php
+#~ msgid "Votre contenu international à portée de main 💊"
+#~ msgstr "Votre contenu international à portée de main 💊"
+
+#~ msgid ""
+#~ "Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez "
+#~ "voir l'avancé de la traduction du contenu en cours ci-dessous."
+#~ msgstr ""
+#~ "Vous n’avez rien à faire, tout se déroule en arrière plan. Vous pouvez "
+#~ "voir l’avancé de la traduction du contenu en cours ci-dessous."
+
+#~ msgid ""
+#~ "Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en "
+#~ "un seul clic."
+#~ msgstr ""
+#~ "Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en "
+#~ "un seul clic."
+
+# Bulk.php
+#~ msgid "%s traduction est en cours"
+#~ msgstr "%s traduction est en cours"
+
+# Bulk.php
+#~ msgid "%s traductions sont en cours"
+#~ msgstr "%s traductions sont en cours"
+
 #~ msgid "Traduction en cours"
 #~ msgstr "Traduction en cours"
 
@@ -553,10 +661,6 @@ msgstr "GPL2"
 #~ msgid "Open my translate tab"
 #~ msgstr "Ouvrir ma console de traduction"
 
-# Products.php
-#~ msgid "Our products"
-#~ msgstr "Nos produits"
-
 # Author
 #~ msgid "Sans-Migraine"
 #~ msgstr "Sans-Migraine"
@@ -589,9 +693,6 @@ msgstr "GPL2"
 #~ "Utilisez la case à cocher sur la gauche pour ajouter cette langue à "
 #~ "traduire. Cependant certains des liens ne seront pas traduits car soit "
 #~ "ils n’existent pas en %s ou ne sont pas encore publiés : "
-
-#~ msgid "The followings articles are not translated : "
-#~ msgstr "Les articles suivants ne sont pas traduit : "
 
 #~ msgid "The followings articles are not published : "
 #~ msgstr "Les articles suivant ne sont pas encore publiés : "

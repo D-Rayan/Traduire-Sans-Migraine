@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.8.000\n"
+"Project-Id-Version: Traduire Sans Migraine 0.9.009\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-06-04T08:42:260\n"
+"POT-Creation-Date: 2024-06-07T09:17:280\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # Main.php
@@ -152,49 +152,117 @@ msgid "Log-in"
 msgstr ""
 
 # Bulk.php
-msgid "Votre contenu international à portée de main 💊"
+msgid "The item has been removed from the queue"
 msgstr ""
 
-msgid "Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir l'avancé de la traduction du contenu en cours ci-dessous."
+msgid "%s will not be translated into %s"
 msgstr ""
 
-msgid "Voir la file d'attente"
+msgid "The item could not be removed from the queue"
 msgstr ""
 
-msgid "Rechercher"
+msgid "The item is currently being processed or has already been processed."
 msgstr ""
 
-msgid "Traduire les %var% contenus sélectionnés"
+msgid "The queue has been restarted"
 msgstr ""
 
-msgid "Traduire le contenu sélectionné"
+msgid "The next item in the queue has been started."
 msgstr ""
 
-msgid "Sélectionner au moins un contenu à traduire"
+msgid "The queue could not be restarted"
 msgstr ""
 
-msgid "Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un seul clic."
+msgid "The queue is currently processing or is empty."
+msgstr ""
+
+msgid "The queue has been paused"
+msgstr ""
+
+msgid "The queue is no longer processing."
+msgstr ""
+
+msgid "The queue has been deleted"
+msgstr ""
+
+msgid "All the translations in the queue have been removed."
+msgstr ""
+
+msgid "Translate all your content in few seconds 💊"
+msgstr ""
+
+msgid "Restart the Queue"
+msgstr ""
+
+msgid "Pause the Queue"
+msgstr ""
+
+msgid "Delete the Queue"
+msgstr ""
+
+msgid "You don't have to do anything, it's all in background. You can check the progress just below."
+msgstr ""
+
+msgid "See the translations progression"
+msgstr ""
+
+msgid "Waiting for the translation to start 🕐"
+msgstr ""
+
+msgid "Remove from the Queue"
+msgstr ""
+
+msgid "Translate the %var% content selected"
+msgstr ""
+
+msgid "Translate the content selected"
+msgstr ""
+
+msgid "Select at least one content to translate"
+msgstr ""
+
+msgid "Display the content in"
+msgstr ""
+
+msgid "that are not translated in"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Oops!"
+msgstr ""
+
+msgid "There is no content to translate with this search."
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Author"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Unknown (ID: %s)"
+msgstr ""
+
+msgid "Want to go the the next step? Translate all your content in few seconds?"
 msgstr ""
 
 # Bulk.php
-msgid "Une erreur est survenue lors de la traduction de votre contenu 🚨"
+msgid "%s translation in progress"
 msgstr ""
 
-msgid "Votre contenu a été traduit avec succès 🎉"
-msgstr ""
-
-msgid "We will create and translate your post 💡"
-msgstr ""
-
-msgid "En attente"
+msgid "The translation is done"
 msgstr ""
 
 # Bulk.php
-msgid "%s traduction est en cours"
+msgid "%s translations in progress"
 msgstr ""
 
-# Bulk.php
-msgid "%s traductions sont en cours"
+msgid "%s translations are done"
 msgstr ""
 
 # Menu.php
@@ -231,12 +299,6 @@ msgid "Post's content"
 msgstr ""
 
 msgid "Post's title"
-msgstr ""
-
-msgid "Post's Excerpt"
-msgstr ""
-
-msgid "The excerpt is a short summary of your post. It is used by default in the search results."
 msgstr ""
 
 msgid "Post's slug"
@@ -315,23 +377,7 @@ msgstr ""
 msgid "Missing required plugins"
 msgstr ""
 
-# Hooks.php
-msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
-msgstr ""
-
-msgid "The otters have finished the translation 🦦, Check it right here %s"
-msgstr ""
-
-msgid "Oops! The otters have lost the translation in the river. Please try again 🦦"
-msgstr ""
-
-msgid "The otters works on your SEO optimization 🦦"
-msgstr ""
-
-# TranslationsHooks.php
-msgid "We could not find the post or the languages asked. Please try again."
-msgstr ""
-
+# DebugHelper.php
 msgid "We could not find the post asked. Please try again."
 msgstr ""
 
@@ -347,9 +393,34 @@ msgstr ""
 msgid "We could not send the debug data. Please try again. Verify the code you entered."
 msgstr ""
 
+# GetPostTranslated.php
+msgid "We could not find your post. Please try again."
+msgstr ""
+
+msgid "We could not find the language. Please try again."
+msgstr ""
+
+# PrepareTranslation.php
+msgid "We could not find the post or the languages asked. Please try again."
+msgstr ""
+
 msgid "We could not create all the translations. Please try again."
 msgstr ""
 
+# RestAPI.php
+msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
+msgstr ""
+
+msgid "The otters have finished the translation 🦦, Check it right here %s"
+msgstr ""
+
+msgid "Oops! The otters have lost the translation in the river. Please try again 🦦"
+msgstr ""
+
+msgid "The otters works on your SEO optimization 🦦"
+msgstr ""
+
+# StartTranslation.php
 msgid "We could not find the post or the language asked. Please try again."
 msgstr ""
 
@@ -359,20 +430,26 @@ msgstr ""
 msgid "You have reached your monthly quota."
 msgstr ""
 
+# StartTranslation.php
+msgid "The otters are translating your post 🦦"
+msgstr ""
+
+# TranslationState.php
 msgid "We could not find the request ID."
 msgstr ""
 
 msgid "We could not find the state of the translation"
 msgstr ""
 
-msgid "We could not find your post. Please try again."
+# TranslationState.php
+msgid "We will create and translate your post 💡"
 msgstr ""
 
-msgid "We could not find the language. Please try again."
+# Menu.php
+msgid "Our Products"
 msgstr ""
 
-# TranslationsHooks.php
-msgid "The otters are translating your post 🦦"
+msgid "💊 Bulk Translation"
 msgstr ""
 
 # traduire-sans-migraine.php

@@ -144,29 +144,6 @@
     align-items: center;
 }
 
-.icon {
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-}
-
-
-.icon-play {
-    color: #4caf50;
-}
-
-.icon-pause {
-    color: #ff9800;
-}
-
-.icon-delete {
-    color: #f44336;
-}
-.icon.disable {
-    color: #a8a8a8;
-    cursor: default;
-}
-
 .actions-queue {
     display: flex;
     gap: 1rem;

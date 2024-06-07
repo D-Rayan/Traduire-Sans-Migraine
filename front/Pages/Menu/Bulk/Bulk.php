@@ -4,6 +4,7 @@ namespace TraduireSansMigraine\Front\Pages\Menu\Bulk;
 use TraduireSansMigraine\Front\Components\Alert;
 use TraduireSansMigraine\Front\Components\Button;
 use TraduireSansMigraine\Front\Components\Checkbox;
+use TraduireSansMigraine\Front\Components\Icon;
 use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Front\Components\Tooltip;use TraduireSansMigraine\Front\Pages\Menu\Menu;
 use TraduireSansMigraine\Languages\LanguageManager;
@@ -156,7 +157,7 @@ class Bulk {
         ob_start();
         ?>
         <span><?php echo TSM__NAME; ?></span>
-        <span class="second-color"><?php echo TextDomain::__("Votre contenu international à portée de main 💊"); ?></span>
+        <span class="second-color"><?php echo TextDomain::__("Translate all your content in few seconds 💊"); ?></span>
         <?php
         return ob_get_clean();
     }
@@ -168,11 +169,6 @@ class Bulk {
     }
 
     private static function renderQueueProgress($page) {
-        echo self::getHTMLQueueProgress($page);
-    }
-
-    private static function getHTMLQueueProgress($page) {
-        ob_start();
         $page = intval($page);
         $Queue = Queue::getInstance();
         $queue = $Queue->getQueue();
@@ -201,38 +197,50 @@ class Bulk {
                     <span>
                         <?php
                             if ($total > $translatedDone) {
-                                echo TextDomain::_n("%s traduction est en cours", "%s traductions sont en cours", count($queue), count($queue));
+                                echo TextDomain::_n("%s translation in progress", "%s translations in progress", count($queue), count($queue));
                             } else {
-                                echo TextDomain::_n("La traduction est terminée", "%s traductions sont terminées", count($queue), count($queue));
+                                echo TextDomain::_n("The translation is done", "%s translations are done", count($queue), count($queue));
                             }
                         ?>
                     </span>
                     <div class="actions-queue">
                         <?php
                             Tooltip::render(
-                                    '<span data-action="play-queue" class="icon icon-play ' . (($statusQueue === "processing" || $translatedDone === $total) ? "disable" : "") . '"><svg viewBox="64 64 896 896" focusable="false" data-icon="play-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M719.4 499.1l-296.1-215A15.9 15.9 0 00398 297v430c0 13.1 14.8 20.5 25.3 12.9l296.1-215a15.9 15.9 0 000-25.8zm-257.6 134V390.9L628.5 512 461.8 633.1z"></path></svg></span>',
-                                TextDomain::__("Restart the Queue"));
+                                Icon::getHTML("play", "#4caf50", ($statusQueue === "processing" || $translatedDone === $total), ["action" => "play-queue"]),
+                                TextDomain::__("Restart the Queue"),
+                                [
+                                    "padding" => true,
+                                ]
+                            );
                         ?>
                         <?php
                             Tooltip::render(
-                                    '<span data-action="pause-queue" class="icon icon-pause ' . (($statusQueue === "idle") ? "disable" : "") . '"><svg viewBox="64 64 896 896" focusable="false" data-icon="pause" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M304 176h80v672h-80zm408 0h-64c-4.4 0-8 3.6-8 8v656c0 4.4 3.6 8 8 8h64c4.4 0 8-3.6 8-8V184c0-4.4-3.6-8-8-8z"></path></svg></span>',
-                                TextDomain::__("Pause the Queue"));
+                                Icon::getHTML("pause", "#ff9800", ($statusQueue === "idle"), ["action" => "pause-queue"]),
+                                TextDomain::__("Pause the Queue"),
+                                [
+                                    "padding" => true,
+                                ]
+                            );
                         ?>
                         <?php
                             Tooltip::render(
-                                    '<span data-action="delete-queue" class="icon icon-delete"><svg fill-rule="evenodd" viewBox="64 64 896 896" focusable="false" data-icon="close" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"></path></svg></span>',
-                                TextDomain::__("Delete the Queue"));
+                                Icon::getHTML("close", "#f44336", false, ["action" => "delete-queue"]),
+                                TextDomain::__("Delete the Queue"),
+                                [
+                                    "padding" => true,
+                                ]
+                            );
                         ?>
                     </div>
                 </div>
                 <?php if ($translatedDone < $total) { ?>
-                <div class="bulk-queue-description"><?php echo TextDomain::__("Vous n'avez rien à faire, tout se déroule en arrière plan. Vous pouvez voir l'avancé de la traduction du contenu en cours ci-dessous."); ?></div>
+                <div class="bulk-queue-description"><?php echo TextDomain::__("You don't have to do anything, it's all in background. You can check the progress just below."); ?></div>
                 <?php } ?>
                 <?php
                 Step::render([
                     "percentage" => $translatedDone / $total * 100,
                     "status" => $haveError ? Step::$STEP_STATE["ERROR"] : ($translatedDone === $total ? Step::$STEP_STATE["DONE"] : Step::$STEP_STATE["PROGRESS"]),
-                    "indicatorText" => Button::getHTML(TextDomain::__("See the translations state"), "primary", "traduire-sans-migraine-bulk-queue-display"),
+                    "indicatorText" => Button::getHTML(TextDomain::__("See the translations progression"), "primary", "traduire-sans-migraine-bulk-queue-display"),
                 ]);
                 ?>
                 <div class="bulk-queue-items">
@@ -280,8 +288,12 @@ class Bulk {
                                 <div class="actions-queue">
                                     <?php
                                     Tooltip::render(
-                                        '<span class="icon icon-delete" data-post-id="'.$postId.'" data-action="remove-from-queue"><svg viewBox="64 64 896 896" focusable="false" data-icon="delete" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z"></path></svg></span>',
-                                        TextDomain::__("Remove from the Queue"));
+                                        Icon::getHTML("delete", "#f44336", false, ["postId" => $postId, "action" => "remove-from-queue"]),
+                                        TextDomain::__("Remove from the Queue"),
+                                        [
+                                            "padding" => true,
+                                        ]
+                                    );
                                     ?>
                                 </div>
                                 <?php } ?>
@@ -329,42 +341,9 @@ class Bulk {
             </div>
             <?php
         }
-        return ob_get_clean();
     }
 
-    private static function getContent() {
-        global $wpdb;
-        ob_start();
-        $languageManager = new LanguageManager();
-        $defaultLanguage = $languageManager->getLanguageManager()->getDefaultLanguage();
-        ?>
-        <div class="bulk-content">
-        <?php
-        if ($defaultLanguage === false) {
-            Alert::render("error", "No default language found. Please check your configuration.", "error");
-            ?>
-            </div>
-            <?php
-            return ob_get_clean();
-        }
-
-        $languagesTranslatable = [];
-        $languagesAvailable = [];
-        foreach ($languageManager->getLanguageManager()->getLanguages() as $language) {
-            $languagesAvailable[$language["code"]] = $language;
-            $languagesTranslatable[$language["code"]] = $language;
-        }
-
-        if (count($languagesTranslatable) < 2) {
-            Alert::render("error", "You need at least two languages to use this feature.", "error");
-            ?>
-            </div>
-            <?php
-            return ob_get_clean();
-        }
-
-
-        $authors = get_users();
+    private static function getSelectedLanguages($languagesAvailable, $languagesTranslatable, $defaultLanguage) {
         $selectedLanguageFrom = isset($_GET["languageFrom"]) && isset($languagesAvailable[$_GET["languageFrom"]]) ? $_GET["languageFrom"] : $defaultLanguage["code"];
         $selectedLanguageTo = isset($_GET["languageTo"]) && isset($languagesTranslatable[$_GET["languageTo"]]) ? $_GET["languageTo"] : array_key_first($languagesTranslatable);
         if ($selectedLanguageTo === $selectedLanguageFrom) {
@@ -373,8 +352,14 @@ class Bulk {
                 $selectedLanguageTo = array_key_first($languagesTranslatable);
             }
         }
+        return ["from" => $selectedLanguageFrom, "to" => $selectedLanguageTo];
+    }
+
+    private static function getPostsToDisplay($selectedLanguageFromId, $selectedLanguageToSlug) {
+        global $wpdb;
+
         $queryFetchPosts = $wpdb->prepare(
-                "SELECT * FROM $wpdb->posts 
+            "SELECT * FROM $wpdb->posts 
                         LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
                         WHERE 
                             post_type IN ('post', 'page') AND 
@@ -392,72 +377,136 @@ class Bulk {
                             )
                         ORDER BY post_status DESC, ID DESC
                         ",
-                $languagesAvailable[$selectedLanguageFrom]["id"],
-                $selectedLanguageTo
+            $selectedLanguageFromId,
+            $selectedLanguageToSlug
         );
-
         $posts = $wpdb->get_results($queryFetchPosts);
+        $Queue = Queue::getInstance();
+        $postsToDisplay = [];
+        foreach ($posts as $post) {
+            if ($Queue->isFromQueue($post->ID)) {
+                continue;
+            }
+            $postsToDisplay[] = $post;
+        }
+        return $postsToDisplay;
+    }
 
-        ?>
-        <div id="queue-container">
-        <?php
-            self::renderQueueProgress(1);
-        ?>
-        </div>
-        <div class="actions">
-            <form method="get">
-                <input type="hidden" name="page" id="page" value="<?php echo $_GET["page"]; ?>"/>
-                <label for="languageFrom">Afficher les contenus en</label>
-                <select name="languageFrom" id="languageFrom">
-                    <?php
-                    foreach ($languagesAvailable as $slug => $language) {
-                        $name = $language["name"];
-                        ?>
-                        <option value="<?php echo $slug; ?>" <?php if ($selectedLanguageFrom === $slug) { echo "selected"; } ?>><?php echo $name; ?></option>
-                        <?php
-                    }
-                    ?>
-                </select>
-                <label for="languageTo">qui ne sont pas encore traduit en</label>
-                <select name="languageTo" id="languageTo">
-                    <?php
-                    foreach ($languagesTranslatable as $slug => $language) {
-                        $name = $language["name"];
-                        ?>
-                        <option value="<?php echo $slug; ?>" <?php if ($selectedLanguageTo === $slug) { echo "selected"; } ?>><?php echo $name; ?></option>
-                        <?php
-                    }
-                    ?>
-                </select>
-                <input type="hidden" id="languageToHidden" name="languageToHidden" value="<?php echo $selectedLanguageTo; ?>"/>
-                <?php
-                    Button::render(TextDomain::__("Rechercher"), "ghost", "traduire-sans-migraine-bulk-filter");
-                ?>
-            </form>
+    private static function getContent() {
+        ob_start();
+        $languageManager = new LanguageManager();
+        $languagesTranslatable = [];
+        $languagesAvailable = [];
+        $defaultLanguage = $languageManager->getLanguageManager()->getDefaultLanguage();
+        foreach ($languageManager->getLanguageManager()->getLanguages() as $language) {
+            $languagesAvailable[$language["code"]] = $language;
+            $languagesTranslatable[$language["code"]] = $language;
+        }
+        if ($defaultLanguage === false) {
+            ?>
+            <div class="bulk-content">
             <?php
-                Button::render("", "primary", "traduire-sans-migraine-bulk-translate", [
-                    "default-plural" => TextDomain::__("Traduire les %var% contenus sélectionnés"),
-                    "default-singular" => TextDomain::__("Traduire le contenu sélectionné"),
-                    "default-none" => TextDomain::__("Sélectionner au moins un contenu à traduire"),
-                ]);
+            Alert::render("error", "No default language found. Please check your configuration.", "error");
+            ?>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
+        if (count($languagesTranslatable) < 2) {
+            ?>
+            <div class="bulk-content">
+            <?php
+            Alert::render("error", "You need at least two languages to use this feature.", "error");
+            ?>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
+
+        $selectedLanguages = self::getSelectedLanguages($languagesAvailable, $languagesTranslatable, $defaultLanguage);
+        $selectedLanguageFrom = $selectedLanguages["from"];
+        $selectedLanguageTo = $selectedLanguages["to"];
+        $postsToDisplay = self::getPostsToDisplay($languagesAvailable[$selectedLanguageFrom]["id"], $selectedLanguageTo);
+        ?>
+        <div class="bulk-content">
+            <div id="queue-container">
+            <?php
+                self::renderQueueProgress(1);
+            ?>
+            </div>
+            <div class="actions">
+                <?php
+                self::renderForm($languagesAvailable, $selectedLanguageFrom, $languagesTranslatable, $selectedLanguageTo);
+                if (!empty($postsToDisplay)) {
+                    Button::render("", "primary", "traduire-sans-migraine-bulk-translate", [
+                        "default-plural" => TextDomain::__("Translate the %var% content selected"),
+                        "default-singular" => TextDomain::__("Translate the content selected"),
+                        "default-none" => TextDomain::__("Select at least one content to translate"),
+                    ]);
+                }
+                ?>
+            </div>
+            <?php
+                self::renderPosts($postsToDisplay);
             ?>
         </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function renderForm($languagesAvailable, $selectedLanguageFrom, $languagesTranslatable, $selectedLanguageTo) {
+        ?>
+        <form method="get">
+            <input type="hidden" name="page" id="page" value="<?php echo $_GET["page"]; ?>"/>
+            <label for="languageFrom"><?php echo TextDomain::__("Display the content in"); ?></label>
+            <select name="languageFrom" id="languageFrom">
+                <?php
+                foreach ($languagesAvailable as $slug => $language) {
+                    $name = $language["name"];
+                    ?>
+                    <option value="<?php echo $slug; ?>" <?php if ($selectedLanguageFrom === $slug) { echo "selected"; } ?>><?php echo $name; ?></option>
+                    <?php
+                }
+                ?>
+            </select>
+            <label for="languageTo"><?php echo TextDomain::__("that are not translated in"); ?></label>
+            <select name="languageTo" id="languageTo">
+                <?php
+                foreach ($languagesTranslatable as $slug => $language) {
+                    $name = $language["name"];
+                    ?>
+                    <option value="<?php echo $slug; ?>" <?php if ($selectedLanguageTo === $slug) { echo "selected"; } ?>><?php echo $name; ?></option>
+                    <?php
+                }
+                ?>
+            </select>
+            <input type="hidden" id="languageToHidden" name="languageToHidden" value="<?php echo $selectedLanguageTo; ?>"/>
+            <?php
+            Button::render(TextDomain::__("Search"), "ghost", "traduire-sans-migraine-bulk-filter");
+            ?>
+        </form>
+        <?php
+    }
+
+    private static function renderPosts($postsToDisplay) {
+        if (empty($postsToDisplay)) {
+            Alert::render(TextDomain::__("Oops!"), TextDomain::__("There is no content to translate with this search."), "warning", ["isDismissible" => false]);
+            return;
+        }
+        $authors = get_users();
+        ?>
         <table class="traduire-sans-migraine-table">
             <thead>
-                <tr>
-                    <th><?php Checkbox::render("", "all-posts"); ?></th>
-                    <th>Titre</th>
-                    <th>Auteur/Autrice</th>
-                    <th>Etat</th>
-                </tr>
+            <tr>
+                <th><?php Checkbox::render("", "all-posts"); ?></th>
+                <th><?php echo TextDomain::__("Title"); ?></th>
+                <th><?php echo TextDomain::__("Author"); ?></th>
+                <th><?php echo TextDomain::__("State"); ?></th>
+            </tr>
             </thead>
             <tbody>
             <?php
-            $Queue = Queue::getInstance();
-            foreach ($posts as $post) {
-                if ($Queue->isFromQueue($post->ID)) {
-                    continue;
-                }
+            foreach ($postsToDisplay as $post) {
                 ?>
                 <tr>
                     <td><?php Checkbox::render("", "post-" . $post->ID); ?></td>
@@ -470,9 +519,7 @@ class Bulk {
             ?>
             </tbody>
         </table>
-        </div>
         <?php
-        return ob_get_clean();
     }
 
     private static function displayAuthorName($authors, $authorId) {
@@ -482,13 +529,13 @@ class Bulk {
                 return;
             }
         }
-        echo "Inconnu (ID: $authorId)";
+        echo TextDomain::__("Unknown (ID: %s)", $authorId);
     }
 
     private static function getDescription() {
         ob_start();
         ?>
-        <span><?php echo TextDomain::__("Envie de passer à la vitesse supérieure ? Traduisez tout vos contenus en un seul clic."); ?></span>
+        <span><?php echo TextDomain::__("Want to go the the next step? Translate all your content in few seconds?"); ?></span>
         <?php
         return ob_get_clean();
     }

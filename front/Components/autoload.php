@@ -9,6 +9,7 @@ include __DIR__ . "/Button/Button.php";
 include __DIR__ . "/Suggestions/Suggestions.php";
 include __DIR__ . "/Notification/Notification.php";
 include __DIR__ . "/Tooltip/Tooltip.php";
+include __DIR__ . "/Icon/Icon.php";
 
 
 /*

@@ -1,4 +1,3 @@
-
 function getCheckboxesList() {
     return document.querySelectorAll("input[type='checkbox']:not([id='all-posts']):not([disabled])")
 }
@@ -7,10 +6,7 @@ function getCheckboxesListChecked() {
     return document.querySelectorAll("input[type='checkbox']:not([id='all-posts']):not([disabled]):checked")
 }
 
-
-const buttonTranslate = document.querySelector('#traduire-sans-migraine-bulk-translate');
-
-function displayCountCheckedToButton() {
+function displayCountCheckedToButton()  {
     const checkedCheckboxes = getCheckboxesListChecked().length;
     if (!buttonTranslate) {
         return;
@@ -25,50 +21,12 @@ function displayCountCheckedToButton() {
     buttonTranslate.disabled = (checkedCheckboxes === 0);
 }
 
-
-const allCheckboxes = getCheckboxesList();
-const globalCheckbox = document.querySelector("#all-posts");
-const handleOnChange = (checkbox) => {
-    displayCountCheckedToButton();
-
-};
 const updateDisplayGlobalCheckbox = () => {
     const checkedCheckboxes = getCheckboxesListChecked().length;
     globalCheckbox.checked = (allCheckboxes.length === checkedCheckboxes);
     globalCheckbox.indeterminate = checkedCheckboxes > 0 && !globalCheckbox.checked;
     displayCountCheckedToButton();
 };
-globalCheckbox.addEventListener('change', () => {
-    allCheckboxes.forEach(checkbox => {
-        checkbox.checked = globalCheckbox.checked;
-        handleOnChange(checkbox);
-    });
-})
-
-
-let lastChecked = null;
-allCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-        handleOnChange(checkbox);
-        updateDisplayGlobalCheckbox();
-    });
-    checkbox.addEventListener('click', (e) => {
-        if (e.shiftKey) {
-            let inBetween = false;
-            allCheckboxes.forEach(checkbox => {
-                if (checkbox === lastChecked || checkbox === e.target) {
-                    inBetween = !inBetween;
-                }
-                if (inBetween) {
-                    checkbox.checked = e.target.checked;
-                    handleOnChange(checkbox);
-                }
-            });
-        }
-        lastChecked = checkbox;
-    });
-});
-updateDisplayGlobalCheckbox();
 
 async function translatePosts(ids) {
     await fetch(`${tsm.url}add_items`, {
@@ -96,9 +54,10 @@ async function getQueueHTML(page = undefined) {
     });
     return response.text();
 }
+
 let queueRefreshingInterval = null;
 function initQueueRefreshing() {
-    queueRefreshingInterval = setInterval(loadQueue, 5000);
+    queueRefreshingInterval = setInterval(loadQueue, 2000);
 }
 
 async function loadQueue(page = undefined) {
@@ -110,6 +69,20 @@ async function loadQueue(page = undefined) {
         document.querySelector(".bulk-queue-items").classList.add("visible");
     }
     addListenerToQueue();
+    handleAutoRefreshQueue();
+}
+
+function handleAutoRefreshQueue() {
+    if (isQueueProgressing() && !queueRefreshingInterval) {
+        initQueueRefreshing();
+    } else if (!isQueueProgressing() && queueRefreshingInterval) {
+        stopQueueRefreshing();
+    }
+}
+function isQueueProgressing() {
+    const playButton = document.querySelector("span[data-action='play-queue']");
+    const pauseButton = document.querySelector("span[data-action='pause-queue']");
+    return (playButton && playButton.classList.contains("disable") && pauseButton && !pauseButton.classList.contains("disable"));
 }
 
 function addListenerToButtonDisplayQueue() {
@@ -129,29 +102,15 @@ function addListenerToButtonDisplayQueue() {
 function stopQueueRefreshing() {
     clearInterval(queueRefreshingInterval);
 }
-// initQueueRefreshing();
-addListenerToQueue();
-buttonTranslate.addEventListener('click', async (e) => {
-    e.preventDefault();
-    const checkedCheckboxes = getCheckboxesListChecked();
-    if (checkedCheckboxes.length === 0) {
-        return;
-    }
-    const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
-    setButtonLoading(buttonTranslate);
-    await translatePosts(ids);
-    await loadQueue();
-    stopButtonLoading(buttonTranslate);
-});
 
 function addListenerToQueue() {
     initTooltips();
     addListenerToButtonDisplayQueue();
     addListenerToActionsItems();
-    addListenerToPages();
+    addListenerToPagination();
 }
 
-function addListenerToPages() {
+function addListenerToPagination() {
     document.querySelectorAll(".bulk-queue-pagination-item").forEach(item => {
         if (item.classList.contains("active") || item.classList.contains("disable")) {
             return;
@@ -166,6 +125,10 @@ function addListenerToPages() {
 
 function addListenerToActionsItems() {
     document.querySelectorAll("span[data-action]").forEach(span => {
+        if ("initialized" in span.dataset) {
+            return;
+        }
+        span.dataset.initialized = "true";
         span.addEventListener('click', async (e) => {
             e.preventDefault();
             const action = span.dataset.action;
@@ -241,3 +204,53 @@ async function deleteQueue() {
         },
     });
 }
+
+
+const allCheckboxes = getCheckboxesList();
+const globalCheckbox = document.querySelector("#all-posts");
+const buttonTranslate = document.querySelector('#traduire-sans-migraine-bulk-translate');
+globalCheckbox.addEventListener('change', () => {
+    allCheckboxes.forEach(checkbox => {
+        checkbox.checked = globalCheckbox.checked;
+        displayCountCheckedToButton();
+    });
+})
+
+
+let lastChecked = null;
+allCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+        displayCountCheckedToButton();
+        updateDisplayGlobalCheckbox();
+    });
+    checkbox.addEventListener('click', (e) => {
+        if (e.shiftKey) {
+            let inBetween = false;
+            allCheckboxes.forEach(checkbox => {
+                if (checkbox === lastChecked || checkbox === e.target) {
+                    inBetween = !inBetween;
+                }
+                if (inBetween) {
+                    checkbox.checked = e.target.checked;
+                    handleOnChange(checkbox);
+                }
+            });
+        }
+        lastChecked = checkbox;
+    });
+});
+updateDisplayGlobalCheckbox();
+buttonTranslate.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const checkedCheckboxes = getCheckboxesListChecked();
+    if (checkedCheckboxes.length === 0) {
+        return;
+    }
+    const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
+    setButtonLoading(buttonTranslate);
+    await translatePosts(ids);
+    await loadQueue();
+    stopButtonLoading(buttonTranslate);
+});
+addListenerToQueue();
+handleAutoRefreshQueue();

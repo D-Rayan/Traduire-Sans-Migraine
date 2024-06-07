@@ -65,6 +65,14 @@ class Client
         return $this->client->get("/translations/$tokenId");
     }
 
+    public function fetchAllFinishedTranslations() {
+        $response = $this->client->get("/translations");
+        if (!$response["success"]) {
+            return [];
+        }
+        return $response["data"]["translations"];
+    }
+
     public function getLanguages() {
         $response = $this->client->get("/languages");
         if (!$response["success"]) {

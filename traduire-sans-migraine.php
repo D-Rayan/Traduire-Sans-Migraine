@@ -16,16 +16,20 @@ namespace TraduireSansMigraine;
 
 
 use TraduireSansMigraine\Front\Components\Alert;
-use TraduireSansMigraine\Wordpress\Hooks\Hooks;
-use TraduireSansMigraine\Wordpress\Hooks\TranslationsHooks;
+use TraduireSansMigraine\Wordpress\Hooks\DebugHelper;
+use TraduireSansMigraine\Wordpress\Hooks\GetPostTranslated;
+use TraduireSansMigraine\Wordpress\Hooks\PrepareTranslation;
+use TraduireSansMigraine\Wordpress\Hooks\RestAPI;
+use TraduireSansMigraine\Wordpress\Hooks\StartTranslation;
+use TraduireSansMigraine\Wordpress\Hooks\TranslationState;
 use TraduireSansMigraine\Wordpress\Menu;
+use TraduireSansMigraine\Wordpress\OfflineProcess;
 use TraduireSansMigraine\Wordpress\TextDomain;
 use TraduireSansMigraine\Wordpress\Updater;
 
 if (!defined("ABSPATH")) {
     exit;
 }
-
 include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
@@ -39,9 +43,6 @@ class TraduireSansMigraine {
     private $updater;
     private $textDomain;
 
-    private $hooks;
-
-    private $translationsHooks;
 
     private $menu;
     public function __construct() {
@@ -49,8 +50,6 @@ class TraduireSansMigraine {
         $this->updater = new Updater();
         $this->textDomain = new TextDomain();
         $this->menu = new Menu();
-        $this->hooks = new Hooks();
-        $this->translationsHooks = TranslationsHooks::getInstance();
         $this->init();
     }
 
@@ -85,9 +84,14 @@ class TraduireSansMigraine {
         register_activation_hook(__FILE__, [$this, "prepareActivationPlugin"]);
         add_action("admin_init", [$this, "checkRequirements"]);
         add_action("admin_init", [$this, "messageSuccessActivation"]);
+        OfflineProcess::getInstance()->init();
         $this->menu->init();
-        $this->hooks->init();
-        $this->translationsHooks->init();
+        DebugHelper::getInstance()->init();
+        GetPostTranslated::getInstance()->init();
+        PrepareTranslation::getInstance()->init();
+        RestAPI::getInstance()->init();
+        StartTranslation::getInstance()->init();
+        TranslationState::getInstance()->init();
     }
 
     public function prepareActivationPlugin() {
