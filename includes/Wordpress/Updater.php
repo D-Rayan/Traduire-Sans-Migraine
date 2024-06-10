@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress;
 
 use stdClass;
+use TraduireSansMigraine\Settings;
 
 class Updater {
 
@@ -10,7 +11,6 @@ class Updater {
     public $version;
     public $cache_key;
     public $cache_allowed;
-
     public function __construct() {
 
         $this->plugin_slug = plugin_basename( TSM__ABSOLUTE_PATH );
@@ -32,8 +32,10 @@ class Updater {
 
         if( false === $remote || ! $this->cache_allowed ) {
 
+            $settings = new Settings();
+
             $remote = wp_remote_get(
-                TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php?locale=' . get_locale() . '&version=' . $this->version . '&php=' . PHP_VERSION . '&wp=' . get_bloginfo( 'version' ),
+                TSM__URL_DOMAIN . '/wp-content/uploads/products/traduire-sans-migraine/info.php?locale=' . get_locale() . '&version=' . $this->version . '&php=' . PHP_VERSION . '&wp=' . get_bloginfo( 'version' ) . '&key=' . $settings->getToken(),
                 array(
                     'timeout' => 10,
                     'headers' => array(
