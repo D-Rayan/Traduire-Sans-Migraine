@@ -11,7 +11,7 @@ class Main {
     }
 
     public function enqueueScripts() {
-        $linkTraduireSansMigrainePractices = TextDomain::__("https://seosansmigraine.crisp.help/fr/article/bonnes-pratiques-de-traduction-seo-k3cmvy/");
+        $linkTraduireSansMigrainePractices = TextDomain::__("https://www.seo-sans-migraine.fr/astuces-traduction-seo");
         wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Main.js", [], TSM__VERSION, true);
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmI18N", [
             "Traduction en cours" => TextDomain::__("Translation in progress"),

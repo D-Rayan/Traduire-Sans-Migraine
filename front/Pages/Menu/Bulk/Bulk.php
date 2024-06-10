@@ -359,32 +359,33 @@ class Bulk {
         global $wpdb;
 
         $queryFetchPosts = $wpdb->prepare(
-            "SELECT * FROM $wpdb->posts 
+            "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
+                                trTaxonomyTo.taxonomy = 'post_translations' AND 
+                                trTaxonomyTo.description LIKE '%%\"%s\"%%' AND 
+                                trTaxonomyTo.term_taxonomy_id IN (
+                                    SELECT trTo.term_taxonomy_id FROM wp_term_relationships trTo WHERE trTo.object_id = posts.ID
+                                )
+                            ) AS translationMap FROM $wpdb->posts posts
                         LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
                         WHERE 
-                            post_type IN ('post', 'page') AND 
-                            post_status!='trash' AND 
-                            post_status!='auto-draft' AND 
-                            trFrom.term_taxonomy_id = %d AND
-                            (
-                                (SELECT COUNT(*) FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
-                                    trTaxonomyTo.taxonomy = 'post_translations' AND 
-                                    trTaxonomyTo.description LIKE '%%\"%s\"%%' AND 
-                                    trTaxonomyTo.term_taxonomy_id IN (
-                                        SELECT trTo.term_taxonomy_id FROM wp_term_relationships trTo WHERE trTo.object_id = ID
-                                    )
-                                ) = 0
-                            )
-                        ORDER BY post_status DESC, ID DESC
+                            posts.post_type IN ('post', 'page') AND 
+                            posts.post_status!='trash' AND 
+                            posts.post_status!='auto-draft' AND 
+                            trFrom.term_taxonomy_id = %d
+                        ORDER BY posts.post_status DESC, posts.ID DESC
                         ",
-            $selectedLanguageFromId,
-            $selectedLanguageToSlug
+            $selectedLanguageToSlug,
+            $selectedLanguageFromId
         );
         $posts = $wpdb->get_results($queryFetchPosts);
         $Queue = Queue::getInstance();
         $postsToDisplay = [];
         foreach ($posts as $post) {
             if ($Queue->isFromQueue($post->ID)) {
+                continue;
+            }
+            $translationMap = !empty($post->translationMap) ? unserialize($post->translationMap) : [];
+            if (isset($translationMap[$selectedLanguageToSlug]) && get_post_status($translationMap[$selectedLanguageToSlug]) !== "trash") {
                 continue;
             }
             $postsToDisplay[] = $post;
