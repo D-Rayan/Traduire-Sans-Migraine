@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "generateJS": "tsc -p .",
+    "generateCSS": "php cli/generateCSSTSM.php",
+    "combineJS": "php cli/generateJSTSM.php",
+    "minifyJS": "uglifyjs front/Main/tsm.js -o front/Main/tsm.min.js",
+    "minifyCSS": "cleancss -o front/Main/tsm.min.css front/Main/tsm.css",
+    "clean": "rm -rf front/Main/tsm.js front/Main/tsm.css front/compiled",
+    "build": "npm run generateJS && npm run combineJS && npm run generateCSS && npm run minifyJS && npm run minifyCSS && npm run clean"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "uglify-js": "^3.18.0",
+    "uglifyjs-folder": "^3.3.0"
+  }
+}

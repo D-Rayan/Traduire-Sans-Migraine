@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . "/Main/Main.php";
+include __DIR__ . "/../Main/Main.php";
 include __DIR__ . "/Alert/Alert.php";
 include __DIR__ . "/Modal/Modal.php";
 include __DIR__ . "/Checkbox/Checkbox.php";

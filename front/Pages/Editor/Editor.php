@@ -3,50 +3,15 @@
 namespace TraduireSansMigraine\Front\Pages\Editor;
 
 use TraduireSansMigraine\Front\Components\Button;
-use TraduireSansMigraine\Front\Components\Checkbox;
-use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\Settings as SettingsPlugin;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 include "OnSave/OnSave.php";
 class Editor {
 
-    private $path;
-
     public function __construct() {
-        $this->path = plugin_dir_url(__FILE__);
     }
 
-    public function enqueueScripts() {
-        $settingsInstance = new SettingsPlugin();
-        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Editor.js", [], TSM__VERSION, true);
-        wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmEditor", [
-            "url" => admin_url("admin-ajax.php") . "?action=traduire-sans-migraine_",
-            "postUrl" => admin_url("post.php"),
-            "autoOpen" => $settingsInstance->settingIsEnabled("tsmOpenOnSave") ? "true" : "false",
-            "_has_been_translated_by_tsm" => isset($_GET["post"]) ? get_post_meta($_GET["post"], "_has_been_translated_by_tsm", true) : false,
-            "_tsm_first_visit_after_translation" => isset($_GET["post"]) ? get_post_meta($_GET["post"], "_tsm_first_visit_after_translation", true) : false,
-        ]);
-        if (isset($_GET["post"])) {
-            delete_post_meta($_GET["post"], "_tsm_first_visit_after_translation");
-        }
-    }
-
-    public function loadAssetsAdmin() {
-        add_action("admin_enqueue_scripts", [$this, "enqueueScripts"]);
-    }
-
-    public function loadAssetsClient() {
-        // nothing to load
-    }
-    public function loadAssets()
-    {
-        if (is_admin()) {
-            $this->loadAssetsAdmin();
-        } else {
-            $this->loadAssetsClient();
-        }
-    }
     public function displayTraduireSansMigraineMetabox()
     {
         ?>
@@ -90,7 +55,6 @@ class Editor {
         // nothing here
     }
     public function init() {
-        $this->loadAssets();
         $this->loadAdminHooks();
     }
 }

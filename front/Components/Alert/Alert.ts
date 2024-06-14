@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 class Alert {
-    static createNode(title, message, type) {
+    static createNode(title: string, message: string, type: string) {
         const alert = document.createElement('div');
         alert.classList.add('notice', 'traduire-sans-migraine-alert', `traduire-sans-migraine-alert-${type}`);
         alert.innerHTML = `

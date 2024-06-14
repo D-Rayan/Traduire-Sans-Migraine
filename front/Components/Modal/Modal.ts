@@ -1,6 +1,12 @@
+import {CustomWindow} from "../../Main/WindowTSM";
+
+declare let window: CustomWindow;
 function initModalEvents() {
     const modals = document.querySelectorAll('.traduire-sans-migraine-modal');
     modals.forEach(modal => {
+        if (!(modal instanceof HTMLElement)) {
+            return;
+        }
         if (modal.dataset.initiliazed) {
             return;
         }
@@ -12,9 +18,9 @@ function initModalEvents() {
     });
 }
 
-function addModalToBody(modal) {
+export function addModalToBody(modalHTML: string): HTMLElement {
     const div = document.createElement('div');
-    div.innerHTML = modal;
+    div.innerHTML = modalHTML;
     div.id = `traduire-sans-migraine-modal-${Date.now()}`
     document.body.appendChild(div);
     initModalEvents();
@@ -22,12 +28,12 @@ function addModalToBody(modal) {
     return document.querySelector(`#${div.id}`);
 }
 
-function removeModal(modal) {
+export function removeModal(modal: Element) {
     modal.remove();
 }
 
-async function renderModal(title = "", message = "", button = []) {
-    const fetchResponse = await fetch(`${tsm.url}render_modal`, {
+export async function renderModal(title: string = "", message: string = "", button: Array<string> = []) {
+    const fetchResponse = await fetch(`${window.tsmVariables.url}render_modal`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -5,56 +5,6 @@ use TraduireSansMigraine\Front\Components\Button;use TraduireSansMigraine\Wordpr
 
 class Menu {
 
-    private $path;
-
-    public function __construct() {
-        $this->path = plugin_dir_url(__FILE__);
-    }
-
-    public function enqueueScripts() {
-        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Menu.js", [], TSM__VERSION, true);
-    }
-
-    public function enqueueStyles()
-    {
-        wp_enqueue_style(TSM__SLUG . "-" . get_class(), $this->path . "Menu.css", [], TSM__VERSION);
-    }
-
-    public function loadAssetsAdmin() {
-        if (!isset($_GET["page"]) || !strstr($_GET["page"], "sans-migraine")) {
-            return;
-        }
-        add_action("admin_enqueue_scripts", [$this, "enqueueScripts"]);
-        add_action("admin_enqueue_scripts", [$this, "enqueueStyles"]);
-    }
-
-    public function loadAssetsClient() {
-        // nothing to load
-    }
-    public function loadAssets()
-    {
-        if (is_admin()) {
-            $this->loadAssetsAdmin();
-        } else {
-            $this->loadAssetsClient();
-        }
-    }
-
-    public function loadHooks() {
-
-    }
-
-    public function loadAdminHooks() {
-    }
-
-    public function loadClientHooks() {
-        // nothing here
-    }
-    public function init() {
-        $this->loadAssets();
-        $this->loadAdminHooks();
-    }
-
     static function render($title, $description, $content, $picture = "") {
         ?>
         <div class="wrap">
@@ -107,6 +57,3 @@ class Menu {
         <?php
     }
 }
-
-$menu = new Menu();
-$menu->init();

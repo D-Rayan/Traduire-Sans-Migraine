@@ -1,11 +1,11 @@
-function setButtonLoading(buttonSelector) {
+function setButtonLoading(buttonSelector: string | Element) {
     const button = typeof buttonSelector === "string" ? document.querySelector(buttonSelector) : buttonSelector;
     button.classList.add('loading');
-    button.disabled = true;
+    button.setAttribute('disabled', 'true');
 }
 
-function stopButtonLoading(buttonSelector) {
+function stopButtonLoading(buttonSelector: string | Element) {
     const button = typeof buttonSelector === "string" ? document.querySelector(buttonSelector) : buttonSelector;
     button.classList.remove('loading');
-    button.disabled = false;
+    button.setAttribute('disabled', 'false');
 }

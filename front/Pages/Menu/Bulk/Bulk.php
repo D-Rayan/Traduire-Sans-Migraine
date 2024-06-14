@@ -14,39 +14,7 @@ use TraduireSansMigraine\Wordpress\TextDomain;
 
 class Bulk {
 
-    private $path;
-
     public function __construct() {
-        $this->path = plugin_dir_url(__FILE__);
-    }
-
-    public function enqueueScripts() {
-        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Bulk.js", [], TSM__VERSION, true);
-    }
-
-    public function enqueueStyles()
-    {
-        wp_enqueue_style(TSM__SLUG . "-" . get_class(), $this->path . "Bulk.css", [], TSM__VERSION);
-    }
-
-    public function loadAssetsAdmin() {
-        if (!isset($_GET["page"]) || $_GET["page"] !== "traduire-sans-migraine-bulk") {
-            return;
-        }
-        add_action("admin_enqueue_scripts", [$this, "enqueueScripts"]);
-        add_action("admin_enqueue_scripts", [$this, "enqueueStyles"]);
-    }
-
-    public function loadAssetsClient() {
-        // nothing to load
-    }
-    public function loadAssets()
-    {
-        if (is_admin()) {
-            $this->loadAssetsAdmin();
-        } else {
-            $this->loadAssetsClient();
-        }
     }
 
     public function loadHooks() {
@@ -66,7 +34,6 @@ class Bulk {
         // nothing here
     }
     public function init() {
-        $this->loadAssets();
         $this->loadAdminHooks();
     }
 
