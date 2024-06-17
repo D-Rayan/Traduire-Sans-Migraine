@@ -46,7 +46,9 @@ class Polylang implements LanguageInterface
             throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post"));
         }
 
-        return pll_get_post($postId, $codeLanguage);
+        $postId = pll_get_post($postId, $codeLanguage);
+
+        return $postId && get_post_status($postId) !== "trash" ? $postId : null;
     }
 
     public function getAllTranslationsPost(string $postId): array

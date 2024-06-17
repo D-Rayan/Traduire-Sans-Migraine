@@ -62,7 +62,8 @@ class OnSave {
         $enrichedTranslationsPosts = [];
         foreach ($translationsPosts as $codeSlug => $translationPost) {
             $translatable = in_array($translationPost["code"], $languagesTranslatable);
-            $checked = !$translationPost["postId"] && $translationPost["postId"] != $post["id"] && $translatable;
+            $postExists = $translationPost["postId"] && get_post_status($translationPost["postId"]) !== "trash";
+            $checked = !$postExists && $translationPost["postId"] != $post["id"] && $translatable;
             $issuesTranslatedUrls = $this->getLinkManager()->getIssuedInternalLinks($post["content"], $post["language"], $translationPost["code"]);
             $notTranslated = $issuesTranslatedUrls["notTranslated"];
             $notPublished = $issuesTranslatedUrls["notPublished"];
@@ -72,7 +73,7 @@ class OnSave {
                 "name" => $translationPost["name"],
                 "flag" => $translationPost["flag"],
                 "code" => $translationPost["code"],
-                "postId" => $translationPost["postId"],
+                "postId" => $postExists ? $translationPost["postId"] : null,
                 "checked" => $checked,
                 "haveWarnings" => $haveWarnings,
                 "notTranslated" => $notTranslated,
