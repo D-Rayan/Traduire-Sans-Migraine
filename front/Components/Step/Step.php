@@ -11,6 +11,43 @@ class Step
         "DONE" => "done",
         "ERROR" => "error"
     ];
+    private $path;
+
+    public function __construct()
+    {
+        $this->path = plugin_dir_url(__FILE__);
+    }
+
+    public function enqueueScripts()
+    {
+        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Step.js", [], TSM__VERSION, true);
+    }
+
+    public function enqueueStyles()
+    {
+        wp_enqueue_style(TSM__SLUG . "-" . get_class(), $this->path . "Step.min.css", [], TSM__VERSION);
+    }
+
+    public function loadAssetsAdmin()
+    {
+        add_action("admin_enqueue_scripts", [$this, "enqueueScripts"]);
+        add_action("admin_enqueue_scripts", [$this, "enqueueStyles"]);
+    }
+
+    public function loadAssetsClient()
+    {
+        // nothing to load
+    }
+
+    public function loadAssets()
+    {
+        if (is_admin()) {
+            $this->loadAssetsAdmin();
+        } else {
+            $this->loadAssetsClient();
+        }
+    }
+
     public static function getHTML($options = [])
     {
         if (!isset($options["percentage"])) {
@@ -42,3 +79,6 @@ class Step
         echo self::getHTML($options);
     }
 }
+
+$alert = new Step();
+$alert->loadAssets();

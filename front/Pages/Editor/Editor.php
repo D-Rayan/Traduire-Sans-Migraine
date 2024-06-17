@@ -3,15 +3,39 @@
 namespace TraduireSansMigraine\Front\Pages\Editor;
 
 use TraduireSansMigraine\Front\Components\Button;
+use TraduireSansMigraine\Front\Components\Checkbox;
+use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\Settings as SettingsPlugin;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 include "OnSave/OnSave.php";
 class Editor {
 
+    private $path;
+
     public function __construct() {
+        $this->path = plugin_dir_url(__FILE__);
     }
 
+    public function enqueueScripts() {
+        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Editor.js", [], TSM__VERSION, true);
+    }
+
+    public function loadAssetsAdmin() {
+        add_action("admin_enqueue_scripts", [$this, "enqueueScripts"]);
+    }
+
+    public function loadAssetsClient() {
+        // nothing to load
+    }
+    public function loadAssets()
+    {
+        if (is_admin()) {
+            $this->loadAssetsAdmin();
+        } else {
+            $this->loadAssetsClient();
+        }
+    }
     public function displayTraduireSansMigraineMetabox()
     {
         ?>
@@ -55,6 +79,7 @@ class Editor {
         // nothing here
     }
     public function init() {
+        $this->loadAssets();
         $this->loadAdminHooks();
     }
 }

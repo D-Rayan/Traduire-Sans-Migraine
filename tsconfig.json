@@ -6,7 +6,6 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "outDir": "./front/compiled"
   },
   "include": ["./front/Components/**/*.ts", "./front/Pages/**/*.ts", "./front/Main/*.ts"]
 }

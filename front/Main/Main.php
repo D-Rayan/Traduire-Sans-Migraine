@@ -14,7 +14,7 @@ class Main {
     public function enqueueScripts() {
         $settingsInstance = new SettingsPlugin();
         $linkTraduireSansMigrainePractices = TextDomain::__("https://www.seo-sans-migraine.fr/astuces-traduction-seo");
-        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "tsm.min.js", [], TSM__VERSION, true);
+        wp_enqueue_script(TSM__SLUG . "-" . get_class(), $this->path . "Main.js", [], TSM__VERSION, true);
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmI18N", [
             "Traduction en cours" => TextDomain::__("Translation in progress"),
             "Traduction terminée" => TextDomain::__("Translation is done"),
@@ -38,7 +38,7 @@ class Main {
     }
 
     public function enqueueStyles() {
-        wp_enqueue_style(TSM__SLUG . "-" . get_class(), $this->path . "tsm.min.css", [], TSM__VERSION);
+        wp_enqueue_style(TSM__SLUG . "-" . get_class(), $this->path . "style.min.css", [], TSM__VERSION);
     }
 
     public function loadAssetsAdmin() {

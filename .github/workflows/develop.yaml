@@ -49,10 +49,7 @@ jobs:
             cp env.global.php traduire-sans-migraine/env.global.php
             rm -rf traduire-sans-migraine.zip && rm -rf .github && rm -rf .gitignore && rm -rf env.production.php && rm -rf env.php && rm -rf cli
             find . -name "*.ts" -type f -delete
-            mv traduire-sans-migraine/front/Main/tsm.min.css traduire-sans-migraine/front/Main/tsm.min
-            find . -name "*.css" -type f -delete
-            mv traduire-sans-migraine/front/Main/tsm.min traduire-sans-migraine/front/Main/tsm.min.css
-            find . -name "*.json" -type f -delete
+            find . -name "*.css" ! -name "*.min.css" -type f -delete
             zip -rm traduire-sans-migraine.zip traduire-sans-migraine
             mv env.staging.php env.php
             rm -rf traduire-sans-migraine

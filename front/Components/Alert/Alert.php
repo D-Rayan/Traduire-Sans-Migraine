@@ -3,7 +3,35 @@
 namespace TraduireSansMigraine\Front\Components;
 
 class Alert {
-    public function __construct() {}
+    private $path;
+    public function __construct() {
+        $this->path = plugin_dir_url(__FILE__);
+    }
+
+    public function enqueueScripts() {
+        wp_enqueue_script(TSM__SLUG . "-". get_class(), $this->path . "Alert.js", [], TSM__VERSION, true);
+    }
+
+    public function enqueueStyles() {
+        wp_enqueue_style(TSM__SLUG . "-". get_class(), $this->path . "Alert.min.css", [], TSM__VERSION);
+    }
+
+    public function loadAssetsAdmin() {
+        add_action("admin_enqueue_scripts", [$this, "enqueueScripts"]);
+        add_action("admin_enqueue_scripts", [$this, "enqueueStyles"]);
+    }
+
+    public function loadAssetsClient() {
+        // nothing to load
+    }
+    public function loadAssets()
+    {
+        if (is_admin()) {
+            $this->loadAssetsAdmin();
+        } else {
+            $this->loadAssetsClient();
+        }
+    }
 
     public static function getHTML($title, $message, $type, $options = [
             "isDismissible" => true
@@ -44,3 +72,6 @@ class Alert {
         echo self::getHTML($title, $message, $type, $options);
     }
 }
+
+$alert = new Alert();
+$alert->loadAssets();
