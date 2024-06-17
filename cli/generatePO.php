@@ -25,6 +25,9 @@ function readFilesThroughDir($dir, $msgIds = ["PLACEHOLDER_VERSION" => true]) {
         if ($include === "." || $include === "..") {
             continue;
         }
+        if (in_array($include, ["cli", ".github", "node_modules"])) {
+            continue;
+        }
         $path = $dir . "/" . $include;
         if (is_dir($path)) {
             $msgIds = readFilesThroughDir($path, $msgIds);
