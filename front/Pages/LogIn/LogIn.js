@@ -1,9 +1,6 @@
-import {CustomWindow} from "../../Main/WindowTSM";
-declare let window: CustomWindow;
-
-function addListenerToLogInButton(callbackOnSuccess: () => void) {
+function addListenerToLogInButton(callbackOnSuccess) {
     const buttonLogIn = document.querySelector("button#log-in");
-    if (buttonLogIn instanceof HTMLButtonElement) {
+    if (buttonLogIn) {
         buttonLogIn.addEventListener("click", async () => {
             const href = buttonLogIn.dataset.href;
             window.open(href, "_blank");
@@ -13,19 +10,19 @@ function addListenerToLogInButton(callbackOnSuccess: () => void) {
 }
 
 async function isOtterLoggedIn() {
-    const fetchResponse = await fetch(`${window.tsmVariables.url}is_otter_logged_in`);
+    const fetchResponse = await fetch(`${tsmVariables.url}is_otter_logged_in`);
     const data = await fetchResponse.json();
     return data.logged_in;
 }
 
-export async function renderLogInHTML(element: HTMLElement, callbackOnSuccess: () => void) {
-    const fetchResponse = await fetch(`${window.tsmVariables.url}get_log_in_html`);
+async function renderLogInHTML(element, callbackOnSuccess) {
+    const fetchResponse = await fetch(`${tsmVariables.url}get_log_in_html`);
     const data = await fetchResponse.text();
     element.innerHTML = data;
     addListenerToLogInButton(callbackOnSuccess);
 }
 
-function startFetchingLogInStatus(callbackOnSuccess: () => void) {
+function startFetchingLogInStatus(callbackOnSuccess) {
     const interval = setInterval(async () => {
         const isLoggedIn = await isOtterLoggedIn();
         if (isLoggedIn) {

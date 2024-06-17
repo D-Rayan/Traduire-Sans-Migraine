@@ -1,15 +1,9 @@
 {
   "scripts": {
-    "generateJS": "tsc -p .",
-    "minifyCSS": "cleancss -b --batch-suffix '.min' front/*/*.css !front/*/*.min.css && cleancss -b --batch-suffix '.min' front/Components/*/*.css !front/Components/*/*.min.css && cleancss -b --batch-suffix '.min' front/Pages/*/*.css !front/Pages/*/*.min.css",
-    "build": "npm run generateJS && npm run minifyCSS"
+    "minifyCSS": "cleancss -b --batch-suffix '.min' **/*.css !**/*.min.css",
+    "build": "npm run minifyCSS"
   },
   "devDependencies": {
-    "clean-css-cli": "^5.6.3",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "uglify-js": "^3.18.0",
-    "uglifyjs-folder": "^3.3.0"
+    "clean-css-cli": "^5.6.3"
   }
 }

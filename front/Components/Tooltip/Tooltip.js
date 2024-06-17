@@ -1,18 +1,15 @@
-const TSMTooltips: Record<string, Element> = {};
+const TSMTooltips = {};
 function initTooltips() {
 
     const tooltips = document.querySelectorAll('.traduire-sans-migraine-tooltip');
     tooltips.forEach(tooltip => {
-        if (!(tooltip instanceof HTMLElement)) {
-            return;
-        }
         if (tooltip.dataset.initilized === "true") {
             return;
         }
         tooltip.dataset.initilized = "true";
         const realContent = tooltip.querySelector('.traduire-sans-migraine-tooltip-hoverable');
         const tooltipContent = tooltip.querySelector('.traduire-sans-migraine-tooltip-content');
-        let copy: Element|null = null;
+        let copy = null;
         realContent.addEventListener('mouseenter', () => {
             if (copy) {
                 return;
@@ -24,7 +21,6 @@ function initTooltips() {
             copy.addEventListener('mouseleave', functionToRemoveTooltip);
             TSMTooltips[copy.id] = realContent;
         });
-        // @ts-ignore
         const functionToRemoveTooltip = async () => {
             await new Promise(resolve => setTimeout(resolve, 100));
             if (!copy) {
@@ -54,11 +50,8 @@ function initTooltips() {
     }
 }
 
-function createDOMAtTheEnd(div: Element, positionX: number, positionY: number) {
+function createDOMAtTheEnd(div, positionX, positionY) {
     const copy = div.cloneNode(true);
-    if (!(copy instanceof HTMLElement)) {
-        return;
-    }
     copy.id = `tooltip-${Date.now()}${Math.floor(Math.random() * 10000)}`;
     copy.style.position = "absolute";
     copy.style.left = `${positionX}px`;
