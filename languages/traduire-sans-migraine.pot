@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 0.9.018\n"
+"Project-Id-Version: Traduire Sans Migraine 0.9.020\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-06-17T12:48:560\n"
+"POT-Creation-Date: 2024-06-20T10:27:420\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # shelved.patch
@@ -239,6 +239,18 @@ msgid "Display the content in"
 msgstr ""
 
 msgid "that are not translated in"
+msgstr ""
+
+msgid "among the"
+msgstr ""
+
+msgid "Pages and Posts"
+msgstr ""
+
+msgid "Posts"
+msgstr ""
+
+msgid "Pages"
 msgstr ""
 
 msgid "Search"

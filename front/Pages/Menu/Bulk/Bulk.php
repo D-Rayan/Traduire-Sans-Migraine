@@ -343,6 +343,13 @@ class Bulk {
         }
     }
 
+    private static function getPostTypes() {
+        $postType = "all";
+        if (isset($_GET["postType"]) && in_array($_GET["postType"], ["post", "page"])) {
+            $postType = $_GET["postType"];
+        }
+        return $postType;
+    }
     private static function getSelectedLanguages($languagesAvailable, $languagesTranslatable, $defaultLanguage) {
         $selectedLanguageFrom = isset($_GET["languageFrom"]) && isset($languagesAvailable[$_GET["languageFrom"]]) ? $_GET["languageFrom"] : $defaultLanguage["code"];
         $selectedLanguageTo = isset($_GET["languageTo"]) && isset($languagesTranslatable[$_GET["languageTo"]]) ? $_GET["languageTo"] : array_key_first($languagesTranslatable);
@@ -355,9 +362,11 @@ class Bulk {
         return ["from" => $selectedLanguageFrom, "to" => $selectedLanguageTo];
     }
 
-    private static function getPostsToDisplay($selectedLanguageFromId, $selectedLanguageToSlug) {
+    private static function getPostsToDisplay($selectedLanguageFromId, $selectedLanguageToSlug, $postType = ["post", "page"]) {
         global $wpdb;
+        $placeholders = str_repeat ('%s, ',  count ($postType) - 1) . '%s';
 
+        $variables = array_merge([$selectedLanguageToSlug], $postType, [$selectedLanguageFromId]);
         $queryFetchPosts = $wpdb->prepare(
             "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
                                 trTaxonomyTo.taxonomy = 'post_translations' AND 
@@ -368,14 +377,14 @@ class Bulk {
                             ) AS translationMap FROM $wpdb->posts posts
                         LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
                         WHERE 
-                            posts.post_type IN ('post', 'page') AND 
+                            posts.post_type IN ($placeholders) AND 
                             posts.post_status!='trash' AND 
                             posts.post_status!='auto-draft' AND 
-                            trFrom.term_taxonomy_id = %d
+                            trFrom.term_taxonomy_id = %d AND 
+                            (posts.post_title NOT LIKE '%Translation of post%' OR posts.post_content != 'This content is temporary... It will be either deleted or updated soon.' OR posts.post_status != 'draft')
                         ORDER BY posts.post_status DESC, posts.ID DESC
                         ",
-            $selectedLanguageToSlug,
-            $selectedLanguageFromId
+            $variables
         );
         $posts = $wpdb->get_results($queryFetchPosts);
         $Queue = Queue::getInstance();
@@ -425,9 +434,11 @@ class Bulk {
         }
 
         $selectedLanguages = self::getSelectedLanguages($languagesAvailable, $languagesTranslatable, $defaultLanguage);
+        $postType = self::getPostTypes();
         $selectedLanguageFrom = $selectedLanguages["from"];
         $selectedLanguageTo = $selectedLanguages["to"];
-        $postsToDisplay = self::getPostsToDisplay($languagesAvailable[$selectedLanguageFrom]["id"], $selectedLanguageTo);
+        $postTypes = $postType === "all" ? ["post", "page"] : [$postType];
+        $postsToDisplay = self::getPostsToDisplay($languagesAvailable[$selectedLanguageFrom]["id"], $selectedLanguageTo, $postTypes);
         ?>
         <div class="bulk-content">
             <div id="queue-container">
@@ -437,7 +448,7 @@ class Bulk {
             </div>
             <div class="actions">
                 <?php
-                self::renderForm($languagesAvailable, $selectedLanguageFrom, $languagesTranslatable, $selectedLanguageTo);
+                self::renderForm($languagesAvailable, $selectedLanguageFrom, $languagesTranslatable, $selectedLanguageTo, $postType);
                 if (!empty($postsToDisplay)) {
                     Button::render("", "primary", "traduire-sans-migraine-bulk-translate", [
                         "default-plural" => TextDomain::__("Translate the %var% content selected"),
@@ -455,7 +466,7 @@ class Bulk {
         return ob_get_clean();
     }
 
-    private static function renderForm($languagesAvailable, $selectedLanguageFrom, $languagesTranslatable, $selectedLanguageTo) {
+    private static function renderForm($languagesAvailable, $selectedLanguageFrom, $languagesTranslatable, $selectedLanguageTo, $postType) {
         ?>
         <form method="get">
             <input type="hidden" name="page" id="page" value="<?php echo $_GET["page"]; ?>"/>
@@ -482,6 +493,12 @@ class Bulk {
                 ?>
             </select>
             <input type="hidden" id="languageToHidden" name="languageToHidden" value="<?php echo $selectedLanguageTo; ?>"/>
+            <label for="postType"><?php echo TextDomain::__("among the"); ?></label>
+            <select name="postType" id="postType">
+                <option value="all" <?php if ($postType === "all") { echo "selected"; } ?>><?php echo TextDomain::__("Pages and Posts"); ?></option>
+                <option value="post" <?php if ($postType === "post") { echo "selected"; } ?>><?php echo TextDomain::__("Posts"); ?></option>
+                <option value="page" <?php if ($postType === "page") { echo "selected"; } ?>><?php echo TextDomain::__("Pages"); ?></option>
+            </select>
             <?php
             Button::render(TextDomain::__("Search"), "ghost", "traduire-sans-migraine-bulk-filter");
             ?>
