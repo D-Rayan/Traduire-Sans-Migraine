@@ -74,6 +74,7 @@ class PrepareTranslation {
         $originalTranslations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
         $translations = [];
         $originalPost = get_post($postId);
+        $createdOnes = [];
 
         foreach ($originalTranslations as $slug => $translation) {
             if ($translation["postId"]) {
@@ -86,6 +87,7 @@ class PrepareTranslation {
                     $temporaryNamePost .= "-" . time();
                 }
 
+                $createdOnes[$slug] = true;
                 $translations[$slug] = wp_insert_post([
                     'post_title' => "Translation of post " . $postId . " in " . $slug,
                     'post_content' => "This content is temporary... It will be either deleted or updated soon.",
@@ -106,7 +108,7 @@ class PrepareTranslation {
                 continue;
             }
             $errorCreationTranslations = true;
-            if (isset($translations[$slug])) { wp_delete_post($translations[$slug], true); }
+            if (isset($translations[$slug]) && isset($createdOnes[$slug])) { wp_delete_post($translations[$slug], true); }
         }
 
         if ($errorCreationTranslations) {
