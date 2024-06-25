@@ -197,6 +197,7 @@ class TranslateHelper
             'ID' => $this->translatedPostId,
             'post_title' => $this->dataToTranslate["title"],
             'post_content' => $this->dataToTranslate["content"],
+            'post_excerpt' => $this->dataToTranslate["excerpt"],
             'post_category' => $this->dataToTranslate["categories"],
             'post_name' => $this->dataToTranslate["slug"],
         ];

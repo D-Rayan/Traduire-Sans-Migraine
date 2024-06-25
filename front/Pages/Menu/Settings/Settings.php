@@ -160,6 +160,11 @@ class Settings {
                 "checked" => $settingsInstance->settingIsEnabled("title"),
                 "label" => TextDomain::__("Post's title"),
             ],
+            "excerpt" => [
+                "checked" => $settingsInstance->settingIsEnabled("excerpt"),
+                "label" => TextDomain::__("Post's Excerpt"),
+                "tooltip" => TextDomain::__("The excerpt is a short summary of your post. It is used by default in the search results.")
+            ],
             "slug" => [
                 "checked" => $settingsInstance->settingIsEnabled("slug"),
                 "label" => TextDomain::__("Post's slug"),

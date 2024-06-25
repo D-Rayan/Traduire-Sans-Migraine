@@ -195,7 +195,7 @@ class StartTranslation
         if (!empty($post->post_title) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("title"))) {
             $this->dataToTranslate["title"] = $post->post_title;
         }
-        if (!empty($post->post_excerpt)) {
+        if (!empty($post->post_excerpt) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("excerpt"))) {
             $this->dataToTranslate["excerpt"] = $post->post_excerpt;
         }
         if (!empty($post->post_name) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("slug"))) {
