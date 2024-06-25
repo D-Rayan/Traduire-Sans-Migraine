@@ -96,7 +96,7 @@ class Settings {
             $settings["seopress_analysis_target_kw"] = isset($_POST["seopress_analysis_target_kw"]) && $_POST["seopress_analysis_target_kw"] === "true";
         }
 
-        $settings["tsmOpenOnSave"] = isset($_POST["tsmOpenOnSave"]) && $_POST["tsmOpenOnSave"] === "true";
+        // $settings["tsmOpenOnSave"] = isset($_POST["tsmOpenOnSave"]) && $_POST["tsmOpenOnSave"] === "true";
 
 
         $settingsInstance = new SettingsPlugin();
@@ -224,12 +224,12 @@ class Settings {
             ];
         }
 
-        $settings["tsmOpenOnSave"] = [
+        /*$settings["tsmOpenOnSave"] = [
             "before" => "Traduire Sans Migraine",
             "checked" => $settingsInstance->settingIsEnabled("tsmOpenOnSave"),
             "label" => TextDomain::__("Open the translation window on save"),
             "tooltip" => TextDomain::__("Each time you're saving a post, the translation window will open.")
-        ];
+        ];*/
         ?>
         <div class="preferences">
             <div class="title"><?php echo TextDomain::__("Settings"); ?></div>

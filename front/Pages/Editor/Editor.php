@@ -57,11 +57,11 @@ class Editor {
     }
 
     public function redirectAfterUpdating( $location ) {
-        $settingsInstance = new SettingsPlugin();
+        /*$settingsInstance = new SettingsPlugin();
         if ( isset( $_POST['save'] ) || isset( $_POST['publish'] ) && $settingsInstance->settingIsEnabled("tsmOpenOnSave") ) {
             $tsmShow = isset($_POST["traduire-sans-migraine–is-enable"]) ? $_POST["traduire-sans-migraine–is-enable"] : "off";
             return $location . "&tsmShow=" . $tsmShow;
-        }
+        }*/
 
         return $location;
     }

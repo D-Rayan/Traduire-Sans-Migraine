@@ -22,7 +22,7 @@ if (window.tsmVariables && window.tsmVariables._tsm_first_visit_after_translatio
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
-    if (tsmVariables.autoOpen === "true") {
+    /*if (tsmVariables.autoOpen === "true") {
         const editor = window.wp.data.dispatch('core/editor')
         const savePost = editor.savePost
         editor.savePost = function (options) {
@@ -35,7 +35,7 @@ if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/edito
                     }
                 })
         };
-    }
+    }*/
 
     const moveButtonToHeader =  () => {
         const headerElement = document.querySelector(".edit-post-header__settings");
@@ -49,10 +49,10 @@ if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/edito
     };
     moveButtonToHeader();
 } else {
-    if (getQuery('tsmShow') === 'on') {
+    /*if (getQuery('tsmShow') === 'on') {
         window.history.replaceState(null, '', window.location.href.replace('&tsmShow=on', '').replace('tsmShow=on', ''));
         loadModalTraduireSansMigraine();
-    }
+    }*/
 }
 
 
