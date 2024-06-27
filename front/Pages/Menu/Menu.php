@@ -62,7 +62,7 @@ class Menu {
                 <div class="menu">
                     <div class="logo">
                         <a href="https://www.seo-sans-migraine.fr/" target="_blank">
-                            <img src="<?php echo TSM__ASSETS_PATH; ?>seo_sans_migraine_logo.png" alt="logo_seo_sans_migraine" />
+                            <img src="<?php echo TSM__ASSETS_PATH; ?>logo_seo_sans_migraine.svg" alt="logo_seo_sans_migraine" />
                         </a>
                     </div>
                     <div class="content">

@@ -120,7 +120,6 @@
 .wrap .logo {
     width: 206px;
     height: 40px !important;
-    position: relative;
 }
 
 .wrap .logo a {
@@ -129,15 +128,13 @@
 
 
 .wrap .logo img {
-    position: absolute;
-    top: -24px;
-    left: 12px;
-    height: auto;
     max-width: 100%;
     border: none;
     border-radius: 0;
     box-shadow: none;
     display: inline-block;
+    width: 100%;
+    height: 40px;
 }
 
 .wrap .transition-dechirure {
