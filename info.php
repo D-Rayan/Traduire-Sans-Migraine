@@ -15,10 +15,11 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 20 juin 2024</h4><ul>
-            <li>Ajout d'une sécurité pour empêcher la suppression d'articles non créés par le plugin</li>
-            <li>Ajout d'un filtre pour cacher les articles brouillons temporaire générés par le plugin</li>
-            <li>Ajout d'une option pour permettre une meilleure sélection pour la traduction groupée</li>
+        "changelog" => "<h4>Mise à jour du 01 Juillet 2024</h4><ul>
+            <li>Changement du logo</li>
+            <li>Correctif pour gérer mieux l'affichage des brouillons liés à traduire sans migraine</li>
+            <li>Ajout d'un filtre pour la page traduction groupée</li>
+            <li>Traduction des extraits</li>
         </ul>",
     ]
 );
