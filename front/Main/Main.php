@@ -23,7 +23,7 @@ class Main {
             "successTranslationFirstShowTitle" => TextDomain::__("You may want to know this"),
             "postTranslatedByTSMTitle" => TextDomain::__("Translated by Traduire Sans Migraine"),
             "postTranslatedByTSMMessage" => TextDomain::__("You're on a content translated by us. If you want to know the best SEO practices, click <a target='_blank' href='%s'>here</a>. Futhermore you can use the differents tools :", $linkTraduireSansMigrainePractices),
-            "translateInternalLinksButton" => TextDomain::__("Traduire les liens internes"),
+            "translateInternalLinksButton" => TextDomain::__("Translate internal links")
         ]);
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmVariables", [
             "assetsURI" => TSM__ASSETS_PATH,

@@ -9,7 +9,7 @@ class Notification {
                 <div class="traduire-sans-migraine-notification__body">
                     <h3 class="traduire-sans-migraine-notification__title">${(tsmI18N && title in tsmI18N) ? tsmI18N[title] : title}</h3>
                     <p class="traduire-sans-migraine-notification__message">${(tsmI18N && message in tsmI18N) ? tsmI18N[message] : message}</p>
-                    ${buttons.length && `<div class="traduire-sans-migraine-notification__buttons"></div>`}
+                    ${buttons.length ? `<div class="traduire-sans-migraine-notification__buttons"></div>` : ''}
                 </div>
         `;
         if (buttons.length) {
