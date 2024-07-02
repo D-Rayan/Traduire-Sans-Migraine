@@ -17,8 +17,19 @@ async function loadModalTraduireSansMigraine() {
     });
 }
 
-if (window.tsmVariables && window.tsmVariables._tsm_first_visit_after_translation === "true") {
-    Notification.show('successTranslationFirstShowTitle', "successTranslationFirstShow", "loutre_docteur_no_shadow.png", "success", true);
+if (window.tsmVariables && window.tsmVariables._has_been_translated_by_tsm === "true") {
+    Notification.show(
+        'postTranslatedByTSMTitle',
+        "postTranslatedByTSMMessage",
+        "loutre_docteur_no_shadow.png",
+        "success",
+        true,
+        document.body,
+        [Button.createNode("translateInternalLinksButton", "primary", async (button) => {
+            setButtonLoading(button);
+            await translateInternalLinks();
+            stopButtonLoading(button);
+        })]);
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
@@ -62,5 +73,13 @@ if (buttonDisplayTraduireSansMigraine) {
         e.preventDefault();
         loadModalTraduireSansMigraine();
         return false;
+    });
+}
+
+async function translateInternalLinks() {
+    await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_translate_internal_links&post_id=${getQuery("post")}`), (response) => {
+        console.error("response", response);
+    }, async (response) => {
+        window.location.reload();
     });
 }

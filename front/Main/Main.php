@@ -21,6 +21,9 @@ class Main {
             "La traduction est en cours, vous pouvez fermer cette fenêtre et continuer à travailler sur votre site." => TextDomain::__("The translation is in progress. You can close this window if you want."),
             "successTranslationFirstShow" => TextDomain::__("You are on a post translated by Traduire Sans Migraine. If you want to know what are the best SEO practices you can click <a target='_blank' href='%s'>here</a>", $linkTraduireSansMigrainePractices),
             "successTranslationFirstShowTitle" => TextDomain::__("You may want to know this"),
+            "postTranslatedByTSMTitle" => TextDomain::__("Translated by Traduire Sans Migraine"),
+            "postTranslatedByTSMMessage" => TextDomain::__("You're on a content translated by us. If you want to know the best SEO practices, click <a target='_blank' href='%s'>here</a>. Futhermore you can use the differents tools :", $linkTraduireSansMigrainePractices),
+            "translateInternalLinksButton" => TextDomain::__("Traduire les liens internes"),
         ]);
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmVariables", [
             "assetsURI" => TSM__ASSETS_PATH,

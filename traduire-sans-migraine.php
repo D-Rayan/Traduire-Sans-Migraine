@@ -21,6 +21,7 @@ use TraduireSansMigraine\Wordpress\Hooks\GetPostTranslated;
 use TraduireSansMigraine\Wordpress\Hooks\PrepareTranslation;
 use TraduireSansMigraine\Wordpress\Hooks\RestAPI;
 use TraduireSansMigraine\Wordpress\Hooks\StartTranslation;
+use TraduireSansMigraine\Wordpress\Hooks\TranslateInternalLinks;
 use TraduireSansMigraine\Wordpress\Hooks\TranslationState;
 use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\OfflineProcess;
@@ -94,6 +95,7 @@ class TraduireSansMigraine {
         StartTranslation::getInstance()->init();
         TranslationState::getInstance()->init();
         PostsSearch::getInstance()->init();
+        TranslateInternalLinks::getInstance()->init();
     }
 
     public function prepareActivationPlugin() {

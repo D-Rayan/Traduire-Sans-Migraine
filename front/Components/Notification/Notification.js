@@ -1,5 +1,5 @@
 class Notification {
-    static createNode(title, message, logo, type) {
+    static createNode(title, message, logo, type, buttons = []) {
         const notification = document.createElement('div');
         notification.classList.add('traduire-sans-migraine-notification', `traduire-sans-migraine-notification-${type}`);
         notification.innerHTML = `<div class="traduire-sans-migraine-notification__close">X</div>
@@ -9,8 +9,12 @@ class Notification {
                 <div class="traduire-sans-migraine-notification__body">
                     <h3 class="traduire-sans-migraine-notification__title">${(tsmI18N && title in tsmI18N) ? tsmI18N[title] : title}</h3>
                     <p class="traduire-sans-migraine-notification__message">${(tsmI18N && message in tsmI18N) ? tsmI18N[message] : message}</p>
+                    ${buttons.length && `<div class="traduire-sans-migraine-notification__buttons"></div>`}
                 </div>
         `;
+        if (buttons.length) {
+            notification.querySelector(".traduire-sans-migraine-notification__buttons").append(...buttons);
+        }
         return notification;
     }
 
@@ -47,8 +51,8 @@ class Notification {
         }
     }
 
-    static show(title, message, logo, type, persist = false, location = document.body) {
-        const notification = Notification.createNode(title, message, logo, type);
+    static show(title, message, logo, type, persist = false, location = document.body, buttons = []) {
+        const notification = Notification.createNode(title, message, logo, type, buttons);
         Notification.getContainer(location).prepend(notification);
         let timeOutId = null;
         if (!persist) {

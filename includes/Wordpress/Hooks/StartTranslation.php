@@ -246,7 +246,15 @@ class StartTranslation
             $result["data"] = [
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("You have reached your monthly quota."),
-                "logo" => "loutre_triste.png"
+                "logo" => "loutre_triste.png",
+                "buttons" => [
+                    [
+                        "label" => TextDomain::__("Get more credits"),
+                        "type" => "primary",
+                        "url" => TSM__CLIENT_LOGIN_DOMAIN . "?key=" . $this->settings->getToken()
+                    ]
+                ],
+                "persist" => true
             ];
         }
         return [
