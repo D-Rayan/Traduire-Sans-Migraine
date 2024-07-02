@@ -29,7 +29,9 @@ if (window.tsmVariables && window.tsmVariables._has_been_translated_by_tsm === "
             setButtonLoading(button);
             await translateInternalLinks();
             stopButtonLoading(button);
-        })]);
+        })],
+        window.tsmVariables._tsm_first_visit_after_translation === "true"
+        );
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {

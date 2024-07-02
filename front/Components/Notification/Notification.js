@@ -51,7 +51,7 @@ class Notification {
         }
     }
 
-    static show(title, message, logo, type, persist = false, location = document.body, buttons = []) {
+    static show(title, message, logo, type, persist = false, location = document.body, buttons = [], displayDefault = true) {
         const notification = Notification.createNode(title, message, logo, type, buttons);
         Notification.getContainer(location).prepend(notification);
         let timeOutId = null;
@@ -84,5 +84,8 @@ class Notification {
                 }, 800);
             }
         });
+        if (!displayDefault) {
+            notification.classList.add('traduire-sans-migraine-notification--hidden');
+        }
     }
 }

@@ -28,7 +28,7 @@ class TranslateInternalLinks {
     }
 
     public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_editor_prepare_translate", [$this, "translateInternalLinks"]);
+        add_action("wp_ajax_traduire-sans-migraine_editor_translate_internal_links", [$this, "translateInternalLinks"]);
     }
 
     public function loadHooks() {
