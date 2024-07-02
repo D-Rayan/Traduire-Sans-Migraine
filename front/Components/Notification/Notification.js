@@ -84,8 +84,9 @@ class Notification {
                 }, 800);
             }
         });
-        if (!displayDefault) {
+        if (!displayDefault && persist) {
             notification.classList.add('traduire-sans-migraine-notification--hidden');
+            Notification.displayContainerOpener(location);
         }
     }
 }
