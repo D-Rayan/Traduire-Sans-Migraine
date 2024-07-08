@@ -52,6 +52,12 @@ class TranslateHelper
             if (isset($this->dataToTranslate["content"])) {
                 $this->dataToTranslate["content"] = $this->linkManager->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
             }
+            foreach ($this->originalPost->post_category as $termId) {
+                $result = $this->languageManager->getLanguageManager()->getTranslationCategories([$termId], $this->codeTo);
+                if (empty($result) && isset($this->dataToTranslate["categories_" . $termId])) {
+                    $this->createCategory($termId, $this->codeTo, $this->dataToTranslate["categories_" . $termId]);
+                }
+            }
             $this->dataToTranslate["categories"] = $this->languageManager->getLanguageManager()->getTranslationCategories($this->originalPost->post_category, $this->codeTo);
             $this->translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($this->originalPost->ID, $this->codeTo);
             if (!$this->translatedPostId) {
@@ -102,7 +108,7 @@ class TranslateHelper
             $this->success = true;
             $Queue = Queue::getInstance();
             $nextItem = $Queue->getNextItem();
-            if (intval($nextItem["ID"]) === intval($this->originalPost->ID)) {
+            if (!empty($nextItem) && intval($nextItem["ID"]) === intval($this->originalPost->ID)) {
                 $Queue->stopQueue();
                 $nextItem["processed"] = true;
                 $Queue->updateItem($nextItem);
@@ -122,6 +128,23 @@ class TranslateHelper
             $this->success = false;
             $this->error = $e->getMessage();
         }
+    }
+
+    private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated) {
+        $category = get_term($originalCategoryId, "category");
+        $categoryTranslated = wp_insert_term($categoryNameTranslated, "category", [
+            "slug" => sanitize_title($categoryNameTranslated),
+            "description" => $category->description,
+            "parent" => $category->parent
+        ]);
+        if (is_wp_error($categoryTranslated)) {
+            return;
+        }
+        $allTranslationsTerms = $this->languageManager->getLanguageManager()->getAllTranslationsTerm($originalCategoryId);
+        if (isset($allTranslationsTerms[$codeTo])) {
+            $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
+        }
+        $this->languageManager->getLanguageManager()->saveAllTranslationsTerms($allTranslationsTerms);
     }
 
     private function checkRequirements()
@@ -197,10 +220,12 @@ class TranslateHelper
             'ID' => $this->translatedPostId,
             'post_title' => $this->dataToTranslate["title"],
             'post_content' => $this->dataToTranslate["content"],
-            'post_excerpt' => $this->dataToTranslate["excerpt"],
             'post_category' => $this->dataToTranslate["categories"],
             'post_name' => $this->dataToTranslate["slug"],
         ];
+        if (isset($this->dataToTranslate["excerpt"])) {
+            $updatePostData["post_excerpt"] = $this->dataToTranslate["excerpt"];
+        }
         wp_update_post($updatePostData);
 
         $thumbnailId = get_post_meta($this->originalPost->ID, '_thumbnail_id', true);

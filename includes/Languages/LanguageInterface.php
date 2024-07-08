@@ -52,6 +52,19 @@ interface LanguageInterface
     public function saveAllTranslationsPost(array $translationsMap);
 
     /**
+     * @param string $termId
+     * @return mixed
+     * @throws Exception
+     */
+    public function getAllTranslationsTerm(string $termId): array;
+
+    /**
+     * @param array $translationsMap
+     * @throws Exception
+     */
+    public function saveAllTranslationsTerms(array $translationsMap);
+
+    /**
      * @param array $categories
      * @param string $codeLanguage
      * @throws Exception

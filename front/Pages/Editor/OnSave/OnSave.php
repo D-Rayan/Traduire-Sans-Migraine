@@ -60,6 +60,7 @@ class OnSave {
         $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
         $translationsPosts = $this->getLanguageManager()->getAllTranslationsPost($post["id"]);
         $enrichedTranslationsPosts = [];
+        $termsCategories = get_the_category($post["id"]);
         foreach ($translationsPosts as $codeSlug => $translationPost) {
             $translatable = in_array($translationPost["code"], $languagesTranslatable);
             $postExists = $translationPost["postId"] && get_post_status($translationPost["postId"]) !== "trash";
@@ -68,7 +69,13 @@ class OnSave {
             $notTranslated = $issuesTranslatedUrls["notTranslated"];
             $notPublished = $issuesTranslatedUrls["notPublished"];
             $haveWarnings = count($notTranslated) + count($notPublished) > 0;
-
+            $missingCategories = [];
+            foreach ($termsCategories as $termCategory) {
+                $result = $this->getLanguageManager()->getTranslationCategories([$termCategory->term_id], $translationPost["code"]);
+                if (empty($result)) {
+                    $missingCategories[] = $termCategory->name;
+                }
+            }
             $enrichedTranslationsPosts[$codeSlug] = [
                 "name" => $translationPost["name"],
                 "flag" => $translationPost["flag"],
@@ -79,6 +86,7 @@ class OnSave {
                 "notTranslated" => $notTranslated,
                 "notPublished" => $notPublished,
                 "translatable" => $translatable,
+                "missingCategories" => $missingCategories
             ];
         }
 
@@ -132,7 +140,8 @@ class OnSave {
     }
 
     private function renderTranslatablePostInformation($postTranslationData) {
-        $indicatorText = TextDomain::__("We are impatient to help you with your translations! Just click the translate button.");
+        $indicatorText = TextDomain::__("We are impatient to help you with your translations! Just click the translate button.") . "<br/>";
+
         if ($postTranslationData["haveWarnings"]) {
             $listHTML = "<ul>";
             if (count($postTranslationData["notTranslated"]) > 0) {
@@ -146,11 +155,23 @@ class OnSave {
                 }
             }
             $listHTML .= "</ul>";
-            $indicatorText .= "<br/>" . Tooltip::getHTML(
+            $indicatorText .= Tooltip::getHTML(
                     "<span class='warning-issues'>" . TextDomain::_n("🔎 We found %s issue", "🔎 We found %s issues", count($postTranslationData["notPublished"]) + count($postTranslationData["notTranslated"]), count($postTranslationData["notPublished"]) + count($postTranslationData["notTranslated"]))  . "</span>",
                     Alert::getHTML(TextDomain::__("Oops! Something wrong"), TextDomain::__("The following links will not be translated because they doesn't exist or aren't published : %s", $listHTML), "warning", [
                         "isDismissible" => false
                     ]));
+        }
+        if (count($postTranslationData["missingCategories"])) {
+            $listHTML = "<ul>";
+            foreach ($postTranslationData["missingCategories"] as $index => $nameCategory) {
+                $listHTML .= "<li>" . $nameCategory . "</li>";
+            }
+            $listHTML .= "</ul>";
+            $indicatorText .= Tooltip::getHTML(
+                "<span class='warning-issues'>" . TextDomain::_n("💡 %s category will be created", "💡 %s categories will be created", count($postTranslationData["missingCategories"]), count($postTranslationData["missingCategories"])) . "</span>",
+                Alert::getHTML(TextDomain::__("Don't worry! We got you"), TextDomain::__("The following categories will be created in this language because they are missing : %s", $listHTML), "info", [
+                    "isDismissible" => false
+                ]));
         }
         Step::render([
             "classname" => $postTranslationData["checked"] ? "":  "hidden",

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-06-20T10:27:420\n"
+"POT-Creation-Date: 2024-07-08T10:40:020\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -54,6 +54,22 @@ msgstr ""
 
 msgid "You may want to know this"
 msgstr "Ça pourrait t’intéresser"
+
+# Plugin Name
+msgid "Translated by Traduire Sans Migraine"
+msgstr "Traduit par Traduire Sans Migraine"
+
+msgid ""
+"You're on a content translated by us. If you want to know the best SEO "
+"practices, click <a target='_blank' href='%s'>here</a>. Futhermore you can "
+"use the differents tools :"
+msgstr ""
+"Tu es sur un article traduit par Traduire Sans Migraine. Si tu veux "
+"connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
+"href='%s'>ici</a>. Tu peux aussi utiliser nos outils :"
+
+msgid "Translate internal links"
+msgstr "Traduire les liens interne"
 
 msgid "Post ID is not set"
 msgstr "L’ID du post est manquant"
@@ -121,6 +137,16 @@ msgid ""
 msgstr ""
 "Les liens internes suivant ne possèdent pas de traduction dans cette langue, "
 "ils ne seront donc pas remplacés. Nous vous conseillons de les traduire %s"
+
+msgid "Don't worry! We got you"
+msgstr "On s’en occupe"
+
+msgid ""
+"The following categories will be created in this language because they are "
+"missing : %s"
+msgstr ""
+"Les catégories suivant seront créées dans cette langue car ils n’existent "
+"pas : %s"
 
 msgid ""
 "Use the checkbox on the left to add this language to the list of "
@@ -191,8 +217,14 @@ msgstr ""
 msgid "🔎 We found %s issue"
 msgstr "🔎 Nous avons trouvé %s problème"
 
+msgid "💡 %s category will be created"
+msgstr "💡 %s catégorie sera crée"
+
 msgid "🔎 We found %s issues"
 msgstr "🔎 Nous avons trouvé %s problèmes"
+
+msgid "💡 %s categories will be created"
+msgstr "💡%s catégories seront créées"
 
 msgid "Your otter 🦦"
 msgstr "Ta loutre 🦦"
@@ -381,6 +413,16 @@ msgstr "Contenu de l’article"
 msgid "Post's title"
 msgstr "Titre de l’article"
 
+msgid "Post's Excerpt"
+msgstr "Extrait de l’article"
+
+msgid ""
+"The excerpt is a short summary of your post. It is used by default in the "
+"search results."
+msgstr ""
+"L’excerpt est un court résumé de ton article. Il est utilisé par défaut dans "
+"les résultats de recherche."
+
 msgid "Post's slug"
 msgstr "Slug de l’article"
 
@@ -514,6 +556,9 @@ msgstr ""
 "Nous n’arrivons pas à trouver ton contenu ou les langues demandés. Réessaye "
 "plus tard."
 
+msgid "Get more credits"
+msgstr "Avoir plus de crédits"
+
 msgid "We could not find the request ID."
 msgstr "Nous ne trouvons plus l’identifiant de la requête."
 
@@ -620,16 +665,6 @@ msgstr "GPL2"
 #~ msgid "Rechercher"
 #~ msgstr "Rechercher"
 
-#~ msgid "Post's Excerpt"
-#~ msgstr "Extrait de l’article"
-
-#~ msgid ""
-#~ "The excerpt is a short summary of your post. It is used by default in the "
-#~ "search results."
-#~ msgstr ""
-#~ "L’excerpt est un court résumé de ton article. Il est utilisé par défaut "
-#~ "dans les résultats de recherche."
-
 # Bulk.php
 #~ msgid "Votre contenu international à portée de main 💊"
 #~ msgstr "Votre contenu international à portée de main 💊"
@@ -658,9 +693,6 @@ msgstr "GPL2"
 
 #~ msgid "Traduction en cours"
 #~ msgstr "Traduction en cours"
-
-#~ msgid "Translate later"
-#~ msgstr "Traduire plus tard"
 
 #~ msgid "tutoriel_screen_en.png"
 #~ msgstr "tutoriel_screen_fr.png"

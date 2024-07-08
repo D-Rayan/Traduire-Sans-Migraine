@@ -208,6 +208,18 @@ class StartTranslation
         $this->handleSeoPress($postMetas, $willBeAnUpdate);
         $this->handleElementor($postMetas);
         $this->handleACF($postMetas);
+        $this->handleCategories($post->post_category, $codeTo);
+    }
+
+    public function handleCategories($categories, $codeTo)
+    {
+        foreach ($categories as $categoryId) {
+            $result = $this->languageManager->getLanguageManager()->getTranslationCategories([$categoryId], $codeTo);
+            if (empty($result)) {
+                $categoryName = get_cat_name($categoryId);
+                $this->dataToTranslate["categories_". $categoryId] = $categoryName;
+            }
+        }
     }
 
     public function startTranslateExecute($post, $codeTo)

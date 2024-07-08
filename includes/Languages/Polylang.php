@@ -68,6 +68,23 @@ class Polylang implements LanguageInterface
         return $results;
     }
 
+    public function getAllTranslationsTerm(string $termId): array
+    {
+        $languages = $this->getLanguages();
+
+        $results = [];
+        foreach ($languages as $language) {
+            $results[$language["code"]] = [
+                "name" => $language["name"],
+                "flag" => $language["flag"],
+                "code" => $language["code"],
+                "termId" => pll_get_term($termId, $language["code"])
+            ];
+        }
+
+        return $results;
+    }
+
     public function saveAllTranslationsPost(array $translationsMap)
     {
         if (!function_exists("pll_save_post_translations")) {
@@ -84,6 +101,25 @@ class Polylang implements LanguageInterface
             pll_set_post_language($postId, $codeLanguage);
         }
         pll_save_post_translations($cleanMap);
+    }
+
+    public function saveAllTranslationsTerms(array $translationsMap)
+    {
+        if (!function_exists("pll_save_term_translations")) {
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_save_term_translations"));
+        }
+
+        $languages = $this->getLanguages();
+        $cleanMap = [];
+        foreach ($translationsMap as $codeLanguage => $term) {
+            $termId = is_array($term) ? $term["termId"] : $term;
+            if (!isset($languages[$codeLanguage]) || empty($termId)) {
+                continue;
+            }
+            $cleanMap[$codeLanguage] = $termId;
+            pll_set_term_language($termId, $codeLanguage);
+        }
+        pll_save_term_translations($cleanMap);
     }
 
     function getTranslationCategories(array $categories, string $codeLanguage): array
