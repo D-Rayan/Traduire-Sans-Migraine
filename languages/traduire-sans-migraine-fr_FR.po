@@ -69,7 +69,7 @@ msgstr ""
 "href='%s'>ici</a>. Tu peux aussi utiliser nos outils :"
 
 msgid "Translate internal links"
-msgstr "Traduire les liens interne"
+msgstr "Traduire les liens internes"
 
 msgid "Post ID is not set"
 msgstr "L’ID du post est manquant"
