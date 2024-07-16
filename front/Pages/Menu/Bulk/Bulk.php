@@ -71,6 +71,14 @@ class Bulk {
     }
 
     public function addItemsToQueue() {
+        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine-bulk-add-items")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $queue = Queue::getInstance();
         $postIds = $_POST["ids"];
         $languageTo = $_POST["languageTo"];
@@ -82,10 +90,18 @@ class Bulk {
             ];
         }
         $queue->add($items);
-        wp_send_json_success();
+        wp_send_json_success(["wp_nonce" => wp_create_nonce("traduire-sans-migraine-bulk-display-queue")]);
     }
 
     public function removeItemFromQueue() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine-bulk-remove-item")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $queue = Queue::getInstance();
         $languageManager = new LanguageManager();
         $languages = $languageManager->getLanguageManager()->getLanguages();
@@ -113,6 +129,14 @@ class Bulk {
     }
 
     public function restartQueue() {
+        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine-bulk-restart-queue")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $queue = Queue::getInstance();
         if ($queue->getState() === "idle" && $queue->getNextItem() !== null) {
             $queue->startNextProcess();
@@ -132,6 +156,14 @@ class Bulk {
     }
 
     public function pauseQueue() {
+        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine-bulk-pause-queue")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $queue = Queue::getInstance();
         $queue->stopQueue();
         wp_send_json_success([
@@ -143,6 +175,14 @@ class Bulk {
     }
 
     public function deleteQueue() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine-bulk-delete-queue")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $queue = Queue::getInstance();
         $queue->deleteQueue();
         wp_send_json_success([
@@ -163,6 +203,14 @@ class Bulk {
     }
 
     public function displayQueue() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine-bulk-display-queue")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $page = $_GET["page"] ?? 1;
         self::renderQueueProgress($page);
         wp_die();
@@ -193,6 +241,7 @@ class Bulk {
             $statusQueue = $Queue->getState();
             ?>
             <div class="bulk-queue">
+                <input type="hidden" id="wp_nonce_display_queue" name="wp_nonce_display_queue" value="<?php echo wp_create_nonce("traduire-sans-migraine-bulk-display-queue"); ?>"/>
                 <div class="bulk-queue-title">
                     <span>
                         <?php
@@ -206,7 +255,7 @@ class Bulk {
                     <div class="actions-queue">
                         <?php
                             Tooltip::render(
-                                Icon::getHTML("play", "#4caf50", ($statusQueue === "processing" || $translatedDone === $total), ["action" => "play-queue"]),
+                                Icon::getHTML("play", "#4caf50", ($statusQueue === "processing" || $translatedDone === $total), ["action" => "play-queue", "wp_nonce" => wp_create_nonce("traduire-sans-migraine-bulk-restart-queue")]),
                                 TextDomain::__("Restart the Queue"),
                                 [
                                     "padding" => true,
@@ -215,7 +264,7 @@ class Bulk {
                         ?>
                         <?php
                             Tooltip::render(
-                                Icon::getHTML("pause", "#ff9800", ($statusQueue === "idle"), ["action" => "pause-queue"]),
+                                Icon::getHTML("pause", "#ff9800", ($statusQueue === "idle"), ["action" => "pause-queue", "wp_nonce" => wp_create_nonce("traduire-sans-migraine-bulk-pause-queue")]),
                                 TextDomain::__("Pause the Queue"),
                                 [
                                     "padding" => true,
@@ -224,7 +273,7 @@ class Bulk {
                         ?>
                         <?php
                             Tooltip::render(
-                                Icon::getHTML("close", "#f44336", false, ["action" => "delete-queue"]),
+                                Icon::getHTML("close", "#f44336", false, ["action" => "delete-queue", "wp_nonce" => wp_create_nonce("traduire-sans-migraine-bulk-delete-queue")]),
                                 TextDomain::__("Delete the Queue"),
                                 [
                                     "padding" => true,
@@ -288,7 +337,7 @@ class Bulk {
                                 <div class="actions-queue">
                                     <?php
                                     Tooltip::render(
-                                        Icon::getHTML("delete", "#f44336", false, ["postId" => $postId, "action" => "remove-from-queue"]),
+                                        Icon::getHTML("delete", "#f44336", false, ["postId" => $postId, "action" => "remove-from-queue", "wp_nonce" => wp_create_nonce("traduire-sans-migraine-bulk-remove-item")]),
                                         TextDomain::__("Remove from the Queue"),
                                         [
                                             "padding" => true,
@@ -454,6 +503,7 @@ class Bulk {
                         "default-plural" => TextDomain::__("Translate the %var% content selected"),
                         "default-singular" => TextDomain::__("Translate the content selected"),
                         "default-none" => TextDomain::__("Select at least one content to translate"),
+                        "wp_nonce" => wp_create_nonce("traduire-sans-migraine-bulk-add-items")
                     ]);
                 }
                 ?>

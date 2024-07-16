@@ -30,16 +30,19 @@ const updateDisplayGlobalCheckbox = () => {
     displayCountCheckedToButton();
 };
 
-async function translatePosts(ids) {
-    await fetch(`${tsmVariables.url}add_items`, {
+async function translatePosts(ids, wpNonce) {
+    const response = await fetch(`${tsmVariables.url}add_items`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ids, languageTo: document.querySelector("#languageToHidden").value }),
+        body: JSON.stringify({ wp_nonce: wpNonce, ids, languageTo: document.querySelector("#languageToHidden").value }),
     });
+    const data = await response.json();
+    console.log(data);
+    return data.data.wp_nonce;
 }
-async function getQueueHTML(page = undefined) {
+async function getQueueHTML(page = undefined, wpNonce = undefined) {
     if (!page) {
         const pageActive = document.querySelector(".bulk-queue-pagination-item.active");
         if (pageActive) {
@@ -48,7 +51,14 @@ async function getQueueHTML(page = undefined) {
             page = 1;
         }
     }
-    const response = await fetch(`${tsmVariables.url}display_queue&page=${page}`, {
+    if (!wpNonce) {
+        const inputNonce = document.querySelector("#wp_nonce_display_queue");
+        if (!inputNonce) {
+            return;
+        }
+        wpNonce = inputNonce.value;
+    }
+    const response = await fetch(`${tsmVariables.url}display_queue&page=${page}&wp_nonce=${wpNonce}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -62,8 +72,8 @@ function initQueueRefreshing() {
     queueRefreshingInterval = setInterval(loadQueue, 2000);
 }
 
-async function loadQueue(page = undefined) {
-    const queueHTML = await getQueueHTML(page);
+async function loadQueue(page = undefined, wpNonce = undefined) {
+    const queueHTML = await getQueueHTML(page, wpNonce);
     const bulkQueueItems = document.querySelector(".bulk-queue-items");
     const isCurrentlyDisplayed = bulkQueueItems ? bulkQueueItems.classList.contains("visible") : false;
     document.querySelector("#queue-container").innerHTML = queueHTML;
@@ -139,19 +149,19 @@ function addListenerToActionsItems() {
             }
             span.classList.add("disable");
             let response = null;
-
+            const wpNonce = span.dataset.wp_nonce;
             if (action === "remove-from-queue") {
                 const postId = span.dataset.postId;
                 if (!postId) {
                     return;
                 }
-                response = await removeItemFromQueue(postId);
+                response = await removeItemFromQueue(postId, wpNonce);
             } else if (action === "play-queue") {
-                response = await playQueue();
+                response = await playQueue(wpNonce);
             } else if (action === "pause-queue") {
-                response = await pauseQueue();
+                response = await pauseQueue(wpNonce);
             } else if (action === "delete-queue") {
-                response = await deleteQueue();
+                response = await deleteQueue(wpNonce);
             }
             if (response) {
                 if (await tsmHandleRequestResponse(response, () => {
@@ -171,8 +181,8 @@ function addListenerToActionsItems() {
     });
 }
 
-async function removeItemFromQueue(postId) {
-    return fetch(`${tsmVariables.url}remove_item&postId=${postId}`, {
+async function removeItemFromQueue(postId, wpNonce) {
+    return fetch(`${tsmVariables.url}remove_item&postId=${postId}&wp_nonce=${wpNonce}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -180,26 +190,32 @@ async function removeItemFromQueue(postId) {
     });
 }
 
-async function playQueue() {
+async function playQueue(wpNonce) {
     return fetch(`${tsmVariables.url}restart_queue`, {
         method: 'PUT',
+        body: JSON.stringify({
+            wp_nonce: wpNonce
+        }),
         headers: {
             'Content-Type': 'application/json',
         },
     });
 }
 
-async function pauseQueue() {
+async function pauseQueue(wpNonce) {
     return fetch(`${tsmVariables.url}pause_queue`, {
         method: 'PUT',
+        body: JSON.stringify({
+            wp_nonce: wpNonce
+        }),
         headers: {
             'Content-Type': 'application/json',
         },
     });
 }
 
-async function deleteQueue() {
-    return fetch(`${tsmVariables.url}delete_queue`, {
+async function deleteQueue(wpNonce) {
+    return fetch(`${tsmVariables.url}delete_queue&wp_nonce=${wpNonce}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -255,8 +271,8 @@ if (buttonTranslate) {
         }
         const ids = Array.from(checkedCheckboxes).map(checkbox => checkbox.id.replace("post-", ""));
         setButtonLoading(buttonTranslate);
-        await translatePosts(ids);
-        await loadQueue();
+        const wpNonceDisplayQueue = await translatePosts(ids, buttonTranslate.dataset.wp_nonce);
+        await loadQueue(undefined, wpNonceDisplayQueue);
         stopButtonLoading(buttonTranslate);
     });
 }

@@ -191,6 +191,14 @@ class OnSave {
     }
 
     public function render() {
+        if (!isset($_GET["wp_nonce"]) || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_onSave")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         if (!isset($_GET["post_id"])) {
             wp_send_json_error([
                 "message" => TextDomain::__("We could not find the post. Try again later..."),
@@ -291,9 +299,26 @@ class OnSave {
         Modal::render(TSM__NAME, $htmlContent, [
             Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button", [
                     "logged" => $this->clientSeoSansMigraine->checkCredential() ? "true" : "false",
+                    "wp_nonce" => wp_create_nonce("traduire-sans-migraine_editor_prepare_translate"),
+                    "loggedNonce" => wp_create_nonce("traduire-sans-migraine_get_log_in_html")
             ]),
             Button::getHTML(TextDomain::__("Close"), "ghost", "closing-button"),
-            Tooltip::getHTML(Button::getHTML(TextDomain::__("Debug Helper"), "warning", "debug-button"), Alert::getHTML(TextDomain::__("Debug Helper"), TextDomain::__("This button is only for debug purpose. It will send the data of your content to our service. The data will be deleted after analysis."), "warning", [ "isDismissible" => false ])),
+            Tooltip::getHTML(
+                    Button::getHTML(
+                        TextDomain::__("Debug Helper"),
+                        "warning",
+                        "debug-button",
+                        [
+                            "wp_nonce" => wp_create_nonce("traduire-sans-migraine_editor_debug")
+                        ]
+                    ),
+                Alert::getHTML(
+                    TextDomain::__("Debug Helper"),
+                    TextDomain::__("This button is only for debug purpose. It will send the data of your content to our service. The data will be deleted after analysis."),
+                    "warning",
+                    [ "isDismissible" => false ]
+                )
+            ),
         ]);
         wp_die();
     }

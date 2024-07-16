@@ -207,7 +207,9 @@ class TranslateHelper
 
     private function updateTemporaryPostToRealOne() {
         global $wpdb;
-
+        if (!isset($this->dataToTranslate["slug"])) {
+            $this->dataToTranslate["slug"] = $this->originalPost->post_name . "-traduire-sans-migraine-" . $this->codeTo;
+        }
         $this->dataToTranslate["slug"] = sanitize_title($this->dataToTranslate["slug"]);
 
         $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $this->dataToTranslate["slug"]);
@@ -218,11 +220,20 @@ class TranslateHelper
 
         $updatePostData = [
             'ID' => $this->translatedPostId,
-            'post_title' => $this->dataToTranslate["title"],
-            'post_content' => $this->dataToTranslate["content"],
-            'post_category' => $this->dataToTranslate["categories"],
             'post_name' => $this->dataToTranslate["slug"],
         ];
+
+
+        if (isset($this->dataToTranslate["title"])) {
+            $updatePostData['post_title'] = $this->dataToTranslate["title"];
+        }
+        if (isset($this->dataToTranslate["content"])) {
+            $updatePostData['post_content'] = $this->dataToTranslate["content"];
+        }
+        if (isset($this->dataToTranslate["categories"])) {
+            $updatePostData['post_category'] = $this->dataToTranslate["categories"];
+        }
+
         if (isset($this->dataToTranslate["excerpt"])) {
             $updatePostData["post_excerpt"] = $this->dataToTranslate["excerpt"];
         }

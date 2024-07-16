@@ -85,6 +85,14 @@ class Articles {
     }
 
     public function render() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_article_deleted_render")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         if (!isset($_GET["post_id"])) {
             Modal::render(TSM__NAME, Alert::getHTML(TSM__NAME, TextDomain::__("Post ID is not set"), "danger"));
             wp_die();
@@ -107,7 +115,9 @@ class Articles {
         <div class="buttons-actions">
             <?php
             Button::render(TextDomain::__("No"), "primary", "no-button");
-            Button::render(TextDomain::__("Yes"), "danger", "yes-button");
+            Button::render(TextDomain::__("Yes"), "danger", "yes-button", [
+                "wp_nonce" => wp_create_nonce("traduire-sans-migraine_article_deleted_delete_translations")
+            ]);
             ?>
         </div>
         <?php
@@ -117,6 +127,14 @@ class Articles {
     }
 
     public function deleteTranslations() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_article_deleted_delete_translations")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         if (!isset($_GET["post_id"])) {
             wp_send_json_error(["html" => Alert::getHTML(false, TextDomain::__("Post ID is not set"), "danger")]);
             wp_die();

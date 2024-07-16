@@ -37,30 +37,32 @@ function displayCountCheckedToButton(modal) {
         buttonTranslate.classList.add('disabled');
     }
 }
-async function sendRequests(modal, languages) {
+async function sendRequests(modal, languages, wpNonces) {
     const response = await Promise.all(languages.map(async language => {
-        const tokenId = await sendRequest(modal, language);
-        if (!tokenId) {
+        const subResponse = await sendRequest(modal, language, wpNonces[language]);
+        if (!subResponse) {
             return false;
         }
+        const {tokenId, wpNonce} = subResponse;
         return {
             modal,
             tokenId,
-            language
+            language,
+            wpNonce,
         }
     }));
     if (response.every(r => r === false)) {
         return;
     }
     Notification.show("Traduction en cours", "La traduction est en cours, vous pouvez fermer cette fenêtre et continuer à travailler sur votre site.", "loutre_docteur_no_shadow.png", "success");
-    await Promise.all(response.map(({modal, tokenId, language}) => {
-        return fetchStateTranslateUntilOver(modal, tokenId, language);
+    await Promise.all(response.map(({modal, tokenId, language, wpNonce}) => {
+        return fetchStateTranslateUntilOver(modal, tokenId, language, wpNonce);
     }));
 }
 
-async function fetchStateTranslateUntilOver(modal, tokenId, language) {
+async function fetchStateTranslateUntilOver(modal, tokenId, language, wpNonce) {
     const stepDiv = getStepList(modal, language);
-    await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_get_state_translate&tokenId=${tokenId}`), () => {}, async (fetchResponse) => {
+    await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_get_state_translate&tokenId=${tokenId}&wp_nonce=${wpNonce}`), () => {}, async (fetchResponse) => {
         const data = await fetchResponse.json();
         if (!data.success || !("data" in data)) {
             setStep({
@@ -71,7 +73,7 @@ async function fetchStateTranslateUntilOver(modal, tokenId, language) {
             });
             return;
         }
-        const {percentage, status, html} = data.data;
+        const {percentage, status, html, wpNonce} = data.data;
         setStep({
             percentage,
             div: stepDiv,
@@ -82,7 +84,7 @@ async function fetchStateTranslateUntilOver(modal, tokenId, language) {
             return;
         }
         await new Promise(resolve => setTimeout(resolve, 1500));
-        return fetchStateTranslateUntilOver(modal, tokenId, language);
+        return fetchStateTranslateUntilOver(modal, tokenId, language, wpNonce);
     })
 }
 
@@ -123,7 +125,7 @@ function addListenerToCheckboxes(modal) {
     updateDisplayGlobalCheckbox();
 }
 
-async function displayLogInSection(modal, callbackOnLoggedIn) {
+async function displayLogInSection(modal, callbackOnLoggedIn, wpNonce) {
     const modalContent = modal.querySelector(".traduire-sans-migraine-modal__content-body-text");
     if (modalContent.querySelector("#login-container")) {
         return;
@@ -132,7 +134,7 @@ async function displayLogInSection(modal, callbackOnLoggedIn) {
     const logInDiv = document.createElement("div");
     logInDiv.id = "login-container";
     modalContent.prepend(logInDiv);
-    await renderLogInHTML(modal.querySelector("#login-container"), callbackOnLoggedIn);
+    await renderLogInHTML(modal.querySelector("#login-container"), callbackOnLoggedIn, wpNonce);
     stopButtonLoading('#translate-button')
 }
 
@@ -152,7 +154,7 @@ function addListenerToButtonTranslate(modal) {
                 removeLogInSection(modal);
                 buttonTranslate.dataset.logged = "true";
                 buttonTranslate.click();
-            });
+            }, buttonTranslate.dataset.loggedNonce);
             return;
         }
         const checkedCheckboxes = getCheckboxesListChecked(modal);
@@ -164,8 +166,8 @@ function addListenerToButtonTranslate(modal) {
             checkbox.disabled = true;
         });
         setButtonLoading('#translate-button')
-        const prepareIsSuccess = await sendRequestPrepare(modal, languages);
-        if (prepareIsSuccess) {
+        const response = await sendRequestPrepare(modal, languages, buttonTranslate.dataset.wp_nonce);
+        if (response !== false) {
             modal.querySelector("#global-languages-section").remove();
             modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
                 if (checkbox.checked) {
@@ -174,7 +176,7 @@ function addListenerToButtonTranslate(modal) {
                     checkbox.closest(".language").remove();
                 }
             });
-            await sendRequests(modal, languages);
+            await sendRequests(modal, languages, response.wpNonce);
         } else {
             modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
                 checkbox.disabled = false;
@@ -192,8 +194,8 @@ function addListenerToButtonTranslateLater(modal) {
     });
 }
 
-async function sendRequest(modal, language) {
-    return tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_start_translate&post_id=${getQuery("post")}&language=${language}`),
+async function sendRequest(modal, language, wpNonce) {
+    return tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_start_translate&post_id=${getQuery("post")}&language=${language}&wp_nonce=${wpNonce}`),
         (data) => {
             const stepDiv = getStepList(modal, language);
             setStep({
@@ -205,7 +207,6 @@ async function sendRequest(modal, language) {
             return false;
         }, async (fetchResponse) => {
             const data = await fetchResponse.json();
-            console.log({data});
             const stepDiv = getStepList(modal, language);
             if (!data.success || !("data" in data) || !("tokenId" in data.data)) {
                 setStep({
@@ -216,14 +217,15 @@ async function sendRequest(modal, language) {
                 });
                 return false;
             }
-            return data.data.tokenId;
+            return data.data;
         });
 }
 
-async function sendRequestPrepare(modal, languages) {
+async function sendRequestPrepare(modal, languages, wpNonce) {
     const body = {
         post_id: getQuery("post"),
-        languages
+        languages,
+        wp_nonce: wpNonce
     }
     return tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_prepare_translate`, {
         method: "POST",
@@ -236,7 +238,10 @@ async function sendRequestPrepare(modal, languages) {
             const alert = Alert.createNode("", data.error, "error");
             modal.querySelector(".traduire-sans-migraine-modal__content-body-text").prepend(alert);
         }
-        return data.success;
+        return {
+            success: data.success,
+            wpNonce: data.data.wpNonce
+        };
     })
 }
 
@@ -254,7 +259,7 @@ function addListenerToButtonDebug(modal) {
             return;
         }
         setButtonLoading(debugButton);
-        await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_debug&post_id=${getQuery("post")}&code=${code}`), () => {
+        await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_debug&post_id=${getQuery("post")}&code=${code}&wp_nonce=${debugButton.dataset.wp_nonce}`), () => {
 
         }, async (fetchResponse) => {
             const data = await fetchResponse.json();

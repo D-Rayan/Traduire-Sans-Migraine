@@ -40,6 +40,14 @@ class DebugHelper {
     }
 
     public function debugTranslation() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_debug")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         if (!isset($_GET["post_id"])) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),

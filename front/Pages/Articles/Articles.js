@@ -10,9 +10,9 @@
         return; // will not display a modal par post that will be too much for the user
     }
 
-    async function deleteTranslations(modal, id) {
+    async function deleteTranslations(modal, id, wpNonce) {
         const contentModal = modal.querySelector(".traduire-sans-migraine-modal__content-body-text");
-        const fetchResponse = await fetch(`${tsmVariables.url}article_deleted_delete_translations&post_id=${id}`);
+        const fetchResponse = await fetch(`${tsmVariables.url}article_deleted_delete_translations&post_id=${id}&wp_nonce=${wpNonce}`);
         const data = await fetchResponse.json();
         if (!data.success) {
             const div = document.createElement("div");
@@ -26,8 +26,8 @@
         }
         contentModal.innerHTML = data.data.html;
     }
-    async function loadModalTraduireSansMigraineForTrash(id) {
-        const fetchResponse = await fetch(`${tsmVariables.url}article_deleted_render&post_id=${id}`);
+    async function loadModalTraduireSansMigraineForTrash(id, wpNonce) {
+        const fetchResponse = await fetch(`${tsmVariables.url}article_deleted_render&post_id=${id}&wp_nonce=${wpNonce}`);
         if (fetchResponse.status >= 400) {
             return;
         }
@@ -43,12 +43,12 @@
             e.preventDefault();
             setButtonLoading(yesButton);
             setButtonLoading(noButton);
-            await deleteTranslations(modal, id);
+            await deleteTranslations(modal, id, yesButton.dataset.wp_nonce);
             stopButtonLoading(yesButton);
             stopButtonLoading(noButton);
         });
     }
 
-    loadModalTraduireSansMigraineForTrash(ids[0]);
+    loadModalTraduireSansMigraineForTrash(ids[0], window.tsmVariables.wpNonce_article_deleted_render);
 })();
 

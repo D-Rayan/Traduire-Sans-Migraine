@@ -6,6 +6,7 @@ if (buttonSave) {
         document.querySelector(".settings").querySelectorAll("input, select").forEach(input => {
             settings.append(input.id, input.checked ? true : false);
         });
+        settings.append("wp_nonce", buttonSave.dataset.wp_nonce);
         setButtonLoading("#save-settings");
         const fetchResponse = await fetch(`${tsmVariables.url}update_settings`, {
             method: "POST",

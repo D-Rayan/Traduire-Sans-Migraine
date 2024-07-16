@@ -25,6 +25,7 @@ class Main {
             "postTranslatedByTSMMessage" => TextDomain::__("You're on a content translated by us. If you want to know the best SEO practices, click <a target='_blank' href='%s'>here</a>. Futhermore you can use the differents tools :", $linkTraduireSansMigrainePractices),
             "translateInternalLinksButton" => TextDomain::__("Translate internal links")
         ]);
+        $hasBeenTranslatedByTsm = isset($_GET["post"]) ? get_post_meta($_GET["post"], "_has_been_translated_by_tsm", true) : false;
         wp_localize_script(TSM__SLUG . "-" . get_class(), "tsmVariables", [
             "assetsURI" => TSM__ASSETS_PATH,
             "url" => admin_url("admin-ajax.php") . "?action=traduire-sans-migraine_",
@@ -32,8 +33,10 @@ class Main {
             "trashed" => isset($_GET["trashed"]) && isset($_GET["ids"]) && count(explode(",", $_GET["ids"])) === 1,
             "ids" => isset($_GET["ids"]) ? $_GET["ids"] : false,
             "autoOpen" => $settingsInstance->settingIsEnabled("tsmOpenOnSave") ? "true" : "false",
-            "_has_been_translated_by_tsm" => isset($_GET["post"]) ? get_post_meta($_GET["post"], "_has_been_translated_by_tsm", true) : false,
+            "_has_been_translated_by_tsm" => $hasBeenTranslatedByTsm,
             "_tsm_first_visit_after_translation" => isset($_GET["post"]) ? get_post_meta($_GET["post"], "_tsm_first_visit_after_translation", true) : false,
+            "wpNonce_editor_translate_internal_links" => $hasBeenTranslatedByTsm !== false ? wp_create_nonce("traduire-sans-migraine_editor_translate_internal_links") : false,
+            "wpNonce_article_deleted_render" => isset($_GET["ids"]) && count(explode(",", $_GET["ids"])) === 1 ? wp_create_nonce("traduire-sans-migraine_article_deleted_render") : false
         ]);
         if (isset($_GET["post"])) {
             delete_post_meta($_GET["post"], "_tsm_first_visit_after_translation");

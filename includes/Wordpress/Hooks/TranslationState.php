@@ -37,6 +37,14 @@ class TranslationState {
     }
 
     public function getTranslateState() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_get_state_translate")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         if (!isset($_GET["tokenId"])) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
@@ -69,6 +77,7 @@ class TranslationState {
         if (isset($state["message"])) {
             $state["html"] = TextDomain::__($state["message"]["id"], ...$state["message"]["args"]);
         }
+        $state["wpNonce"] = wp_create_nonce("traduire-sans-migraine_editor_get_state_translate");
         echo json_encode(["success" => true, "data" => $state]);
         wp_die();
     }

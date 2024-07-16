@@ -58,12 +58,28 @@ class LogIn {
     }
 
     public function isOtterLoggedIn() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_is_otter_logged_in")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $clientSeoSansMigraine = new Client();
-        echo json_encode(["logged_in" => $clientSeoSansMigraine->checkCredential()]);
+        echo json_encode(["logged_in" => $clientSeoSansMigraine->checkCredential(), "wpNonce" => wp_create_nonce("traduire-sans-migraine_is_otter_logged_in")]);
         wp_die();
     }
 
     public function sendHTML() {
+        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_get_log_in_html")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         echo self::getHTML();
         wp_die();
     }
@@ -78,7 +94,7 @@ class LogIn {
         return Suggestions::getHTML(TextDomain::__("Your otter 🦦"),
             TextDomain::__("You're not logged in. Please log-in to continue."),
             "<div class='suggestion-footer-settings' id='log-in'>
-                <div>".Button::getHTML(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $urlToOpen])."</div>
+                <div>".Button::getHTML(TextDomain::__("Log-in"), "primary", "log-in", ["href" => $urlToOpen, "wp_nonce" => wp_create_nonce("traduire-sans-migraine_is_otter_logged_in")])."</div>
                 <div class='right-footer'>
                     <img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' /></div></div>",
             ["classname" => "suggestion-settings"]

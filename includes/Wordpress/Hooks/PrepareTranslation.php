@@ -40,6 +40,14 @@ class PrepareTranslation {
     }
 
     public function prepareTranslation() {
+        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_editor_prepare_translate")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         if (!isset($_POST["post_id"]) || !isset($_POST["languages"])) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
@@ -102,8 +110,9 @@ class PrepareTranslation {
         $this->languageManager->getLanguageManager()->saveAllTranslationsPost($translations);
         $updatedTranslations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
         $errorCreationTranslations = false;
-
+        $data = ["wpNonce" => []];
         foreach ($languages as $slug) {
+            $data["wpNonce"][$slug] = wp_create_nonce("traduire-sans-migraine_editor_start_translate_" . $slug);
             if (isset($updatedTranslations[$slug]["postId"]) && !empty(isset($updatedTranslations[$slug]["postId"]))) {
                 continue;
             }
@@ -121,7 +130,7 @@ class PrepareTranslation {
                 ]
             ];
         }
-        return ["success" => true, "data" => []];
+        return ["success" => true, "data" => $data];
     }
 
     public static function getInstance() {

@@ -72,10 +72,19 @@ class Settings {
     }
 
     public function saveSettings() {
+        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine-update-settings")) {
+            wp_send_json_error([
+                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
+                "title" => "",
+                "logo" => "loutre_docteur_no_shadow.png"
+            ], 400);
+            wp_die();
+        }
         $settings = [
             "content" => isset($_POST["content"]) && $_POST["content"] === "true",
             "title" => isset($_POST["title"]) && $_POST["title"] === "true",
             "slug" => isset($_POST["slug"]) && $_POST["slug"] === "true",
+            "excerpt" => isset($_POST["excerpt"]) && $_POST["excerpt"] === "true",
         ];
 
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
@@ -263,7 +272,9 @@ class Settings {
                         }
                     ?>
                     <div>
-                        <?php Button::render(TextDomain::__("Save"), "primary", "save-settings"); ?>
+                        <?php Button::render(TextDomain::__("Save"), "primary", "save-settings", [
+                                "wp_nonce" => wp_create_nonce("traduire-sans-migraine-update-settings"),
+                        ]); ?>
                     </div>
                 </div>
                 <div>
