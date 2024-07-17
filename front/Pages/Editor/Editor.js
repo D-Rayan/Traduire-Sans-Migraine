@@ -36,7 +36,7 @@ if (window.tsmVariables && window.tsmVariables._has_been_translated_by_tsm === "
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
     const moveButtonToHeader =  () => {
-        const headerElement = document.querySelector(".edit-post-header__settings");
+        const headerElement = document.querySelector(".edit-post-header__settings") || document.querySelector(".editor-header__settings");
         if (headerElement) {
             const button = document.querySelector('#display-traduire-sans-migraine-button');
             headerElement.appendChild(button);
