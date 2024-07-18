@@ -291,6 +291,14 @@ class StartTranslation
                 ],
                 "persist" => true
             ];
+        } else if (isset($result["error"])) {
+            $result["data"] = [
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("It's a bit weird, but we could not translate your post. Please try again."),
+                "logo" => "loutre_triste.png",
+                "persist" => false,
+                "error" => $result["error"]
+            ];
         }
         return [
             "success" => $result["success"],
