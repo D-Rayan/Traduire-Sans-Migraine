@@ -277,6 +277,20 @@ class StartTranslation
                 ],
                 "persist" => true
             ];
+        } else if (isset($result["error"]) && $result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003") {
+            $result["data"] = [
+                "title" => TextDomain::__("An error occurred"),
+                "message" => TextDomain::__("You have reached your languages quota."),
+                "logo" => "loutre_triste.png",
+                "buttons" => [
+                    [
+                        "label" => TextDomain::__("Check my account"),
+                        "type" => "primary",
+                        "url" => TSM__CLIENT_LOGIN_DOMAIN . "?key=" . $this->settings->getToken()
+                    ]
+                ],
+                "persist" => true
+            ];
         }
         return [
             "success" => $result["success"],
