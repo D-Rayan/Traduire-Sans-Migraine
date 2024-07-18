@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-07-08T10:40:020\n"
+"POT-Creation-Date: 2024-07-18T11:17:420\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -70,6 +70,10 @@ msgstr ""
 
 msgid "Translate internal links"
 msgstr "Traduire les liens internes"
+
+# Articles.php
+msgid "The security code is expired. Reload your page and retry"
+msgstr "Le code de sécurité est expiré."
 
 msgid "Post ID is not set"
 msgstr "L’ID du post est manquant"
@@ -558,6 +562,17 @@ msgstr ""
 
 msgid "Get more credits"
 msgstr "Avoir plus de crédits"
+
+msgid "You have reached your languages quota."
+msgstr "Tu as atteint ton maximum de langues autorisés."
+
+msgid "Check my account"
+msgstr "Voir mon compte"
+
+msgid ""
+"It's a bit weird, but we could not translate your post. Please try again."
+msgstr ""
+"Bizarre… nous n’arrivons pas à traduire ton contenu. Réessaye plus tard."
 
 msgid "We could not find the request ID."
 msgstr "Nous ne trouvons plus l’identifiant de la requête."

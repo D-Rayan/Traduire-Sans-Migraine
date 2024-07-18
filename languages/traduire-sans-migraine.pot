@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 1.0.004\n"
+"Project-Id-Version: Traduire Sans Migraine 1.1.001\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-08T10:40:020\n"
+"POT-Creation-Date: 2024-07-18T11:17:420\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # shelved.patch
@@ -56,6 +56,9 @@ msgid "Translate internal links"
 msgstr ""
 
 # Articles.php
+msgid "The security code is expired. Reload your page and retry"
+msgstr ""
+
 msgid "Post ID is not set"
 msgstr ""
 
@@ -465,6 +468,15 @@ msgid "We could not find the post. Please try again."
 msgstr ""
 
 msgid "Get more credits"
+msgstr ""
+
+msgid "You have reached your languages quota."
+msgstr ""
+
+msgid "Check my account"
+msgstr ""
+
+msgid "It's a bit weird, but we could not translate your post. Please try again."
 msgstr ""
 
 # StartTranslation.php
