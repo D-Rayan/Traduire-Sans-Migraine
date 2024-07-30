@@ -103,6 +103,14 @@ class Settings
         return $token;
     }
 
+    public function deleteToken() {
+        delete_option("seo_sans_migraine_token");
+    }
+
+    public function deleteSettings() {
+        delete_option("seo_sans_migraine_settings");
+    }
+
     public function saveSettings($settings) {
         update_option("seo_sans_migraine_settings", $settings);
         $this->settings = $settings;

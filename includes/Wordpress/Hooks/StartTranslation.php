@@ -262,8 +262,7 @@ class StartTranslation
             if (isset($result["data"]["backgroundProcess"])) {
                 update_option("_seo_sans_migraine_backgroundProcess", $result["data"]["backgroundProcess"]);
             }
-        }
-        if (isset($result["error"]) && $result["error"]["code"] === "U004403-001") {
+        } else if (!empty($result) && isset($result["error"]) && $result["error"]["code"] === "U004403-001") {
             $result["data"] = [
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("You have reached your monthly quota."),
@@ -277,7 +276,7 @@ class StartTranslation
                 ],
                 "persist" => true
             ];
-        } else if (isset($result["error"]) && $result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003") {
+        } else if (!empty($result) && isset($result["error"]) && $result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003") {
             $result["data"] = [
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("You have reached your languages quota."),
@@ -291,7 +290,7 @@ class StartTranslation
                 ],
                 "persist" => true
             ];
-        } else if (isset($result["error"])) {
+        } else if (!empty($result) && isset($result["error"])) {
             $result["data"] = [
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("It's a bit weird, but we could not translate your post. Please try again."),

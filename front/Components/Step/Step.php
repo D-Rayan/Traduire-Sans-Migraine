@@ -56,6 +56,9 @@ class Step
         if (!isset($options["status"])) {
             $options["status"] = self::$STEP_STATE["PROGRESS"];
         }
+        if (!isset($options["buttons"])) {
+            $options["buttons"] = [];
+        }
         if (!strstr($options["percentage"], "%")) {
             $options["percentage"] .= "%";
         }
@@ -66,7 +69,16 @@ class Step
             <div class="progress-bar">
                 <div class="progress-bar-fill progress-bar-fill--<?php echo $options["status"]; ?>" style="width: <?php echo $options["percentage"]; ?>;"></div>
             </div>
-            <div class="indicator-text"><?php if (isset($options["indicatorText"])) { echo $options["indicatorText"]; } ?></div>
+            <div class="indicator-text">
+                <?php
+                    if (isset($options["indicatorText"])) { echo $options["indicatorText"]; }
+                    foreach ($options["buttons"] as $button) {
+                        if (isset($button["url"])) {
+                            ?> <a href="<?php echo $button["url"]; ?>" target="_blank"><?php echo $button["label"]; ?></a><?php
+                        }
+                    }
+                ?>
+            </div>
         </div>
         <?php
         $content = ob_get_contents();

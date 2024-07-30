@@ -17,21 +17,37 @@ async function loadModalTraduireSansMigraine(wpNonce) {
     });
 }
 
-if (window.tsmVariables && window.tsmVariables._has_been_translated_by_tsm === "true") {
-    Notification.show(
-        'postTranslatedByTSMTitle',
-        "postTranslatedByTSMMessage",
-        "loutre_docteur_no_shadow.png",
-        "success",
-        true,
-        document.body,
-        [Button.createNode("translateInternalLinksButton", "primary", async (button) => {
-            setButtonLoading(button);
-            await translateInternalLinks(window.tsmVariables.wpNonce_editor_translate_internal_links);
-            stopButtonLoading(button);
-        })],
-        window.tsmVariables._tsm_first_visit_after_translation === "true"
-    );
+if (window.tsmVariables && window.tsmVariables.wpNonce_editor_get_post_notifications) {
+    // make axios to get notifications
+    const fetchNotifications = async () => {
+        await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_get_post_notifications&post_id=${getQuery("post")}&wp_nonce=${tsmVariables.wpNonce_editor_get_post_notifications}`), (response) => {
+
+        }, async (response) => {
+            const data = await response.json();
+            const notifications = data.data;
+            notifications.forEach((notification) => {
+                const buttons = [];
+                if (notification.buttons) {
+                    notification.buttons.forEach((button) => {
+                        buttons.push(Button.createNode(button.label, button.type, async (buttonNode) => {
+                            setButtonLoading(buttonNode);
+                            if ("url" in button) {
+                                window.open(button.url, '_blank');
+                            }
+                            if ("action" in button) {
+                                if (button.action === "translateInternalLinks") {
+                                    await translateInternalLinks(button.wpNonce);
+                                }
+                            }
+                            stopButtonLoading(buttonNode);
+                        }));
+                    });
+                }
+                Notification.show(notification.title, notification.message, notification.logo, notification.type, notification.persist, document.body, buttons, notification.displayDefault);
+            });
+        });
+    }
+    fetchNotifications();
 }
 
 if (window && window.wp && window.wp.data && window.wp.data.dispatch('core/editor')) {
@@ -57,6 +73,7 @@ if (buttonDisplayTraduireSansMigraine) {
         return false;
     });
 }
+
 
 async function translateInternalLinks(wpNonce) {
     await tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_translate_internal_links&post_id=${getQuery("post")}&wp_nonce=${wpNonce}`), (response) => {

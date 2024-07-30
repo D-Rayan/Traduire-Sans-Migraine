@@ -1,0 +1,24 @@
+.form-reason-deactivate {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    padding: 1rem;
+    gap: 1rem;
+    width: 70%;
+}
+
+.form-reason-deactivate > div {
+    display: flex;
+    align-items: center;
+}
+
+.reason-deactivate-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.reason-deactivate-picture img {
+    width: 100%;
+}

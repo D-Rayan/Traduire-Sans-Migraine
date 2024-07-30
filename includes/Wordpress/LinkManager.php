@@ -85,13 +85,15 @@ class LinkManager {
         }
         return $this->combineQueryAndAnchor($resultUrl, $result["query"], $result["anchor"]);
     }
-    public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $getErrors = false) {
+    public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo, $getErrors = false) {
         $homeUrl = str_replace("/", "\/", home_url());
         $regexAbsoluteUrl = '/'.$homeUrl.'\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
+        $regexAbsoluteUrlExclude = '/'.$homeUrl.'\/'.$translateTo.'\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
         $regexRelativeUrl = '/"\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
+        $regexRelativeUrlExclude = '/"\/'.$translateTo.'\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
         return array_merge(
-            $this->regexOnContent($regexAbsoluteUrl, $postContent, $getErrors),
-            $this->regexOnContent($regexRelativeUrl, $postContent, $getErrors)
+            $this->regexOnContent($regexAbsoluteUrl, $postContent, $getErrors, $regexAbsoluteUrlExclude),
+            $this->regexOnContent($regexRelativeUrl, $postContent, $getErrors, $regexRelativeUrlExclude)
         );
     }
 
@@ -99,11 +101,14 @@ class LinkManager {
         return false !== strpos($absoluteURI, "/wp-content/") || false !== strpos($absoluteURI, "/wp-includes/");
     }
 
-    private function regexOnContent($regex, $postContent, $getErrors = false)  {
+    private function regexOnContent($regex, $postContent, $getErrors = false, $regexExclude = null) {
         preg_match_all($regex, $postContent, $matches);
         $extractedUrls = $matches[0];
         $internalsPostsId = [];
         foreach ($extractedUrls as $extractedUrl) {
+            if ($regexExclude && preg_match($regexExclude, $extractedUrl)) {
+                continue;
+            }
             $internalUrl = str_replace('"', '', $extractedUrl);
             $completeInternalUrl = $this->formatUrlToAbsolute($internalUrl);
             if ($this->isRestrictedURL($completeInternalUrl)) {
@@ -112,7 +117,7 @@ class LinkManager {
             $internalPostId = url_to_postid($completeInternalUrl);
             if (!$internalPostId) {
                 if ($getErrors) {
-                    $internalsPostsId[$internalUrl] = "notFound";
+                    $internalsPostsId[$internalPostId] = "notFound";
                 }
                 continue;
             }
@@ -126,7 +131,7 @@ class LinkManager {
     }
 
     public function translateInternalLinks($postContent, $translateFrom, $translateTo) {
-        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom);
+        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
         $newContent = $postContent;
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
             $internalPostIdTranslated = $this->languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
@@ -145,10 +150,11 @@ class LinkManager {
         if ($translateFrom === $translateTo) {
             return [
                 "notTranslated" => [],
-                "notPublished" => []
+                "notPublished" => [],
+                "translatable" => []
             ];
         }
-        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom);
+        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
         $notTranslatedInternalLinks = $notPublishedInternalLinks = [];
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
             $internalPostIdTranslated = $this->languageManager->getLanguageManager()->getTranslationPost($postIdRelated, $translateTo);
@@ -161,9 +167,16 @@ class LinkManager {
                 $notPublishedInternalLinks[$urlToReplace] = $postIdRelated;
             }
         }
+        $translatable = [];
+        foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
+            if (!isset($notTranslatedInternalLinks[$urlToReplace]) && !isset($notPublishedInternalLinks[$urlToReplace])) {
+                $translatable[$urlToReplace] = $postIdRelated;
+            }
+        }
         return [
             "notTranslated" => $notTranslatedInternalLinks,
-            "notPublished" => $notPublishedInternalLinks
+            "notPublished" => $notPublishedInternalLinks,
+            "translatable" => $translatable
         ];
     }
 }

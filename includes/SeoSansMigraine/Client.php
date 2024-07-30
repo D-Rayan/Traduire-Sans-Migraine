@@ -52,6 +52,10 @@ class Client
         return $this->client->post("/debugs", $data);
     }
 
+    public function sendReasonDeactivate($data) {
+        return $this->client->post("/reasons-deactivate", $data);
+    }
+
     public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo): array {
         return $this->client->post("/translations", [
             "dataToTranslate" => $dataToTranslate,

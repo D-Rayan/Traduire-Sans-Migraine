@@ -17,9 +17,11 @@ namespace TraduireSansMigraine;
 
 use TraduireSansMigraine\Front\Components\Alert;
 use TraduireSansMigraine\Wordpress\Hooks\DebugHelper;
+use TraduireSansMigraine\Wordpress\Hooks\GetPostNotifications;
 use TraduireSansMigraine\Wordpress\Hooks\GetPostTranslated;
 use TraduireSansMigraine\Wordpress\Hooks\PrepareTranslation;
 use TraduireSansMigraine\Wordpress\Hooks\RestAPI;
+use TraduireSansMigraine\Wordpress\Hooks\SendReasonsDeactivate;
 use TraduireSansMigraine\Wordpress\Hooks\StartTranslation;
 use TraduireSansMigraine\Wordpress\Hooks\TranslateInternalLinks;
 use TraduireSansMigraine\Wordpress\Hooks\TranslationState;
@@ -84,6 +86,7 @@ class TraduireSansMigraine {
         $this->loadComponents();
         $this->loadPages();
         register_activation_hook(__FILE__, [$this, "prepareActivationPlugin"]);
+        register_deactivation_hook( __FILE__, [$this, "deactivateTsm"] );
         add_action("admin_init", [$this, "checkRequirements"]);
         add_action("admin_init", [$this, "messageSuccessActivation"]);
         OfflineProcess::getInstance()->init();
@@ -96,6 +99,8 @@ class TraduireSansMigraine {
         TranslationState::getInstance()->init();
         PostsSearch::getInstance()->init();
         TranslateInternalLinks::getInstance()->init();
+        GetPostNotifications::getInstance()->init();
+        SendReasonsDeactivate::getInstance()->init();
     }
 
     public function prepareActivationPlugin() {
@@ -112,6 +117,14 @@ class TraduireSansMigraine {
                     "info"
                 );
             });
+        }
+    }
+
+    public function deactivateTsm() {
+        global $wpdb;
+
+        if (isset($_GET["delete_configuration"])) {
+            $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%seo_sans_migraine%'");
         }
     }
 }

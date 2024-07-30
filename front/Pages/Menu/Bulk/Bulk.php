@@ -317,6 +317,16 @@ class Bulk {
                             $state["percentage"] = 100;
                             if (isset($data["message"])) {
                                 $state["message"]["id"] = TextDomain::__($data["message"]);
+                                if (isset($data["buttons"])) {
+                                    $state["buttons"] = [];
+                                    foreach ($data["buttons"] as $button) {
+                                        $state["buttons"][] = [
+                                            "label" => TextDomain::__($button["label"]),
+                                            "type" => $button["type"],
+                                            "url" => $button["url"],
+                                        ];
+                                    }
+                                }
                             }
                         } else if ($isProcessed) {
                             $state["status"] = Step::$STEP_STATE["DONE"];

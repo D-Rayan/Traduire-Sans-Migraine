@@ -20,6 +20,13 @@ class Menu {
                 content: "💊";
                 padding: 5px 0 !important;
             }
+            #toplevel_page_sans-migraine li:last-child {
+                font-weight: 600;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                background: #7795EE;
+                color: white;
+            }
             </style>';
         });
     }
@@ -68,6 +75,17 @@ class Menu {
             "manage_options",
             "traduire-sans-migraine-bulk",
             [$this, "renderBulkMenu"]
+        );
+        add_submenu_page(
+            "sans-migraine",
+            "Redirecting to the tutorial",
+            TextDomain::__("See the tutorial"),
+            "manage_options",
+            "traduire-sans-migraine-bulk",
+            function () {
+                wp_redirect(TextDomain::__("tutorialLink"));
+                exit;
+            }
         );
     }
 
