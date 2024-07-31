@@ -16,6 +16,7 @@ namespace TraduireSansMigraine;
 
 
 use TraduireSansMigraine\Front\Components\Alert;
+use TraduireSansMigraine\Wordpress\Hooks\AddNewLanguage;
 use TraduireSansMigraine\Wordpress\Hooks\DebugHelper;
 use TraduireSansMigraine\Wordpress\Hooks\GetPostNotifications;
 use TraduireSansMigraine\Wordpress\Hooks\GetPostTranslated;
@@ -84,10 +85,13 @@ class TraduireSansMigraine {
         $this->updater->init();
         $this->textDomain->loadTextDomain();
         $this->loadComponents();
-        $this->loadPages();
         register_activation_hook(__FILE__, [$this, "prepareActivationPlugin"]);
         register_deactivation_hook( __FILE__, [$this, "deactivateTsm"] );
-        add_action("admin_init", [$this, "checkRequirements"]);
+        if (!$this->settings->checkRequirements()) {
+            add_action("wp_ajax_traduire-sans-migraine_install_required_plugin", [$this, "installRequiredPlugins"]);
+            return;
+        }
+        $this->loadPages();
         add_action("admin_init", [$this, "messageSuccessActivation"]);
         OfflineProcess::getInstance()->init();
         $this->menu->init();
@@ -101,6 +105,7 @@ class TraduireSansMigraine {
         TranslateInternalLinks::getInstance()->init();
         GetPostNotifications::getInstance()->init();
         SendReasonsDeactivate::getInstance()->init();
+        AddNewLanguage::getInstance()->init();
     }
 
     public function prepareActivationPlugin() {
@@ -125,6 +130,23 @@ class TraduireSansMigraine {
 
         if (isset($_GET["delete_configuration"])) {
             $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%seo_sans_migraine%'");
+        }
+    }
+
+    public function installRequiredPlugins() {
+        if (!current_user_can('install_plugins')) {
+            wp_die();
+        }
+        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_install_required_plugin")) {
+            wp_die();
+        }
+        include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+        include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+        $api = plugins_api( 'plugin_information', array( 'slug' => 'polylang' ) );
+        $upgrader = new \Plugin_Upgrader();
+        $install = $upgrader->install($api->download_link);
+        if (is_wp_error($install)) {
+            wp_die();
         }
     }
 }

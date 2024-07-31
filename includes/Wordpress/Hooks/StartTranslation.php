@@ -86,7 +86,7 @@ class StartTranslation
             $result["data"]["wpNonce"] = wp_create_nonce("traduire-sans-migraine_editor_get_state_translate");
             wp_send_json_success($result["data"]);
         } else {
-            wp_send_json_error($result["data"], 400);
+            wp_send_json_error($result, 400);
         }
     }
 
@@ -274,9 +274,9 @@ class StartTranslation
                         "url" => TSM__CLIENT_LOGIN_DOMAIN . "?key=" . $this->settings->getToken()
                     ]
                 ],
-                "persist" => true
+                "semi-persist" => true
             ];
-        } else if (!empty($result) && isset($result["error"]) && $result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003") {
+        } else if (!empty($result) && isset($result["error"]) && ($result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003")) {
             $result["data"] = [
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("You have reached your languages quota."),
@@ -301,7 +301,8 @@ class StartTranslation
         }
         return [
             "success" => $result["success"],
-            "data" => $result["data"]
+            "data" => $result["data"],
+            "debug" => $result
         ];
     }
 

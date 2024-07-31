@@ -88,9 +88,14 @@ class LinkManager {
     public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo, $getErrors = false) {
         $homeUrl = str_replace("/", "\/", home_url());
         $regexAbsoluteUrl = '/'.$homeUrl.'\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
-        $regexAbsoluteUrlExclude = '/'.$homeUrl.'\/'.$translateTo.'\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
         $regexRelativeUrl = '/"\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
-        $regexRelativeUrlExclude = '/"\/'.$translateTo.'\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
+        if ($translateTo !== $translateFrom) {
+            $regexAbsoluteUrlExclude = '/' . $homeUrl . '\/' . $translateTo . '\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
+            $regexRelativeUrlExclude = '/"\/' . $translateTo . '\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
+        } else {
+            $regexAbsoluteUrlExclude = null;
+            $regexRelativeUrlExclude = null;
+        }
         return array_merge(
             $this->regexOnContent($regexAbsoluteUrl, $postContent, $getErrors, $regexAbsoluteUrlExclude),
             $this->regexOnContent($regexRelativeUrl, $postContent, $getErrors, $regexRelativeUrlExclude)

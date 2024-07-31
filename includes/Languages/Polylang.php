@@ -2,8 +2,10 @@
 
 namespace TraduireSansMigraine\Languages;
 
+use PLL_Admin_Model;
 use TraduireSansMigraine\Locker;
 use TraduireSansMigraine\Wordpress\TextDomain;
+use WP_Error;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -49,6 +51,15 @@ class Polylang implements LanguageInterface
         $postId = pll_get_post($postId, $codeLanguage);
 
         return $postId && get_post_status($postId) !== "trash" ? $postId : null;
+    }
+
+    public function setLanguageForPost(string $postId, string $codeLanguage)
+    {
+        if (!function_exists("pll_set_post_language")) {
+            throw new \Exception(TextDomain::__("%s not existing.", "pll_set_post_language"));
+        }
+
+        pll_set_post_language($postId, $codeLanguage);
     }
 
     public function getAllTranslationsPost(string $postId): array
@@ -164,5 +175,37 @@ class Polylang implements LanguageInterface
     public function getLanguageManagerName(): string
     {
         return "Polylang";
+    }
+
+    public function addLanguage(string $locale): bool
+    {
+        $options = get_option( 'polylang' );
+        $model = new PLL_Admin_Model($options);
+        $model->set_languages_ready();
+        $all_languages   = include POLYLANG_DIR . '/settings/languages.php';
+        $saved_languages = array();
+
+        require_once ABSPATH . 'wp-admin/includes/translation-install.php';
+        $saved_languages = $all_languages[ $locale ];
+
+        $saved_languages['slug'] = $saved_languages['code'];
+        $saved_languages['rtl'] = (int) ( 'rtl' === $saved_languages['dir'] );
+        $saved_languages['term_group'] = 0; // Default term_group.
+
+        $language_added = $model->add_language( $saved_languages );
+
+        if ( $language_added instanceof WP_Error && array_key_exists( 'pll_non_unique_slug', $language_added->errors ) ) {
+            $saved_languages['slug'] = strtolower( str_replace( '_', '-', $saved_languages['locale'] ) );
+            $language_added = $model->add_language( $saved_languages );
+        }
+
+        if ( $language_added instanceof WP_Error ) {
+            return false;
+        }
+
+        if ( 'en_US' !== $locale && current_user_can( 'install_languages' ) ) {
+            wp_download_language_pack( $locale );
+        }
+        return true;
     }
 }

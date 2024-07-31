@@ -67,7 +67,7 @@ class Notification {
             }, 8000);
         }
         notification.querySelector(".traduire-sans-migraine-notification__close").addEventListener('click', () => {
-            if (!persist) {
+            if (persist !== true) {
                 if (timeOutId) {
                     clearTimeout(timeOutId);
                 }
@@ -84,7 +84,7 @@ class Notification {
                 }, 800);
             }
         });
-        if (!displayDefault && persist) {
+        if (!displayDefault && persist === true) {
             notification.classList.add('traduire-sans-migraine-notification--hidden');
             Notification.displayContainerOpener(location);
         }

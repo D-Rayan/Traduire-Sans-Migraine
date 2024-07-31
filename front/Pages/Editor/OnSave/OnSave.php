@@ -56,38 +56,47 @@ class OnSave {
         add_action("wp_ajax_traduire-sans-migraine_editor_onSave_render", [$this, "render"]);
     }
 
-    private function getTranslationsPostsData($post) {
+    private function getTranslationPostData($codeSlug, $post, $translationPost, $termsCategories) {
+        $postExists = $translationPost["postId"] && get_post_status($translationPost["postId"]) !== "trash";
+        $checked = !$postExists && $translationPost["postId"] != $post["id"];
+        $issuesTranslatedUrls = $this->getLinkManager()->getIssuedInternalLinks($post["content"], $post["language"], $translationPost["code"]);
+        $notTranslated = $issuesTranslatedUrls["notTranslated"];
+        $notPublished = $issuesTranslatedUrls["notPublished"];
+        $haveWarnings = count($notTranslated) + count($notPublished) > 0;
+        $missingCategories = [];
+        foreach ($termsCategories as $termCategory) {
+            $result = $this->getLanguageManager()->getTranslationCategories([$termCategory->term_id], $translationPost["code"]);
+            if (empty($result)) {
+                $missingCategories[] = $termCategory->name;
+            }
+        }
+        return [
+            "name" => $translationPost["name"],
+            "flag" => $translationPost["flag"],
+            "code" => $translationPost["code"],
+            "postId" => $postExists ? $translationPost["postId"] : null,
+            "checked" => $checked,
+            "haveWarnings" => $haveWarnings,
+            "notTranslated" => $notTranslated,
+            "notPublished" => $notPublished,
+            "translatable" => true,
+            "missingCategories" => $missingCategories
+        ];
+    }
+    private function getTranslationsPostsData($post, $accountSlugs) {
         $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
         $translationsPosts = $this->getLanguageManager()->getAllTranslationsPost($post["id"]);
         $enrichedTranslationsPosts = [];
         $termsCategories = get_the_category($post["id"]);
         foreach ($translationsPosts as $codeSlug => $translationPost) {
-            $translatable = in_array($translationPost["code"], $languagesTranslatable);
-            $postExists = $translationPost["postId"] && get_post_status($translationPost["postId"]) !== "trash";
-            $checked = !$postExists && $translationPost["postId"] != $post["id"] && $translatable;
-            $issuesTranslatedUrls = $this->getLinkManager()->getIssuedInternalLinks($post["content"], $post["language"], $translationPost["code"]);
-            $notTranslated = $issuesTranslatedUrls["notTranslated"];
-            $notPublished = $issuesTranslatedUrls["notPublished"];
-            $haveWarnings = count($notTranslated) + count($notPublished) > 0;
-            $missingCategories = [];
-            foreach ($termsCategories as $termCategory) {
-                $result = $this->getLanguageManager()->getTranslationCategories([$termCategory->term_id], $translationPost["code"]);
-                if (empty($result)) {
-                    $missingCategories[] = $termCategory->name;
-                }
+            if ($accountSlugs["max"] != -1 && $accountSlugs["current"] >= $accountSlugs["max"] && !in_array($codeSlug, $accountSlugs["allowed"])) {
+                continue;
             }
-            $enrichedTranslationsPosts[$codeSlug] = [
-                "name" => $translationPost["name"],
-                "flag" => $translationPost["flag"],
-                "code" => $translationPost["code"],
-                "postId" => $postExists ? $translationPost["postId"] : null,
-                "checked" => $checked,
-                "haveWarnings" => $haveWarnings,
-                "notTranslated" => $notTranslated,
-                "notPublished" => $notPublished,
-                "translatable" => $translatable,
-                "missingCategories" => $missingCategories
-            ];
+            $translatable = in_array($translationPost["code"], $languagesTranslatable);
+            if (!$translatable) {
+                continue;
+            }
+            $enrichedTranslationsPosts[$codeSlug] = $this->getTranslationPostData($codeSlug, $post, $translationPost, $termsCategories);
         }
 
         usort($enrichedTranslationsPosts, function ($a, $b) use ($post) {
@@ -121,7 +130,7 @@ class OnSave {
     }
 
     private function renderCurrentPostInformation($post) {
-        $listsUrlsIssues = $this->getLinkManager()->extractAndRetrieveInternalLinks($post["content"], $post["language"], true);
+        $listsUrlsIssues = $this->getLinkManager()->extractAndRetrieveInternalLinks($post["content"], $post["language"],  $post["language"],true);
         Alert::render(false, TextDomain::__("That's the last version of your post that will be translated. If you have done any modification don't forget to save it before the translation!"), "success", [
             "isDismissible" => false
         ]);
@@ -220,20 +229,73 @@ class OnSave {
             $currentPost["content"] = get_post($localPostId)->post_content;
             $currentPost["language"] = $this->getLanguageManager()->getLanguageForPost($localPostId);
         } catch (\Exception $e) {
+            $currentLanguageWordpress = get_locale();
+            $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
+            $polylangLanguages = include POLYLANG_DIR . '/settings/languages.php';
+            ob_start();
+            ?>
+            <select id="global-languages" class="global-languages">
+                <?php
+                $uniquesLocales = [];
+                foreach ($languagesTranslatable as $language) {
+                    if ($language === "en") {
+                        $locale = "en_US";
+                    } else {
+                        $locale = $language . "_" . strtoupper($language);
+                    }
+                    $associatedLanguage = isset($polylangLanguages[$locale]) ? $polylangLanguages[$locale] : null;
+                    if (!$associatedLanguage) {
+                        foreach ($polylangLanguages as $polylangLanguage) {
+                            if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $language) {
+                                $associatedLanguage = $polylangLanguage;
+                                break;
+                            }
+                        }
+                    }
+                    if (!$associatedLanguage) {
+                        continue;
+                    }
+                    if (!isset($uniquesLocales[$associatedLanguage["locale"]])) {
+                        $uniquesLocales[$associatedLanguage["locale"]] = true;
+                    } else {
+                        continue;
+                    }
+                    ?>
+                    <option value="<?php echo $associatedLanguage["locale"]; ?>" <?php if ($associatedLanguage["locale"] === $currentLanguageWordpress) { echo "selected"; } ?>>
+                        <?php echo $associatedLanguage["name"]; ?>
+                    </option>
+                    <?php
+                }
+                ?>
+            </select>
+            <?php
+            $selectHtml = ob_get_clean();
             wp_send_json_error([
-                "message" => TextDomain::__("You need at least to add two languages to your website. (The default language and the one you want to translate to)"),
-                "logo" => "loutre_docteur_no_shadow.png"
+                "title" => TextDomain::__("We need one more thing"),
+                "message" => TextDomain::__("We need to know the language of your post.") . "<br/>" . $selectHtml,
+                "logo" => "loutre_docteur_no_shadow.png",
+                "semi-persist" => true,
+                "buttons" => [
+                    [
+                        "label" => TextDomain::__("Apply this language"),
+                        "type" => "primary",
+                        "action" => "add-new-language",
+                        "wpNonce" => wp_create_nonce("traduire-sans-migraine_add_new_language"),
+                    ]
+                ]
             ], 400);
             wp_die();
         }
+        $this->clientSeoSansMigraine->fetchAccount();
+        $account = $this->clientSeoSansMigraine->getAccount();
+        $slugsMax = $account["slugs"]["max"] == -1 ? PHP_INT_MAX : $account["slugs"]["max"];
+        $slugsUsed = $account["slugs"]["current"];
+        $slugsLeft = $slugsMax - $slugsUsed;
 
         if (empty($currentPost["language"])) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("This post is not associated with a language. Check the configuration and try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
-            wp_die();
+            $defaultLanguage = $this->getLanguageManager()->getDefaultLanguage();
+            $currentPost["language"] = $defaultLanguage["code"];
+            $this->getLanguageManager()->setLanguageForPost($localPostId, $currentPost["language"]);
         }
         ob_start();
         ?>
@@ -250,8 +312,10 @@ class OnSave {
         <div class="traduire-sans-migraine-list-languages">
         <?php
             try {
-                $enrichedTranslationsPosts = $this->getTranslationsPostsData($currentPost);
+                $enrichedTranslationsPosts = $this->getTranslationsPostsData($currentPost, $account["slugs"]);
+                $slugsUsed = [];
                 foreach ($enrichedTranslationsPosts as $enrichedTranslationPost) {
+                    $slugsUsed[$enrichedTranslationPost["code"]] = true;
                     ?>
                     <div class="language" data-language="<?php echo $enrichedTranslationPost["code"]; ?>">
                         <div class="left-column">
@@ -287,14 +351,67 @@ class OnSave {
         ?>
         </div>
         <?php
-        Suggestions::render(
-            TextDomain::__("You're not finding a specific language?"),
-            TextDomain::__("To translate you first need to add the language to your website.")
-            . "<br/>"
-            . TextDomain::__("Go to %s to add a new language.", $this->getLanguageManager()->getLanguageManagerName())
-            . "<br/>"
-            . TextDomain::__("Then come back here to translate your post."),
-            "<img width='72' src='".TSM__ASSETS_PATH."loutre_ampoule.png' alt='loutre_ampoule' />");
+
+        if ($slugsLeft <= 0) {
+            Suggestions::render(
+                TextDomain::__("You have reached the maximum languages you can translate."),
+                TextDomain::__("If you want more languages, you can ")
+                . Button::getHTML(TextDomain::__("Upgrade your plan"), "primary", "upgrade-plan-button", [
+                        "href" => TSM__CLIENT_LOGIN_DOMAIN
+                ]),
+                "<img width='72' src='" . TSM__ASSETS_PATH . "loutre_ampoule.png' alt='loutre_ampoule' />");
+        } else {
+            $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
+            $polylangLanguages = include POLYLANG_DIR . '/settings/languages.php';
+            ob_start();
+            ?>
+            <select id="language-selection-add" class="global-languages">
+                <?php
+                $uniquesLocales = [];
+                foreach ($languagesTranslatable as $language) {
+                    if ($language === "en") {
+                        $locale = "en_US";
+                    } else {
+                        $locale = $language . "_" . strtoupper($language);
+                    }
+                    $associatedLanguage = isset($polylangLanguages[$locale]) ? $polylangLanguages[$locale] : null;
+                    if (!$associatedLanguage) {
+                        foreach ($polylangLanguages as $polylangLanguage) {
+                            if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $language) {
+                                $associatedLanguage = $polylangLanguage;
+                                break;
+                            }
+                        }
+                    }
+                    if (!$associatedLanguage) {
+                        continue;
+                    }
+                    if (!isset($uniquesLocales[$associatedLanguage["locale"]])) {
+                        $uniquesLocales[$associatedLanguage["locale"]] = true;
+                    } else {
+                        continue;
+                    }
+                    if (isset($slugsUsed[$associatedLanguage["code"]]) || $associatedLanguage["code"] === $currentPost["language"]) {
+                        continue;
+                    }
+                    ?>
+                    <option value="<?php echo $associatedLanguage["locale"]; ?>">
+                        <?php echo $associatedLanguage["name"]; ?>
+                    </option>
+                    <?php
+                }
+                ?>
+            </select>
+            <?php
+            Button::render(TextDomain::__("Add new language"), "primary", "add-new-language", [
+                "nonce" => wp_create_nonce("traduire-sans-migraine_add_new_language")
+            ]);
+            $selectHtml = ob_get_clean();
+            Suggestions::render(
+                TextDomain::__("You can add more language to translate."),
+                $selectHtml,
+                "<img width='72' src='" . TSM__ASSETS_PATH . "loutre_ampoule.png' alt='loutre_ampoule' />");
+        }
         $htmlContent = ob_get_clean();
         Modal::render(TSM__NAME, $htmlContent, [
             Button::getHTML(TextDomain::__("Translate now"), "success", "translate-button", [

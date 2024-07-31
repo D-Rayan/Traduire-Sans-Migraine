@@ -74,4 +74,8 @@ interface LanguageInterface
     public function getLanguageManagerName(): string;
 
     public function getDefaultLanguage();
+
+    public function addLanguage(string $language): bool;
+
+    public function setLanguageForPost(string $postId, string $codeLanguage);
 }

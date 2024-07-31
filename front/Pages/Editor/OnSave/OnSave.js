@@ -15,8 +15,48 @@ function injectFunctionTranslationModal(modal) {
     addListenerToButtonTranslate(modal);
     addListenerToButtonTranslateLater(modal);
     addListenerToButtonDebug(modal);
+    addListenerToButtonAddLanguage(modal);
+    addListenerToUpgradeButton(modal);
     initTooltips();
+}
 
+function addListenerToUpgradeButton(modal) {
+    const upgradeButton = modal.querySelector('#upgrade-plan-button');
+    if (!upgradeButton) {
+        return;;
+    }
+    upgradeButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = upgradeButton.dataset.href;
+        window.open(href, "_blank");
+    });
+}
+
+function addListenerToButtonAddLanguage(modal) {
+    const buttonAddLanguage = modal.querySelector('#add-new-language');
+    if (!buttonAddLanguage) {
+        return;
+    }
+    buttonAddLanguage.addEventListener('click', async (e) => {
+        setButtonLoading(buttonAddLanguage);
+        const response = await fetch(`${tsmVariables.url}add_new_language`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                language: modal.querySelector("#language-selection-add").value,
+                wp_nonce: buttonAddLanguage.dataset.nonce
+            })
+        });
+        await response.text();
+        if (typeof buttonDisplayTraduireSansMigraine !== "undefined") {
+            await loadModalTraduireSansMigraine(buttonDisplayTraduireSansMigraine.dataset.wp_nonce);
+            modal.remove();
+        } else {
+            stopButtonLoading(buttonAddLanguage);
+        }
+    });
 }
 
 function getStepList(modal, language) {
@@ -195,6 +235,12 @@ function addListenerToButtonTranslateLater(modal) {
 }
 
 async function sendRequest(modal, language, wpNonce) {
+    const getHTML = (error) => {
+        if (!error) {
+            return "Une erreur est survenue lors de la traduction";
+        }
+        return typeof error === "string" ? error : error.message.join("<br>");
+    }
     return tsmHandleRequestResponse(await fetch(`${tsmVariables.url}editor_start_translate&post_id=${getQuery("post")}&language=${language}&wp_nonce=${wpNonce}`),
         (data) => {
             const stepDiv = getStepList(modal, language);
@@ -202,7 +248,7 @@ async function sendRequest(modal, language, wpNonce) {
                 percentage: 100,
                 div: stepDiv,
                 status: "error",
-                html: typeof data.error === "string" ? data.error : data.error.message.join("<br>"),
+                html: getHTML(data.error),
             });
             return false;
         }, async (fetchResponse) => {
