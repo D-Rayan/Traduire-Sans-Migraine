@@ -374,11 +374,15 @@ class TranslateHelper
                 continue;
             }
             $newMediaId = $this->duplicateMedia($mediaId, $newName);
+            if ($newMediaId instanceof \WP_Error || !$newMediaId) {
+                continue;
+            }
             $content = str_replace($originalUrlAsset, wp_get_attachment_url($newMediaId), $content);
             // handling gutemberg blocks
             $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content); // adding specific character to avoid wrong update
             $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content); // adding specific character to avoid wrong update
         }
+        $this->dataToTranslate["content"] = $content;
     }
 
     private function duplicateMedia($mediaId, $name) {
@@ -390,7 +394,7 @@ class TranslateHelper
             "post_mime_type" => $media->post_mime_type,
             "guid" => $media->guid,
             "post_type" => "attachment",
-            "post_author" => get_current_user_id(),
+            "post_author" => $media->post_author,
         ];
         $newMediaId = wp_insert_post($newMedia);
         $attachmentData = wp_generate_attachment_metadata($newMediaId, $media->guid);
