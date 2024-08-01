@@ -396,6 +396,7 @@ class TranslateHelper
         $path = get_attached_file($mediaId);
         $explodedPath = explode("/", $path);
         $fileName = end($explodedPath);
+        $name = str_replace("." . pathinfo($fileName, PATHINFO_EXTENSION), "", $name);
         $newFileName = sanitize_file_name($name) . "." . pathinfo($fileName, PATHINFO_EXTENSION);
         $newPath = str_replace($fileName, $newFileName, $path);
         if (file_exists($newPath)) {
