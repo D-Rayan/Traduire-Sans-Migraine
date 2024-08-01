@@ -386,17 +386,39 @@ class TranslateHelper
     }
 
     private function duplicateMedia($mediaId, $name) {
+        if ( ! function_exists( 'wp_crop_image' ) ) {
+            include( ABSPATH . 'wp-admin/includes/image.php' );
+        }
         $media = get_post($mediaId);
+        if (!$media) {
+            return false;
+        }
+        $path = get_attached_file($mediaId);
+        $explodedPath = explode("/", $path);
+        $fileName = end($explodedPath);
+        $newFileName = sanitize_file_name($name) . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+        $newPath = str_replace($fileName, $newFileName, $path);
+        if (file_exists($newPath)) {
+            $newFileName = sanitize_file_name($name) . "-" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+            $newPath = str_replace($fileName, $newFileName, $path);
+        }
+        if (!copy($path, $newPath)) {
+            return false;
+        }
+        $newGuid = str_replace($fileName, $newFileName, $media->guid);
         $newMedia = [
             "post_title" => $name,
             "post_content" => $media->post_content,
             "post_status" => "inherit",
             "post_mime_type" => $media->post_mime_type,
-            "guid" => $media->guid,
+            "guid" => $newGuid,
             "post_type" => "attachment",
             "post_author" => $media->post_author,
         ];
         $newMediaId = wp_insert_post($newMedia);
+        if ($newMediaId instanceof \WP_Error) {
+            return $newMediaId;
+        }
         $attachmentData = wp_generate_attachment_metadata($newMediaId, $media->guid);
         wp_update_attachment_metadata($newMediaId, $attachmentData);
         return $newMediaId;
