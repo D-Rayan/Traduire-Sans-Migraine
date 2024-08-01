@@ -92,6 +92,7 @@ class Settings {
             $settings["_yoast_wpseo_title"] = isset($_POST["_yoast_wpseo_title"]) && $_POST["_yoast_wpseo_title"] === "true";
             $settings["_yoast_wpseo_metadesc"] = isset($_POST["_yoast_wpseo_metadesc"]) && $_POST["_yoast_wpseo_metadesc"] === "true";
             $settings["_yoast_wpseo_metakeywords"] = isset($_POST["_yoast_wpseo_metakeywords"]) && $_POST["_yoast_wpseo_metakeywords"] === "true";
+            $settings["yoast_wpseo_focuskw"] = isset($_POST["yoast_wpseo_focuskw"]) && $_POST["yoast_wpseo_focuskw"] === "true";
         }
 
         if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
@@ -203,6 +204,11 @@ class Settings {
                 "checked" => $settingsInstance->settingIsEnabled("_yoast_wpseo_metakeywords"),
                 "label" => TextDomain::__("Keywords"),
                 "tooltip" => TextDomain::__("Keywords are used by yoast to help you to optimize your post.")
+            ];
+            $settings["yoast_wpseo_focuskw"] = [
+                "checked" => $settingsInstance->settingIsEnabled("yoast_wpseo_focuskw"),
+                "label" => TextDomain::__("Target Request"),
+                "tooltip" => TextDomain::__("The target request is the request you want to rank for. It will help you to optimize your post.")
             ];
         }
 
