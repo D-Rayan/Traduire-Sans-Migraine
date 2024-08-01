@@ -182,7 +182,7 @@ class Polylang implements LanguageInterface
         $options = get_option( 'polylang' );
         $model = new PLL_Admin_Model($options);
         $model->set_languages_ready();
-        $is_first_language = empty($this->getLanguages());
+        $is_first_language = !function_exists("pll_languages_list");
         $all_languages   = include POLYLANG_DIR . '/settings/languages.php';
         $saved_languages = array();
 

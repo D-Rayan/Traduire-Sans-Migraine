@@ -2,11 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\LanguageManager;
-use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
