@@ -247,7 +247,9 @@ class StartTranslation
         $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($post->ID);
         $this->prepareDataToTranslate($post, $codeTo);
 
-        $result = $this->clientSeoSansMigraine->startTranslation($this->dataToTranslate, $codeFrom, $codeTo);
+        $result = $this->clientSeoSansMigraine->startTranslation($this->dataToTranslate, $codeFrom, $codeTo, [
+            "translateAssets" => $this->settings->settingIsEnabled("translateAssets")
+        ]);
         if ($result["success"]) {
             $tokenId = $result["data"]["tokenId"];
             update_option("_seo_sans_migraine_state_" . $tokenId, [

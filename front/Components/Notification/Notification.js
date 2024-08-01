@@ -89,4 +89,13 @@ class Notification {
             Notification.displayContainerOpener(location);
         }
     }
+
+    static cleanAll() {
+        document.querySelectorAll('.traduire-sans-migraine-notification').forEach((notification) => {
+            notification.remove();
+        });
+        document.querySelectorAll('.traduire-sans-migraine-notification-container').forEach((container) => {
+            container.remove();
+        });
+    }
 }

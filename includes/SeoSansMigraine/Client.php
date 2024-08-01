@@ -56,12 +56,13 @@ class Client
         return $this->client->post("/reasons-deactivate", $data);
     }
 
-    public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo): array {
+    public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo, array $options = []): array {
         return $this->client->post("/translations", [
             "dataToTranslate" => $dataToTranslate,
             "codeFrom" => $codeFrom,
             "codeTo" => $codeTo,
             "restUrl" => get_rest_url(),
+            "translateAssets" => $options["translateAssets"] ?? false,
         ]);
     }
 

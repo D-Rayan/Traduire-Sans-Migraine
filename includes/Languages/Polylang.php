@@ -182,6 +182,7 @@ class Polylang implements LanguageInterface
         $options = get_option( 'polylang' );
         $model = new PLL_Admin_Model($options);
         $model->set_languages_ready();
+        $is_first_language = empty($this->getLanguages());
         $all_languages   = include POLYLANG_DIR . '/settings/languages.php';
         $saved_languages = array();
 
@@ -205,6 +206,9 @@ class Polylang implements LanguageInterface
 
         if ( 'en_US' !== $locale && current_user_can( 'install_languages' ) ) {
             wp_download_language_pack( $locale );
+        }
+        if (empty($is_first_language)) {
+            $model->set_language_in_mass();
         }
         return true;
     }

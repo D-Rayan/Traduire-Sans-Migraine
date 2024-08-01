@@ -51,6 +51,7 @@ class TranslateHelper
             $this->codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($this->originalPost->ID);
             if (isset($this->dataToTranslate["content"])) {
                 $this->dataToTranslate["content"] = $this->linkManager->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
+                $this->handleAssetsTranslations();
             }
             foreach ($this->originalPost->post_category as $termId) {
                 $result = $this->languageManager->getLanguageManager()->getTranslationCategories([$termId], $this->codeTo);
@@ -358,6 +359,43 @@ class TranslateHelper
                 }
             }
         }
+    }
+
+    private function handleAssetsTranslations() {
+        $content = $this->dataToTranslate["content"];
+        foreach ($this->dataToTranslate as $key => $value) {
+            if (!strstr($key, "src-")) {
+                continue;
+            }
+            $originalUrlAsset = explode("src-", $key)[1];
+            $newName = $value;
+            $mediaId = attachment_url_to_postid($originalUrlAsset);
+            if (!$mediaId) {
+                continue;
+            }
+            $newMediaId = $this->duplicateMedia($mediaId, $newName);
+            $content = str_replace($originalUrlAsset, wp_get_attachment_url($newMediaId), $content);
+            // handling gutemberg blocks
+            $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content); // adding specific character to avoid wrong update
+            $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content); // adding specific character to avoid wrong update
+        }
+    }
+
+    private function duplicateMedia($mediaId, $name) {
+        $media = get_post($mediaId);
+        $newMedia = [
+            "post_title" => $name,
+            "post_content" => $media->post_content,
+            "post_status" => "inherit",
+            "post_mime_type" => $media->post_mime_type,
+            "guid" => $media->guid,
+            "post_type" => "attachment",
+            "post_author" => get_current_user_id(),
+        ];
+        $newMediaId = wp_insert_post($newMedia);
+        $attachmentData = wp_generate_attachment_metadata($newMediaId, $media->guid);
+        wp_update_attachment_metadata($newMediaId, $attachmentData);
+        return $newMediaId;
     }
 
     public function getError()

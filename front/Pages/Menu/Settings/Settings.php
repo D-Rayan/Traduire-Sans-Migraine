@@ -85,6 +85,7 @@ class Settings {
             "title" => isset($_POST["title"]) && $_POST["title"] === "true",
             "slug" => isset($_POST["slug"]) && $_POST["slug"] === "true",
             "excerpt" => isset($_POST["excerpt"]) && $_POST["excerpt"] === "true",
+            "translateAssets" => isset($_POST["translateAssets"]) && $_POST["translateAssets"] === "true",
         ];
 
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
@@ -178,6 +179,11 @@ class Settings {
                 "checked" => $settingsInstance->settingIsEnabled("slug"),
                 "label" => TextDomain::__("Post's slug"),
                 "tooltip" => TextDomain::__("The slug is the URL of your post.")
+            ],
+            "translateAssets" => [
+                "checked" => $settingsInstance->settingIsEnabled("translateAssets"),
+                "label" => TextDomain::__("Translate media assets"),
+                "tooltip" => TextDomain::__("Translate the alt and the name of your media assets used inside your content.")
             ],
         ];
 

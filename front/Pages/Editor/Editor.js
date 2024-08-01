@@ -15,6 +15,7 @@ async function loadModalTraduireSansMigraine(wpNonce) {
         injectFunctionTranslationModal(modal);
         stopButtonLoading("#display-traduire-sans-migraine-button");
     }, () => {
+        Notification.cleanAll();
         return loadModalTraduireSansMigraine(wpNonce);
     });
 }
