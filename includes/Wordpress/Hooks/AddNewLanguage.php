@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -50,8 +51,33 @@ class AddNewLanguage {
             ], 400);
             wp_die();
         }
+        $locale = $_POST["language"];
         $languageManager = new LanguageManager();
-        if ($languageManager->getLanguageManager()->addLanguage($_POST["language"])) {
+        $slug = substr($locale, 0, 2);
+        $client = new Client();
+        try {
+            $languages = $languageManager->getLanguageManager()->getLanguages();
+            if (isset($languages[$slug])) {
+                if ($client->enableLanguage($slug)) {
+                    wp_send_json_success([
+                        "message" => TextDomain::__("The language has been enabled"),
+                        "title" => "",
+                        "logo" => "loutre_docteur_no_shadow.png"
+                    ]);
+                } else {
+                    wp_send_json_error([
+                        "message" => TextDomain::__("The language has not been enabled"),
+                        "title" => "",
+                        "logo" => "loutre_docteur_no_shadow.png"
+                    ], 400);
+                }
+                wp_die();
+            }
+        } catch (\Exception $e) {
+
+        }
+        if ($languageManager->getLanguageManager()->addLanguage($locale)) {
+            $client->enableLanguage($slug);
             wp_send_json_success([
                 "message" => TextDomain::__("The language has been added"),
                 "title" => "",

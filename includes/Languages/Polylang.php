@@ -187,6 +187,9 @@ class Polylang implements LanguageInterface
         $saved_languages = array();
 
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
+        if (!isset($all_languages[ $locale ])) {
+            return false;
+        }
         $saved_languages = $all_languages[ $locale ];
 
         $saved_languages['slug'] = $saved_languages['code'];

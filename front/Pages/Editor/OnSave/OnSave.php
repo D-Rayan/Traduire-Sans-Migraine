@@ -84,7 +84,7 @@ class OnSave {
         ];
     }
     private function getTranslationsPostsData($post, $accountSlugs) {
-        $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
+        $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages()["languages"];
         $translationsPosts = $this->getLanguageManager()->getAllTranslationsPost($post["id"]);
         $enrichedTranslationsPosts = [];
         $termsCategories = get_the_category($post["id"]);
@@ -230,7 +230,7 @@ class OnSave {
             $currentPost["language"] = $this->getLanguageManager()->getLanguageForPost($localPostId);
         } catch (\Exception $e) {
             $currentLanguageWordpress = get_locale();
-            $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
+            $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages()["languages"];
             $polylangLanguages = include POLYLANG_DIR . '/settings/languages.php';
             ob_start();
             ?>

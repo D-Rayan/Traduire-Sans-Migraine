@@ -17,7 +17,9 @@ namespace TraduireSansMigraine;
 
 use TraduireSansMigraine\Front\Components\Alert;
 use TraduireSansMigraine\Wordpress\Hooks\AddNewLanguage;
+use TraduireSansMigraine\Wordpress\Hooks\AddWordToDictionary;
 use TraduireSansMigraine\Wordpress\Hooks\DebugHelper;
+use TraduireSansMigraine\Wordpress\Hooks\DeleteWordToDictionary;
 use TraduireSansMigraine\Wordpress\Hooks\GetPostNotifications;
 use TraduireSansMigraine\Wordpress\Hooks\GetPostTranslated;
 use TraduireSansMigraine\Wordpress\Hooks\PrepareTranslation;
@@ -26,6 +28,8 @@ use TraduireSansMigraine\Wordpress\Hooks\SendReasonsDeactivate;
 use TraduireSansMigraine\Wordpress\Hooks\StartTranslation;
 use TraduireSansMigraine\Wordpress\Hooks\TranslateInternalLinks;
 use TraduireSansMigraine\Wordpress\Hooks\TranslationState;
+use TraduireSansMigraine\Wordpress\Hooks\UpdateLanguageSettings;
+use TraduireSansMigraine\Wordpress\Hooks\UpdateWordToDictionary;
 use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\OfflineProcess;
 use TraduireSansMigraine\Wordpress\PostsSearch;
@@ -106,6 +110,10 @@ class TraduireSansMigraine {
         GetPostNotifications::getInstance()->init();
         SendReasonsDeactivate::getInstance()->init();
         AddNewLanguage::getInstance()->init();
+        AddWordToDictionary::getInstance()->init();
+        UpdateWordToDictionary::getInstance()->init();
+        DeleteWordToDictionary::getInstance()->init();
+        UpdateLanguageSettings::getInstance()->init();
     }
 
     public function prepareActivationPlugin() {

@@ -2,7 +2,7 @@
 .container {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: start;
     justify-content: space-around;
     height: 100%;
     width: 100%;
@@ -103,4 +103,39 @@
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 1rem;
+}
+
+.languages-settings {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 18px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.language-settings {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.languages-settings .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.language-settings *:first-child {
+    width: 20%;
+    max-width: 80px;
+}
+
+.row-add-language {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
 }

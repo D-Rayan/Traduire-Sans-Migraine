@@ -8,7 +8,9 @@ use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Front\Components\Suggestions;
 use TraduireSansMigraine\Front\Components\Tooltip;
 use TraduireSansMigraine\Front\Pages\LogIn\LogIn;
+use TraduireSansMigraine\Front\Pages\Menu\Bulk\Dictionary;
 use TraduireSansMigraine\Front\Pages\Menu\Menu;
+use TraduireSansMigraine\Languages\LanguageManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings as SettingsPlugin;
 use TraduireSansMigraine\Wordpress\TextDomain;
@@ -249,13 +251,6 @@ class Settings {
                 "tooltip" => TextDomain::__("Keywords are used by SEOPress to help you to optimize your post.")
             ];
         }
-
-        /*$settings["tsmOpenOnSave"] = [
-            "before" => "Traduire Sans Migraine",
-            "checked" => $settingsInstance->settingIsEnabled("tsmOpenOnSave"),
-            "label" => TextDomain::__("Open the translation window on save"),
-            "tooltip" => TextDomain::__("Each time you're saving a post, the translation window will open.")
-        ];*/
         ?>
         <div class="preferences">
             <div class="title"><?php echo TextDomain::__("Settings"); ?></div>
@@ -298,6 +293,178 @@ class Settings {
         return ob_get_clean();
     }
 
+    private static function renderLanguagesSettings() {
+        $languageManager = new LanguageManager();
+        $client = new Client();
+        $client->fetchAccount();
+        $account = $client->getAccount();
+        $response = $client->getLanguages();
+        $glossaries = $response["glossaries"];
+        $polylangLanguagesConfiguration = include POLYLANG_DIR . '/settings/languages.php';
+        $languagesFromAPI = $response["complete"];
+        $slugs = $account["slugs"];
+        $maxSlugs = $account["slugs"]["max"] == -1 ? PHP_INT_MAX : $account["slugs"]["max"];
+        $maxSlugsString = $account["slugs"]["max"] == -1 ? TextDomain::__("Unlimited") : $account["slugs"]["max"];
+        $currentSlugs = $account["slugs"]["current"];
+        $slugsUsed = [];
+        $allOptions = isset($slugs["options"]) ? $slugs["options"] : [];
+        $polylangLanguages = $languageManager->getLanguageManager()->getLanguages();
+        ?>
+        <div class="languages-settings">
+            <div class="title"><?php echo TextDomain::__("Gérer vos langues"); ?> (<?php echo $currentSlugs . " / " . $maxSlugsString; ?>)</div>
+            <?php
+            foreach ($slugs["allowed"] as $languageCode) {
+                $isEnabledInThisWebsite = false;
+                foreach ($polylangLanguages as $subLanguage) {
+                    if ($subLanguage["code"] === $languageCode) {
+                        $isEnabledInThisWebsite = true;
+                        break;
+                    }
+                }
+                $slugsUsed[$languageCode] = true;
+                $options = isset($allOptions[$languageCode]) ? $allOptions[$languageCode] : [];
+                $glossaryAvailable = false;
+                $formalityAvailable = false;
+                $multipleCountry = 0;
+                foreach ($glossaries as $glossary) {
+                    if ($glossary["target_lang"] === $languageCode) {
+                        $glossaryAvailable = true;
+                        break;
+                    }
+                }
+                foreach ($languagesFromAPI as $lang) {
+                    if (strstr(strtolower($lang["language"]), strtolower($languageCode))) {
+                        $multipleCountry++;
+                        $formalityAvailable = $lang["supports_formality"] == true;
+                        $languageName = explode(" ", $lang["name"])[0];
+                    }
+                }
+                if (!isset($languageName)) {
+                    $languageName = $languageCode;
+                }
+                ?>
+                <div class="language-settings">
+                    <span><?php echo $languageName; ?></span>
+                    <?php
+                    if (!$isEnabledInThisWebsite) {
+                        if ($languageCode === "en") {
+                            $locale = "en_US";
+                        } else {
+                            $locale = $languageCode . "_" . strtoupper($languageCode);
+                        }
+                        $associatedLanguage = isset($polylangLanguagesConfiguration[$locale]) ? $polylangLanguagesConfiguration[$locale] : null;
+                        if (!$associatedLanguage) {
+                            foreach ($polylangLanguagesConfiguration as $polylangLanguage) {
+                                if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $languageCode) {
+                                    $associatedLanguage = $polylangLanguage;
+                                    break;
+                                }
+                            }
+                        }
+                        Button::render(TextDomain::__("Enable on this website"), "primary", "add-language", [
+                            "language" => $associatedLanguage["locale"],
+                            "nonce" => wp_create_nonce("traduire-sans-migraine_add_new_language")
+                        ]);
+                    } else {
+                        if ($glossaryAvailable) {
+                            Button::render(TextDomain::__("Open Dictionary"), "primary", "dictionary-button", [
+                                "language" => $languageCode,
+                            ]);
+                        }
+                        if ($formalityAvailable) {
+                            $formality = isset($options["formality"]) ? $options["formality"] : "default";
+                            ?>
+                            <select id="formality" name="formality" data-slug="<?php echo $languageCode; ?>" data-nonce="<?php echo wp_create_nonce("traduire-sans-migraine_update_language_settings"); ?>">
+                                <option value="default" <?php if ($formality === "default") { echo "selected"; } ?>><?php echo TextDomain::__("Default"); ?></option>
+                                <option value="more" <?php if ($formality === "more") { echo "selected"; } ?>><?php echo TextDomain::__("More Formal"); ?></option>
+                                <option value="less" <?php if ($formality === "less") { echo "selected"; } ?>><?php echo TextDomain::__("Less Formal"); ?></option>
+                            </select>
+                            <?php
+                        }
+                        if ($multipleCountry > 1) {
+                            $selectedCountry = isset($options["country"]) ? $options["country"] : "";
+                            ?>
+                            <select id="country" name="country" data-slug="<?php echo $languageCode; ?>" data-nonce="<?php echo wp_create_nonce("traduire-sans-migraine_update_language_settings"); ?>">
+                                <?php
+                                foreach ($languagesFromAPI as $lang) {
+                                    if (strstr(strtolower($lang["language"]), strtolower($languageCode))) {
+                                        ?>
+                                        <option value="<?php echo $lang["language"]; ?>" <?php if ($selectedCountry === $lang["language"]) { echo "selected"; } ?>><?php echo $lang["name"]; ?></option>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+                <?php
+            }
+            if ($currentSlugs < $maxSlugs) {
+                $languagesTranslatable = $response["languages"];
+                ?>
+                <div class="row-add-language">
+                    <label for="language-selection-add"><?php echo TextDomain::__("If you want you can add a new language to your website"); ?></label>
+                    <select id="language-selection-add" class="global-languages">
+                        <?php
+                        $uniquesLocales = [];
+                        foreach ($languagesTranslatable as $language) {
+                            if ($language === "en") {
+                                $locale = "en_US";
+                            } else {
+                                $locale = $language . "_" . strtoupper($language);
+                            }
+                            $associatedLanguage = isset($polylangLanguagesConfiguration[$locale]) ? $polylangLanguagesConfiguration[$locale] : null;
+                            if (!$associatedLanguage) {
+                                foreach ($polylangLanguagesConfiguration as $polylangLanguage) {
+                                    if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $language) {
+                                        $associatedLanguage = $polylangLanguage;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!$associatedLanguage) {
+                                continue;
+                            }
+                            if (!isset($uniquesLocales[$associatedLanguage["locale"]])) {
+                                $uniquesLocales[$associatedLanguage["locale"]] = true;
+                            } else {
+                                continue;
+                            }
+                            if (isset($slugsUsed[$associatedLanguage["code"]])) {
+                                continue;
+                            }
+                            ?>
+                            <option value="<?php echo $associatedLanguage["locale"]; ?>">
+                                <?php echo $associatedLanguage["name"]; ?>
+                            </option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                    <?php
+                    Button::render(TextDomain::__("Add"), "primary", "add-new-language", [
+                        "nonce" => wp_create_nonce("traduire-sans-migraine_add_new_language")
+                    ]);
+                    ?>
+                </div>
+                <?php
+            } else {
+                Suggestions::render(
+                    TextDomain::__("You have reached the maximum languages you can translate."),
+                    TextDomain::__("If you want more languages, you can ")
+                    . Button::getHTML(TextDomain::__("Upgrade your plan"), "primary", "upgrade-plan-button", [
+                        "href" => TSM__CLIENT_LOGIN_DOMAIN
+                    ]),
+                    "<img width='72' src='" . TSM__ASSETS_PATH . "loutre_ampoule.png' alt='loutre_ampoule' />");
+            }
+            ?>
+        </div>
+        <?php
+    }
+
     private static function getContent() {
         $client = new Client();
         $client->fetchAccount();
@@ -308,15 +475,18 @@ class Settings {
         <div class="container">
             <div class="column">
             <?php
-                echo self::getStatePlugin($account, $redirect);
                 echo self::getParametersPlugin();
+                self::renderLanguagesSettings();
             ?>
             </div>
-            <?php
-            if ($account !== null) {
-                echo self::getHelpPlugin();
-            }
-            ?>
+            <div class="column">
+                <?php
+                    echo self::getStatePlugin($account, $redirect);
+                    if ($account !== null) {
+                        echo self::getHelpPlugin();
+                    }
+                ?>
+            </div>
         </div>
         <?php
         return ob_get_clean();
@@ -325,7 +495,7 @@ class Settings {
     private static function getHelpPlugin() {
         ob_start();
         ?>
-        <video style="max-width: 45vw;" width="100%" controls>
+        <video style="max-width: 45vw;" width="90%" controls>
             <source src="<?php echo TSM__URL_DOMAIN . "/wp-content/uploads/products/traduire-sans-migraine/server-assets/tutoriel.mov"; ?>" type="video/mp4">
             Your browser does not support the video tag.
         </video>

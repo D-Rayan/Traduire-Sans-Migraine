@@ -84,7 +84,7 @@ class Client
             return [];
         }
 
-        return $response["data"]["languages"];
+        return $response["data"];
     }
 
     public function getProducts() {
@@ -94,6 +94,80 @@ class Client
         }
 
         return $response["data"]["products"];
+    }
+
+    public function loadDictionary($language) {
+        $response = $this->client->get("/glossaries?langTo=$language");
+        if (!$response["success"]) {
+            return [];
+        }
+
+        return $response["data"]["glossaries"];
+    }
+
+    public function updateWordToDictionary($id, $entry, $translation, $langFrom) {
+        $response = $this->client->put("/glossaries/$id", [
+            "entry" => $entry,
+            "result" => $translation,
+            "langFrom" => $langFrom
+        ]);
+        if (!$response["success"]) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function addWordToDictionary($entry, $translation, $langFrom, $langTo) {
+        $response = $this->client->post("/glossaries", [
+            "entry" => $entry,
+            "result" => $translation,
+            "langFrom" => $langFrom,
+            "langTo" => $langTo
+        ]);
+        if (!$response["success"]) {
+            return false;
+        }
+
+        return $response["data"]["glossaryId"];
+    }
+
+    public function deleteWordFromDictionary($id) {
+        $response = $this->client->delete("/glossaries/$id");
+        if (!$response["success"]) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function updateLanguageSettings($slug, $formality = null, $country = null) {
+        $body = [
+            "slug" => $slug
+        ];
+        if ($formality !== null) {
+            $body["formality"] = $formality;
+        }
+        if ($country !== null) {
+            $body["country"] = $country;
+        }
+        $response = $this->client->put("/languages/settings", $body);
+        if (!$response["success"]) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function enableLanguage($language) {
+        $response = $this->client->post("/languages/enable", [
+            "slug" => $language
+        ]);
+        if (!$response["success"]) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getAccount() {
