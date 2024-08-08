@@ -298,6 +298,9 @@ class Settings {
         $client = new Client();
         $client->fetchAccount();
         $account = $client->getAccount();
+        if ($account === null) {
+            return;
+        }
         $response = $client->getLanguages();
         $glossaries = $response["glossaries"];
         $polylangLanguagesConfiguration = include POLYLANG_DIR . '/settings/languages.php';
