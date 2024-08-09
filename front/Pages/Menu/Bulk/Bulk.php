@@ -104,7 +104,7 @@ class Bulk {
         }
         $queue = Queue::getInstance();
         $languageManager = new LanguageManager();
-        $languages = $languageManager->getLanguageManager()->getLanguages();
+        $languages = $languageManager->getLanguageManager()->getLanguagesActives();
         $flagsMap = [];
         foreach ($languages as $language) {
             $flagsMap[$language["code"]] = $language["flag"];
@@ -221,7 +221,7 @@ class Bulk {
         $Queue = Queue::getInstance();
         $queue = $Queue->getQueue();
         $languageManager = new LanguageManager();
-        $languages = $languageManager->getLanguageManager()->getLanguages();
+        $languages = $languageManager->getLanguageManager()->getLanguagesActives();
         $flagsMap = [];
         foreach ($languages as $language) {
             $flagsMap[$language["code"]] = $language["flag"];
@@ -467,7 +467,7 @@ class Bulk {
         $languagesTranslatable = [];
         $languagesAvailable = [];
         $defaultLanguage = $languageManager->getLanguageManager()->getDefaultLanguage();
-        foreach ($languageManager->getLanguageManager()->getLanguages() as $language) {
+        foreach ($languageManager->getLanguageManager()->getLanguagesActives() as $language) {
             $languagesAvailable[$language["code"]] = $language;
             $languagesTranslatable[$language["code"]] = $language;
         }

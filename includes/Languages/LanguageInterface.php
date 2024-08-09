@@ -20,7 +20,7 @@ interface LanguageInterface
      * @return array[]
      * @throws Exception
      */
-    public function getLanguages(): array;
+    public function getLanguagesActives(): array;
 
     /**
      * @param string $postId
@@ -78,4 +78,6 @@ interface LanguageInterface
     public function addLanguage(string $language): bool;
 
     public function setLanguageForPost(string $postId, string $codeLanguage);
+
+    public function getLanguages();
 }

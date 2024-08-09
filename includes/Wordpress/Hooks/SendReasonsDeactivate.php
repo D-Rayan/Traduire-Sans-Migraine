@@ -18,7 +18,7 @@ class SendReasonsDeactivate {
 
     public function __construct()
     {
-        $this->clientSeoSansMigraine = new Client();
+        $this->clientSeoSansMigraine = Client::getInstance();
     }
     public function loadHooksClient() {
         // nothing to load

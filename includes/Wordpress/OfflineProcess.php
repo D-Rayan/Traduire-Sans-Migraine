@@ -15,7 +15,7 @@ class OfflineProcess {
 
     public function __construct()
     {
-        $this->clientSeoSansMigraine = new Client();
+        $this->clientSeoSansMigraine = Client::getInstance();
     }
     public function init() {
         $key = "_seo_sans_migraine_backgroundProcess";

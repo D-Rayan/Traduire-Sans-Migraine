@@ -295,77 +295,55 @@ class Settings {
 
     private static function renderLanguagesSettings() {
         $languageManager = new LanguageManager();
-        $client = new Client();
+        $client = Client::getInstance();
         $client->fetchAccount();
         $account = $client->getAccount();
         if ($account === null) {
             return;
         }
-        $response = $client->getLanguages();
-        $glossaries = $response["glossaries"];
-        $polylangLanguagesConfiguration = include POLYLANG_DIR . '/settings/languages.php';
-        $languagesFromAPI = $response["complete"];
+        $languagesAvailable = $languageManager->getLanguageManager()->getLanguages();
+        $glossaries = $client->getLanguages()["glossaries"];
         $slugs = $account["slugs"];
         $maxSlugs = $account["slugs"]["max"] == -1 ? PHP_INT_MAX : $account["slugs"]["max"];
         $maxSlugsString = $account["slugs"]["max"] == -1 ? TextDomain::__("Unlimited") : $account["slugs"]["max"];
         $currentSlugs = $account["slugs"]["current"];
-        $slugsUsed = [];
         $allOptions = isset($slugs["options"]) ? $slugs["options"] : [];
-        $polylangLanguages = $languageManager->getLanguageManager()->getLanguages();
         ?>
         <div class="languages-settings">
             <div class="title"><?php echo TextDomain::__("Gérer vos langues"); ?> (<?php echo $currentSlugs . " / " . $maxSlugsString; ?>)</div>
             <?php
             foreach ($slugs["allowed"] as $languageCode) {
                 $isEnabledInThisWebsite = false;
-                foreach ($polylangLanguages as $subLanguage) {
-                    if ($subLanguage["code"] === $languageCode) {
-                        $isEnabledInThisWebsite = true;
-                        break;
-                    }
-                }
                 $slugsUsed[$languageCode] = true;
                 $options = isset($allOptions[$languageCode]) ? $allOptions[$languageCode] : [];
                 $glossaryAvailable = false;
                 $formalityAvailable = false;
                 $multipleCountry = 0;
+                foreach ($languagesAvailable as $subLanguage) {
+                    if ($subLanguage["slug"] === $languageCode) {
+                        $isEnabledInThisWebsite = $subLanguage["enabled"] || $isEnabledInThisWebsite;
+                        $multipleCountry++;
+                        $formalityAvailable = $subLanguage["supports_formality"] == true;
+                        $languageName = $subLanguage["simple_name"];
+                        $locale = $subLanguage["locale"];
+                    }
+                }
+                if ($multipleCountry === 0) {
+                    continue;
+                }
                 foreach ($glossaries as $glossary) {
                     if ($glossary["target_lang"] === $languageCode) {
                         $glossaryAvailable = true;
                         break;
                     }
                 }
-                foreach ($languagesFromAPI as $lang) {
-                    if (strstr(strtolower($lang["language"]), strtolower($languageCode))) {
-                        $multipleCountry++;
-                        $formalityAvailable = $lang["supports_formality"] == true;
-                        $languageName = explode(" ", $lang["name"])[0];
-                    }
-                }
-                if (!isset($languageName)) {
-                    $languageName = $languageCode;
-                }
                 ?>
                 <div class="language-settings">
                     <span><?php echo $languageName; ?></span>
                     <?php
                     if (!$isEnabledInThisWebsite) {
-                        if ($languageCode === "en") {
-                            $locale = "en_US";
-                        } else {
-                            $locale = $languageCode . "_" . strtoupper($languageCode);
-                        }
-                        $associatedLanguage = isset($polylangLanguagesConfiguration[$locale]) ? $polylangLanguagesConfiguration[$locale] : null;
-                        if (!$associatedLanguage) {
-                            foreach ($polylangLanguagesConfiguration as $polylangLanguage) {
-                                if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $languageCode) {
-                                    $associatedLanguage = $polylangLanguage;
-                                    break;
-                                }
-                            }
-                        }
                         Button::render(TextDomain::__("Enable on this website"), "primary", "add-language", [
-                            "language" => $associatedLanguage["locale"],
+                            "language" => $locale,
                             "nonce" => wp_create_nonce("traduire-sans-migraine_add_new_language")
                         ]);
                     } else {
@@ -389,12 +367,13 @@ class Settings {
                             ?>
                             <select id="country" name="country" data-slug="<?php echo $languageCode; ?>" data-nonce="<?php echo wp_create_nonce("traduire-sans-migraine_update_language_settings"); ?>">
                                 <?php
-                                foreach ($languagesFromAPI as $lang) {
-                                    if (strstr(strtolower($lang["language"]), strtolower($languageCode))) {
-                                        ?>
-                                        <option value="<?php echo $lang["language"]; ?>" <?php if ($selectedCountry === $lang["language"]) { echo "selected"; } ?>><?php echo $lang["name"]; ?></option>
-                                        <?php
+                                foreach ($languagesAvailable as $lang) {
+                                    if ($lang["slug"] !== $languageCode) {
+                                        continue;
                                     }
+                                    ?>
+                                    <option value="<?php echo $lang["locale"]; ?>" <?php if ($selectedCountry === $lang["locale"]) { echo "selected"; } ?>><?php echo $lang["name"]; ?></option>
+                                    <?php
                                 }
                                 ?>
                             </select>
@@ -406,42 +385,23 @@ class Settings {
                 <?php
             }
             if ($currentSlugs < $maxSlugs) {
-                $languagesTranslatable = $response["languages"];
                 ?>
                 <div class="row-add-language">
                     <label for="language-selection-add"><?php echo TextDomain::__("If you want you can add a new language to your website"); ?></label>
                     <select id="language-selection-add" class="global-languages">
                         <?php
-                        $uniquesLocales = [];
-                        foreach ($languagesTranslatable as $language) {
-                            if ($language === "en") {
-                                $locale = "en_US";
-                            } else {
-                                $locale = $language . "_" . strtoupper($language);
-                            }
-                            $associatedLanguage = isset($polylangLanguagesConfiguration[$locale]) ? $polylangLanguagesConfiguration[$locale] : null;
-                            if (!$associatedLanguage) {
-                                foreach ($polylangLanguagesConfiguration as $polylangLanguage) {
-                                    if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $language) {
-                                        $associatedLanguage = $polylangLanguage;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (!$associatedLanguage) {
+                        $uniquesSlugs = [];
+                        foreach ($languagesAvailable as $language) {
+                            if (isset($uniquesSlugs[$language["slug"]])) {
                                 continue;
                             }
-                            if (!isset($uniquesLocales[$associatedLanguage["locale"]])) {
-                                $uniquesLocales[$associatedLanguage["locale"]] = true;
-                            } else {
-                                continue;
-                            }
-                            if (isset($slugsUsed[$associatedLanguage["code"]])) {
+                            $uniquesSlugs[$language["slug"]] = true;
+                            if ($language["enabled"]) {
                                 continue;
                             }
                             ?>
-                            <option value="<?php echo $associatedLanguage["locale"]; ?>">
-                                <?php echo $associatedLanguage["name"]; ?>
+                            <option value="<?php echo $language["locale"]; ?>">
+                                <?php echo $language["simple_name"]; ?>
                             </option>
                             <?php
                         }
@@ -468,30 +428,106 @@ class Settings {
         <?php
     }
 
-    private static function getContent() {
-        $client = new Client();
-        $client->fetchAccount();
-        $account = $client->getAccount();
-        $redirect = $client->getRedirect();
+    private static function renderLogInSection($redirect) {
+        ?>
+        <div class="container">
+            <?php
+                echo self::getStatePlugin(null, $redirect);
+            ?>
+        </div>
+        <?php
+    }
+    private static function renderLanguagesInitialization() {
+        $languageManager = new LanguageManager();
+        $languages = $languageManager->getLanguageManager()->getLanguages();
+        $activeLanguage = null;
+        foreach ($languages as $language) {
+            if ($language["enabled"]) {
+                $activeLanguage = $language;
+                break;
+            }
+        }
         ob_start();
         ?>
         <div class="container">
             <div class="column">
-            <?php
-                echo self::getParametersPlugin();
-                self::renderLanguagesSettings();
-            ?>
-            </div>
-            <div class="column">
-                <?php
-                    echo self::getStatePlugin($account, $redirect);
-                    if ($account !== null) {
-                        echo self::getHelpPlugin();
-                    }
-                ?>
+                <div class="preferences">
+                    <div class="title"><?php echo TextDomain::__("Languages initialization"); ?></div>
+                    <div class="description"><?php if ($activeLanguage) { echo TextDomain::__("You already have enabled %s on your website, just one more language and you'll be able to use this tool.", $activeLanguage["simple_name"]); } else { echo TextDomain::__("You need at least two languages to use the tool. Please add a new language to your website."); } ?></div>
+                    <div class="content">
+                        <div class="row-add-language">
+                            <label for="language-selection-add"><?php echo TextDomain::__("Just select the language then add it."); ?></label>
+                            <select id="language-selection-add" class="global-languages">
+                                <?php
+                                $uniqueSlugs = [];
+                                foreach ($languages as $language) {
+                                    if (isset($uniqueSlugs[$language["slug"]])) {
+                                        continue;
+                                    }
+                                    if ($language["enabled"]) {
+                                        continue;
+                                    }
+                                    $preSelected = ($activeLanguage && $activeLanguage["locale"] === get_locale() && ($language["slug"] === "fr" || $language["slug"] === "en"))
+                                        || ((!$activeLanguage || $activeLanguage["locale"] !== get_locale()) && $language["locale"] === get_locale());
+                                    $uniqueSlugs[$language["slug"]] = true;
+                                    ?>
+                                    <option value="<?php echo $language["locale"]; ?>" <?php if ($preSelected) { echo "selected"; } ?>>
+                                        <?php echo $language["simple_name"]; ?>
+                                    </option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                            <?php
+                            Button::render(TextDomain::__("Add"), "primary", "add-new-language", [
+                                "nonce" => wp_create_nonce("traduire-sans-migraine_add_new_language")
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <?php
+        echo ob_get_clean();
+    }
+    private static function getContent() {
+        $client = Client::getInstance();
+        $client->fetchAccount();
+        $redirect = $client->getRedirect();
+        $account = $client->getAccount();
+        ob_start();
+        if (!$account) {
+            self::renderLogInSection($redirect);
+        } else {
+            $languageManager = new LanguageManager();
+            try {
+                $languages = $languageManager->getLanguageManager()->getLanguagesActives();
+            } catch (\Exception $e) {
+                $languages = [];
+            }
+            $countLanguages = count($languages);
+            if ($countLanguages < 2) {
+                self::renderLanguagesInitialization();
+            } else {
+                ?>
+                <div class="container">
+                    <div class="column">
+                        <?php
+                        echo self::getParametersPlugin();
+                        self::renderLanguagesSettings();
+                        ?>
+                    </div>
+                    <div class="column">
+                        <?php
+                        echo self::getStatePlugin($account, $redirect);
+                        echo self::getHelpPlugin();
+                        ?>
+                    </div>
+                </div>
+                <?php
+            }
+        }
         return ob_get_clean();
     }
 

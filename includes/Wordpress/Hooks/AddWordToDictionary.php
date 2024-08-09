@@ -88,7 +88,7 @@ class AddWordToDictionary {
             ], 400);
             wp_die();
         }
-        $client = new Client();
+        $client = Client::getInstance();
         $response = $client->addWordToDictionary($entry, $result, $langFrom, $langTo);
         if ($response === false) {
             wp_send_json_error([

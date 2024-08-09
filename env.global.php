@@ -1,6 +1,6 @@
 <?php
 
-define("TSM__VERSION", "1.2.006");
+define("TSM__VERSION", "1.2.100");
 define("TSM__WORDPRESS_TESTED", "6.6");
 define("TSM__PHP_REQUIREMENT", "7.0");
 define("TSM__WORDPRESS_REQUIREMENT", "6.4");

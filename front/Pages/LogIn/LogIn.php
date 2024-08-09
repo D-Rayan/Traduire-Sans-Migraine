@@ -66,7 +66,7 @@ class LogIn {
             ], 400);
             wp_die();
         }
-        $clientSeoSansMigraine = new Client();
+        $clientSeoSansMigraine = Client::getInstance();
         echo json_encode(["logged_in" => $clientSeoSansMigraine->checkCredential(), "wpNonce" => wp_create_nonce("traduire-sans-migraine_is_otter_logged_in")]);
         wp_die();
     }
@@ -85,7 +85,7 @@ class LogIn {
     }
 
     public static function getHTML() {
-        $clientSeoSansMigraine = new Client();
+        $clientSeoSansMigraine = Client::getInstance();
         if ($clientSeoSansMigraine->checkCredential()) {
             return Suggestions::getHTML(TextDomain::__("Your otter 🦦"),
                 TextDomain::__("You're already logged in. You can start translating your content."), "");

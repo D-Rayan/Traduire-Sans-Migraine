@@ -90,7 +90,7 @@ class TranslateInternalLinks {
         $post = get_post($_GET["post_id"]);
         $content = $post->post_content;
         $language = $this->languageManager->getLanguageManager()->getLanguageForPost($post->ID);
-        $languages = $this->languageManager->getLanguageManager()->getLanguages();
+        $languages = $this->languageManager->getLanguageManager()->getLanguagesActives();
         foreach ($languages as $slug => $ignored) {
             if ($slug === $language) {
                 continue;

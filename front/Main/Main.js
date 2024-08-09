@@ -19,7 +19,7 @@ async function tsmHandleRequestResponse(response, onError, onSuccess, retryFunct
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({
-                                language: document.querySelector("#global-languages").value,
+                                language: document.querySelector("#language-selection-add").value,
                                 wp_nonce: button.wpNonce
                             })
                         });

@@ -52,7 +52,7 @@ class DeleteWordToDictionary {
             wp_die();
         }
         $id = $_GET["id"];
-        $client = new Client();
+        $client = Client::getInstance();
         $response = $client->deleteWordFromDictionary($id);
         if ($response === false) {
             wp_send_json_error([

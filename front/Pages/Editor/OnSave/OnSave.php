@@ -23,7 +23,7 @@ class OnSave {
     private $languageManager;
     public function __construct() {
         $this->path = plugin_dir_url(__FILE__);
-        $this->clientSeoSansMigraine = new Client();
+        $this->clientSeoSansMigraine = Client::getInstance();
     }
 
     public function enqueueScripts() {
@@ -230,39 +230,23 @@ class OnSave {
             $currentPost["language"] = $this->getLanguageManager()->getLanguageForPost($localPostId);
         } catch (\Exception $e) {
             $currentLanguageWordpress = get_locale();
-            $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages()["languages"];
-            $polylangLanguages = include POLYLANG_DIR . '/settings/languages.php';
+            $languagesAvailable =  $this->getLanguageManager()->getLanguages();
             ob_start();
             ?>
-            <select id="global-languages" class="global-languages">
+            <select id="language-selection-add" class="global-languages">
                 <?php
-                $uniquesLocales = [];
-                foreach ($languagesTranslatable as $language) {
-                    if ($language === "en") {
-                        $locale = "en_US";
-                    } else {
-                        $locale = $language . "_" . strtoupper($language);
-                    }
-                    $associatedLanguage = isset($polylangLanguages[$locale]) ? $polylangLanguages[$locale] : null;
-                    if (!$associatedLanguage) {
-                        foreach ($polylangLanguages as $polylangLanguage) {
-                            if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $language) {
-                                $associatedLanguage = $polylangLanguage;
-                                break;
-                            }
-                        }
-                    }
-                    if (!$associatedLanguage) {
+                $uniquesSlugs = [];
+                foreach ($languagesAvailable as $language) {
+                    if ($language["enabled"]) {
                         continue;
                     }
-                    if (!isset($uniquesLocales[$associatedLanguage["locale"]])) {
-                        $uniquesLocales[$associatedLanguage["locale"]] = true;
-                    } else {
+                    if (isset($uniquesSlugs[$language["slug"]])) {
                         continue;
                     }
+                    $uniquesSlugs[$language["slug"]] = true;
                     ?>
-                    <option value="<?php echo $associatedLanguage["locale"]; ?>" <?php if ($associatedLanguage["locale"] === $currentLanguageWordpress) { echo "selected"; } ?>>
-                        <?php echo $associatedLanguage["name"]; ?>
+                    <option value="<?php echo $language["locale"]; ?>" <?php if ($language["locale"] === $currentLanguageWordpress) { echo "selected"; } ?>>
+                        <?php echo $language["simple_name"]; ?>
                     </option>
                     <?php
                 }
@@ -361,42 +345,23 @@ class OnSave {
                 ]),
                 "<img width='72' src='" . TSM__ASSETS_PATH . "loutre_ampoule.png' alt='loutre_ampoule' />");
         } else {
-            $languagesTranslatable = $this->clientSeoSansMigraine->getLanguages();
-            $polylangLanguages = include POLYLANG_DIR . '/settings/languages.php';
+            $languagesAvailable =  $this->getLanguageManager()->getLanguages();
             ob_start();
             ?>
             <select id="language-selection-add" class="global-languages">
                 <?php
-                $uniquesLocales = [];
-                foreach ($languagesTranslatable as $language) {
-                    if ($language === "en") {
-                        $locale = "en_US";
-                    } else {
-                        $locale = $language . "_" . strtoupper($language);
-                    }
-                    $associatedLanguage = isset($polylangLanguages[$locale]) ? $polylangLanguages[$locale] : null;
-                    if (!$associatedLanguage) {
-                        foreach ($polylangLanguages as $polylangLanguage) {
-                            if (isset($polylangLanguage["code"]) && $polylangLanguage["code"] === $language) {
-                                $associatedLanguage = $polylangLanguage;
-                                break;
-                            }
-                        }
-                    }
-                    if (!$associatedLanguage) {
+                $uniquesSlugs = [];
+                foreach ($languagesAvailable as $language) {
+                    if ($language["enabled"]) {
                         continue;
                     }
-                    if (!isset($uniquesLocales[$associatedLanguage["locale"]])) {
-                        $uniquesLocales[$associatedLanguage["locale"]] = true;
-                    } else {
+                    if (isset($uniquesSlugs[$language["slug"]])) {
                         continue;
                     }
-                    if (isset($slugsUsed[$associatedLanguage["code"]]) || $associatedLanguage["code"] === $currentPost["language"]) {
-                        continue;
-                    }
+                    $uniquesSlugs[$language["slug"]] = true;
                     ?>
-                    <option value="<?php echo $associatedLanguage["locale"]; ?>">
-                        <?php echo $associatedLanguage["name"]; ?>
+                    <option value="<?php echo $language["locale"]; ?>">
+                        <?php echo $language["simple_name"]; ?>
                     </option>
                     <?php
                 }

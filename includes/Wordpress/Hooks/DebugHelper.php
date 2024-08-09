@@ -17,7 +17,7 @@ class DebugHelper {
     private $languageManager;
     public function __construct()
     {
-        $this->clientSeoSansMigraine = new Client();
+        $this->clientSeoSansMigraine = Client::getInstance();
         $this->languageManager = new LanguageManager();
     }
     public function loadHooksClient() {

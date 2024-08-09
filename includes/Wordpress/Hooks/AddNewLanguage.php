@@ -54,9 +54,9 @@ class AddNewLanguage {
         $locale = $_POST["language"];
         $languageManager = new LanguageManager();
         $slug = substr($locale, 0, 2);
-        $client = new Client();
+        $client = Client::getInstance();
         try {
-            $languages = $languageManager->getLanguageManager()->getLanguages();
+            $languages = $languageManager->getLanguageManager()->getLanguagesActives();
             if (isset($languages[$slug])) {
                 if ($client->enableLanguage($slug)) {
                     wp_send_json_success([

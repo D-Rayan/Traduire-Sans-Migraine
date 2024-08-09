@@ -16,6 +16,7 @@ class Client
 
     private $account;
     private $redirect;
+    private $getLanguagesResponse = null;
 
     public function __construct()
     {
@@ -79,11 +80,18 @@ class Client
     }
 
     public function getLanguages() {
+        if ($this->getLanguagesResponse !== null) {
+            return $this->getLanguagesResponse;
+        }
         $response = $this->client->get("/languages");
         if (!$response["success"]) {
-            return [];
+            return [
+                "languages" => [],
+                "complete" => [],
+                "glossaries" => []
+            ];
         }
-
+        $this->getLanguagesResponse = $response["data"];
         return $response["data"];
     }
 
@@ -176,5 +184,13 @@ class Client
 
     public function getRedirect() {
         return $this->redirect;
+    }
+
+    static public function getInstance() {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
     }
 }

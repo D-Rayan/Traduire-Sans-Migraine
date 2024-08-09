@@ -87,7 +87,7 @@ class UpdateWordToDictionary {
             ], 400);
             wp_die();
         }
-        $client = new Client();
+        $client = Client::getInstance();
         $response = $client->updateWordToDictionary($id, $entry, $result, $langFrom);
         if ($response === false) {
             wp_send_json_error([

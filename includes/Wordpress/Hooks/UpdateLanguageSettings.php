@@ -51,9 +51,9 @@ class UpdateLanguageSettings {
             ], 400);
             wp_die();
         }
-        $country = (isset($_POST["country"])) ? $_POST["country"] : null;
+        $country = (isset($_POST["country"])) ? strtoupper(str_replace("_", "-", $_POST["country"])) : null;
         $formality = (isset($_POST["formality"])) ? $_POST["formality"] : null;
-        $client = new Client();
+        $client = Client::getInstance();
         $response = $client->updateLanguageSettings($_POST["slug"], $formality, $country);
         if ($response === false) {
             wp_send_json_error([

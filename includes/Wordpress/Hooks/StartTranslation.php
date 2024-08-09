@@ -22,7 +22,7 @@ class StartTranslation
 
     public function __construct()
     {
-        $this->clientSeoSansMigraine = new Client();
+        $this->clientSeoSansMigraine = Client::getInstance();
         $this->languageManager = new LanguageManager();
         $this->settings = new Settings();
         $this->dataToTranslate = [];

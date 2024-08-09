@@ -12,7 +12,14 @@ if (!defined("ABSPATH")) {
 }
 class Polylang implements LanguageInterface
 {
-    public function getLanguages(): array
+    private $languagesAllowed;
+    private $languagesPolylang;
+    public function __construct(array $languagesAllowed)
+    {
+        $this->languagesAllowed = $languagesAllowed;
+        $this->languagesPolylang = include POLYLANG_DIR . '/settings/languages.php';
+    }
+    public function getLanguagesActives(): array
     {
         if (!function_exists("pll_languages_list")) {
             throw new \Exception(TextDomain::__("%s not existing.", "pll_languages_list"));
@@ -64,7 +71,7 @@ class Polylang implements LanguageInterface
 
     public function getAllTranslationsPost(string $postId): array
     {
-        $languages = $this->getLanguages();
+        $languages = $this->getLanguagesActives();
 
         $results = [];
         foreach ($languages as $language) {
@@ -81,7 +88,7 @@ class Polylang implements LanguageInterface
 
     public function getAllTranslationsTerm(string $termId): array
     {
-        $languages = $this->getLanguages();
+        $languages = $this->getLanguagesActives();
 
         $results = [];
         foreach ($languages as $language) {
@@ -102,7 +109,7 @@ class Polylang implements LanguageInterface
             throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
         }
 
-        $languages = $this->getLanguages();
+        $languages = $this->getLanguagesActives();
         $cleanMap = [];
         foreach ($translationsMap as $codeLanguage => $postId) {
             if (!isset($languages[$codeLanguage]) || empty($postId)) {
@@ -120,7 +127,7 @@ class Polylang implements LanguageInterface
             throw new \Exception(TextDomain::__("%s not existing.", "pll_save_term_translations"));
         }
 
-        $languages = $this->getLanguages();
+        $languages = $this->getLanguagesActives();
         $cleanMap = [];
         foreach ($translationsMap as $codeLanguage => $term) {
             $termId = is_array($term) ? $term["termId"] : $term;
@@ -161,7 +168,7 @@ class Polylang implements LanguageInterface
 
     public function getDefaultLanguage()
     {
-        $languages = $this->getLanguages();
+        $languages = $this->getLanguagesActives();
 
         foreach ($languages as $language) {
             if ($language["default"]) {
@@ -210,9 +217,70 @@ class Polylang implements LanguageInterface
         if ( 'en_US' !== $locale && current_user_can( 'install_languages' ) ) {
             wp_download_language_pack( $locale );
         }
-        if (empty($is_first_language)) {
-            $model->set_language_in_mass();
+        ob_start();
+        try {
+            if ($is_first_language) {
+                $model->set_language_in_mass();
+            }
+        } catch (\Exception $e) {
         }
+        ob_get_clean();
         return true;
+    }
+
+    public function getLanguages() {
+        try {
+            $enabledLanguages = $this->getLanguagesActives();
+        } catch (\Exception $e) {
+            $enabledLanguages = [];
+        }
+
+        $languages = [];
+        foreach ($this->languagesAllowed as $language) {
+            $polylangLanguage = $this->getLanguagePolylangByIncompleteLocale($language["language"]);
+            if (!$polylangLanguage) {
+                continue;
+            }
+            $slug = strtolower(substr($language["language"], 0, 2));
+            $languages[] = [
+                "slug" => $slug,
+                "locale" => $polylangLanguage["locale"],
+                "enabled" => isset($enabledLanguages[$slug]),
+                "name" => $language["name"],
+                "simple_name" => explode(" ", $language["name"])[0],
+                "supports_formality" => $language["supports_formality"],
+            ];
+        }
+        usort($languages, function ($a, $b) {
+            return strcmp($a["name"], $b["name"]);
+        });
+        return $languages;
+    }
+
+    private function getLanguagePolylangByIncompleteLocale(string $incompleteLocale) {
+        $bestMatch = null;
+        $incompleteLocaleLower = strtolower($incompleteLocale);
+        foreach ($this->languagesPolylang as $language) {
+            if (!isset($language["code"]) || !isset($language["locale"])) {
+                continue;
+            }
+            $slug = strtolower($language["code"]);
+            $locale = strtolower($language["locale"]);
+            if ($locale === $incompleteLocaleLower
+                || $locale === str_replace("-", "_", $incompleteLocaleLower)
+                || $locale === str_replace("_", "-", $incompleteLocaleLower)) {
+                return $language;
+            }
+            if ($locale === $incompleteLocaleLower . "_" . $incompleteLocaleLower) {
+                return $language;
+            }
+            if ($locale === $incompleteLocaleLower . "-" . $incompleteLocaleLower) {
+                return $language;
+            }
+            if ($slug === $incompleteLocaleLower) {
+                $bestMatch = $language;
+            }
+        }
+        return $bestMatch;
     }
 }

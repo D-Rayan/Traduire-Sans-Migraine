@@ -68,7 +68,7 @@ class Products {
 
     private static function getContent() {
         ob_start();
-        $client = new Client();
+        $client = Client::getInstance();
         $products = $client->getProducts();
         ?>
         <div class="products">

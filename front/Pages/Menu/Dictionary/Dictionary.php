@@ -132,7 +132,7 @@ class Dictionary {
 
     public function renderDictionary() {
         $langTo = $_GET["language"];
-        $clientSeoSansMigraine = new Client();
+        $clientSeoSansMigraine = Client::getInstance();
         $clientSeoSansMigraine->checkCredential();
         $dictionaries = $clientSeoSansMigraine->loadDictionary($langTo);
         $this->name = $this->getLanguages()[$langTo];
@@ -169,7 +169,7 @@ class Dictionary {
     }
 
     private function initLanguagesAndGlossaries() {
-        $clientSeoSansMigraine = new Client();
+        $clientSeoSansMigraine = Client::getInstance();
         $clientSeoSansMigraine->checkCredential();
         $response = $clientSeoSansMigraine->getLanguages();
         $listSlugs = $response["languages"];
