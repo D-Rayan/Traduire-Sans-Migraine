@@ -26,6 +26,8 @@ class TranslateHelper
     private $languageManager;
     private $linkManager;
 
+    private $postMetas;
+
     public function __construct($tokenId, $translationData, $codeTo)
     {
         $this->tokenId = $tokenId;
@@ -43,6 +45,31 @@ class TranslateHelper
             return;
         }
         $this->startTranslate();
+    }
+
+    private function handleDefaultMetaPosts() {
+        foreach ($this->postMetas as $key => $value) {
+            $valueKey = $value[0];
+            if ($this->is_json($valueKey)) {
+                $valueKey = wp_slash($valueKey);
+            } else if ($this->is_serialized($valueKey)) {
+                $valueKey = unserialize($valueKey);
+            }
+            $valueKey = $this->replaceValue($valueKey);
+            update_post_meta($this->translatedPostId, $key, $valueKey);
+        }
+    }
+
+    private function replaceValue($value) {
+        if (is_array($value)) {
+            foreach ($value as $key => $val) {
+                $value[$key] = $this->replaceValue($val);
+            }
+        } else if (is_string($value)) {
+            $value = $this->linkManager->translateInternalLinks($value, $this->codeFrom, $this->codeTo);
+            $value = str_replace($this->originalPost->ID, $this->translatedPostId, $value);
+        }
+        return $value;
     }
 
     private function startTranslate()
@@ -86,11 +113,14 @@ class TranslateHelper
                 $this->success = false;
                 return;
             }
+            $this->postMetas = get_post_meta($this->originalPost->ID);
+
             if (strstr($translatedPost->post_name, "-traduire-sans-migraine")) {
                 $this->updateTemporaryPostToRealOne();
             } else {
                 $this->updatePost();
             }
+            $this->handleDefaultMetaPosts();
             $this->handleYoast();
             $this->handleRankMath();
             $this->handleSEOPress();
@@ -240,7 +270,7 @@ class TranslateHelper
         }
         wp_update_post($updatePostData);
 
-        $thumbnailId = get_post_meta($this->originalPost->ID, '_thumbnail_id', true);
+        $thumbnailId = isset($this->postMetas["_thumbnail_id"]) ? $this->postMetas["_thumbnail_id"][0] : null;
         if (!empty($thumbnailId)) {
             update_post_meta($this->translatedPostId, '_thumbnail_id', $thumbnailId);
         }
@@ -288,11 +318,10 @@ class TranslateHelper
 
     private function handleACF() {
         if (is_plugin_active("advanced-custom-fields/acf.php")) {
-            $postMetas = get_post_meta($this->originalPost->ID);
             foreach ($this->dataToTranslate as $key => $value) {
                 if (strstr($key, "acf_")) {
                     $key = substr($key, 4);
-                    if (isset($postMetas[$key]) && isset($postMetas["_" . $key])) {
+                    if (isset($this->postMetas[$key]) && isset($this->postMetas["_" . $key])) {
                         if ($this->is_json($value)) {
                             $value = wp_slash($value);
                         }
@@ -301,7 +330,7 @@ class TranslateHelper
                         }
 
                         update_post_meta($this->translatedPostId, $key, $value);
-                        update_post_meta($this->translatedPostId, "_" . $key, $postMetas["_" . $key][0]);
+                        update_post_meta($this->translatedPostId, "_" . $key, $this->postMetas["_" . $key][0]);
                     }
                 }
             }
@@ -347,8 +376,7 @@ class TranslateHelper
 
     private function handleElementor() {
         if (is_plugin_active("elementor/elementor.php")) {
-            $postMetas = get_post_meta($this->originalPost->ID);
-            foreach ($postMetas as $key => $value) {
+            foreach ($this->postMetas as $key => $value) {
                 if (strstr($key, "elementor")) {
                     $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
                     $valueKey = $this->linkManager->translateInternalLinks($valueKey, $this->codeFrom, $this->codeTo);
