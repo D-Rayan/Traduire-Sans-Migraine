@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-07-18T11:17:420\n"
+"POT-Creation-Date: 2024-08-12T12:03:100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -29,10 +29,6 @@ msgstr "Une erreur est survenue."
 msgid "The otters are translating your post 🦦"
 msgstr "Les loutres traduisent ton article 🦦"
 
-# Author URI
-msgid "https://www.seo-sans-migraine.fr/astuces-traduction-seo"
-msgstr "https://www.seo-sans-migraine.fr/astuces-traduction-seo"
-
 msgid "Translation in progress"
 msgstr "Traduction en cours"
 
@@ -42,34 +38,6 @@ msgstr "Traduction terminée"
 msgid "The translation is in progress. You can close this window if you want."
 msgstr ""
 "La traduction est en cours. Tu peux fermer la fenêtre si tu le souhaites."
-
-msgid ""
-"You are on a post translated by Traduire Sans Migraine. If you want to know "
-"what are the best SEO practices you can click <a target='_blank' "
-"href='%s'>here</a>"
-msgstr ""
-"Tu es sur un article traduit par Traduire Sans Migraine. Si tu veux "
-"connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
-"href='%s'>ici</a>"
-
-msgid "You may want to know this"
-msgstr "Ça pourrait t’intéresser"
-
-# Plugin Name
-msgid "Translated by Traduire Sans Migraine"
-msgstr "Traduit par Traduire Sans Migraine"
-
-msgid ""
-"You're on a content translated by us. If you want to know the best SEO "
-"practices, click <a target='_blank' href='%s'>here</a>. Futhermore you can "
-"use the differents tools :"
-msgstr ""
-"Tu es sur un article traduit par Traduire Sans Migraine. Si tu veux "
-"connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
-"href='%s'>ici</a>. Tu peux aussi utiliser nos outils :"
-
-msgid "Translate internal links"
-msgstr "Traduire les liens internes"
 
 # Articles.php
 msgid "The security code is expired. Reload your page and retry"
@@ -169,19 +137,14 @@ msgstr ""
 msgid "We could not find the post. Try again later..."
 msgstr "Nous ne pouvons pas trouver ton contenu. Réessaie plus tard…"
 
-msgid ""
-"You need at least to add two languages to your website. (The default "
-"language and the one you want to translate to)"
-msgstr ""
-"Tu as besoin d’au moins deux langues sur ton site. (La langue par défaut "
-"ainsi que la langue que tu souhaites traduire)"
+msgid "We need one more thing"
+msgstr "Une dernière petite chose"
 
-msgid ""
-"This post is not associated with a language. Check the configuration and try "
-"again."
-msgstr ""
-"Ce contenu n’est associé à aucune langue. Vérifies ta configuration puis "
-"réessaie."
+msgid "We need to know the language of your post."
+msgstr "Nous avons besoins de savoir la langue de votre contenu."
+
+msgid "Apply this language"
+msgstr "Appliquer cette langue"
 
 msgid "Unselect/Select All"
 msgstr "Sélectionner/Désélectionner tous"
@@ -189,17 +152,20 @@ msgstr "Sélectionner/Désélectionner tous"
 msgid "At the moment none of our otters are able to write in this language."
 msgstr "Pour le moment aucune de nos loutres ne sait écrire dans cette langue."
 
-msgid "You're not finding a specific language?"
-msgstr "Tu ne trouves pas la langue que tu souhaites ?"
+msgid "You have reached the maximum languages you can translate."
+msgstr "Tu as atteint ton maximum de langues autorisés."
 
-msgid "To translate you first need to add the language to your website."
-msgstr "Pour traduire tu dois en premier lieu ajouter la langue à ton site."
+msgid "If you want more languages, you can "
+msgstr "Si tu veux plus de langages, tu peux "
 
-msgid "Go to %s to add a new language."
-msgstr "Utilise %s pour ajouter une nouvelle langue."
+msgid "Upgrade your plan"
+msgstr "Améliorer ton plan"
 
-msgid "Then come back here to translate your post."
-msgstr "Puis reviens ici pour traduire ton article."
+msgid "Add new language"
+msgstr "Ajouter une langue"
+
+msgid "You can add more language to translate."
+msgstr "Tu peux ajouter plus de langues à traduire."
 
 msgid "Translate now"
 msgstr "Lancer la traduction"
@@ -374,6 +340,25 @@ msgstr "%s traductions en cours"
 msgid "%s translations are done"
 msgstr "%s traductions sont terminées"
 
+# Dictionary.php
+msgid "Original words"
+msgstr "Mots d’origine"
+
+msgid "Translation in %s"
+msgstr "Traduire en %s"
+
+msgid "Update"
+msgstr "Mettre à jour"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Dictionary for %s"
+msgstr "Dictionnaire pour %s"
+
 # Menu.php
 msgid "Happy with our products? Help us with few words. ⭐️⭐️⭐️⭐️⭐️"
 msgstr ""
@@ -433,6 +418,15 @@ msgstr "Slug de l’article"
 msgid "The slug is the URL of your post."
 msgstr "Le slug est l’url de ton article."
 
+msgid "Translate media assets"
+msgstr "Traduire les médias"
+
+msgid ""
+"Translate the alt and the name of your media assets used inside your content."
+msgstr ""
+"Traduire les alternatives et le nom de vos médias qui sont utilisés dans ton "
+"contenu."
+
 msgid "SEO Title"
 msgstr "Titre SEO"
 
@@ -458,6 +452,15 @@ msgid "Keywords are used by yoast to help you to optimize your post."
 msgstr ""
 "Les mots clés sont utilisés par Yoast pour t’aider à optimiser ton article."
 
+msgid "Target Request"
+msgstr "Requête cible"
+
+msgid ""
+"The target request is the request you want to rank for. It will help you to "
+"optimize your post."
+msgstr ""
+"Les mots clés sont utilisés par Yoast pour t’aider à optimiser ton article."
+
 msgid "Keywords are used by rank math to help you to optimize your post."
 msgstr ""
 "Les mots clés sont utilisés par Rank math pour t’aider à optimiser ton "
@@ -468,14 +471,6 @@ msgstr ""
 "Lets mots clés sont utilisés par SEOpress pour t’aider à optimiser ton "
 "article."
 
-msgid "Open the translation window on save"
-msgstr "Ouvrir la fenêtre de traduction lors de la sauvegarde"
-
-msgid "Each time you're saving a post, the translation window will open."
-msgstr ""
-"A chaque fois que tu sauvegardes ton contenu, la fenêtre de traduction "
-"s’ouvrira."
-
 msgid "Settings"
 msgstr "Préférences"
 
@@ -484,6 +479,50 @@ msgstr "Que devra mettre à jour la loutre lorsque l’article existe déjà ?"
 
 msgid "Save"
 msgstr "Sauvegarder"
+
+msgid "Unlimited"
+msgstr "Illimité"
+
+msgid "Gérer vos langues"
+msgstr "Gérer tes langues"
+
+msgid "Enable on this website"
+msgstr "Ajouter à ce site"
+
+msgid "Open Dictionary"
+msgstr "Ouvre le dictionnaire"
+
+msgid "Default"
+msgstr "Défaut"
+
+msgid "More Formal"
+msgstr "Plus formel"
+
+msgid "Less Formal"
+msgstr "Moins formel"
+
+msgid "If you want you can add a new language to your website"
+msgstr "SI tu veux tu peux ajouter une autre langue à ton site"
+
+msgid "Languages initialization"
+msgstr "Configuration de tes langues"
+
+msgid ""
+"You already have enabled %s on your website, just one more language and "
+"you'll be able to use this tool."
+msgstr ""
+"Tu as déjà activé %s sur ton site, plus que une langue avant de pouvoir "
+"utiliser ton outil."
+
+msgid ""
+"You need at least two languages to use the tool. Please add a new language "
+"to your website."
+msgstr ""
+"Tu as besoin d’au moins deux langues sur ton site. S’il te plaît ajoute une "
+"autre langue à ton site."
+
+msgid "Just select the language then add it."
+msgstr "Sélectionne simplement la langue que tu veux ajouter."
 
 msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
@@ -496,6 +535,16 @@ msgstr "Elle a traduit %s caractère sur %s"
 # Settings.php
 msgid "She have translated %s characters on %s"
 msgstr "Elle a traduit %s caractères sur %s"
+
+# ReasonsDeactivate.php
+msgid "Send & Deactivate"
+msgstr "Envoyer et Désactiver"
+
+msgid "Also delete all configuration related to %s"
+msgstr "Supprimer toutes les configuration relié à %s"
+
+msgid "Skip & Disable"
+msgstr "Passer & Désactiver"
 
 # /includes/Languages/Polylang.php
 msgid "%s not existing."
@@ -511,11 +560,51 @@ msgstr "Ta version PHP est trop basse"
 msgid "%s required at least PHP %s"
 msgstr "%s nécessite au moins la version %s de PHP"
 
-msgid "%s required at least one of the following plugins %s"
-msgstr "%s requis au moins un des plugins suivants : %s"
-
-msgid "Missing required plugins"
+msgid "Missing required plugin"
 msgstr "Des plugins requis sont manquants"
+
+msgid "Polylang is a dependence for %s so it has been activate automatically"
+msgstr "Polylang est nécessaire pour %s, il a donc été activé automatiquement"
+
+msgid "%s required Polylang to be installed and active"
+msgstr "Polylang doit être installé et actif pour %s"
+
+msgid "The language is missing"
+msgstr "Le langage est manquant"
+
+msgid "The language has been enabled"
+msgstr "La langue a été activée"
+
+msgid "The language has not been enabled"
+msgstr "La langue n’a pas été activé"
+
+msgid "The language has been added"
+msgstr "La langue a été ajoutée"
+
+msgid "The language has not been added"
+msgstr "La langue n’a pas été ajoutée"
+
+msgid "The language from is missing"
+msgstr "La langue de départ est manquante"
+
+msgid "The entry is missing"
+msgstr "L’entré est manquante"
+
+# /front/Pages/Editor/OnSave/OnSave.php
+msgid "The result is missing"
+msgstr "Le résultat est manquant"
+
+msgid "The language to is missing"
+msgstr "Le langage d’arrivé est manquant"
+
+msgid "The fields are empty"
+msgstr "Les champs sont vides"
+
+msgid "The word has not been added"
+msgstr "Le mot n’a pas été ajouté"
+
+msgid "The word has been added"
+msgstr "Le mot a été ajouté"
 
 msgid "We could not find the post asked. Please try again."
 msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
@@ -534,8 +623,52 @@ msgstr ""
 "Nous n’avons pas pu envoyer les données. Vérifie ton code de débug et "
 "réessaye."
 
+msgid "The id is missing"
+msgstr "L’id est manquant"
+
+msgid "The word has not been deleted"
+msgstr "Le mot n’a pas été supprimé"
+
+msgid "The word has been deleted"
+msgstr "Le mot a bien été supprimé"
+
 msgid "We could not find your post. Please try again."
 msgstr "Nous n’arrivons pas à trouver ton contenu. Réessaye plus tard."
+
+# Author URI
+msgid "https://www.seo-sans-migraine.fr/astuces-traduction-seo"
+msgstr "https://www.seo-sans-migraine.fr/astuces-traduction-seo"
+
+# Plugin Name
+msgid "Translated by Traduire Sans Migraine"
+msgstr "Traduit par Traduire Sans Migraine"
+
+msgid ""
+"You're on a content translated by us. If you want to know the best SEO "
+"practices, click <a target='_blank' href='%s'>here</a>."
+msgstr ""
+"Tu es sur un contenu traduit par Traduire Sans Migraine. Si tu veux "
+"connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
+"href='%s'>ici</a>."
+
+msgid "translateInternalLinksButton"
+msgstr "Traduire les liens internes"
+
+msgid ""
+"You're on a content translated by us. If you want to know the best SEO "
+"practices, click <a target='_blank' href='%s'>here</a>"
+msgstr ""
+"Tu es sur un article traduit par Traduire Sans Migraine. Si tu veux "
+"connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
+"href='%s'>ici</a>"
+
+# GetPostNotifications.php
+msgid "We have detected %s internal link that is not translated."
+msgstr "Nous avons détectés %s lien interne qui n’est pas traduit."
+
+# GetPostNotifications.php
+msgid "We have detected %s internal links that are not translated."
+msgstr "Nous avons détectés %s liens internes qui ne sont pas traduits."
 
 msgid "We could not find the language. Please try again."
 msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
@@ -549,6 +682,9 @@ msgstr ""
 msgid "We could not create all the translations. Please try again."
 msgstr ""
 "Nous n’avons pas réussi à créer toutes les traductions. Réessaye plus tard."
+
+msgid "The reason is missing"
+msgstr "La raison est manquante"
 
 msgid "We could not find the post or the language asked. Please try again."
 msgstr ""
@@ -583,12 +719,30 @@ msgstr "Nous ne trouvons plus l’état de ta traduction"
 msgid "We will create and translate your post 💡"
 msgstr "On va créer et traduire ton article 💡"
 
+msgid "The slug is missing"
+msgstr "Le slug est manquant"
+
+msgid "The language has not been updated"
+msgstr "La langue n’a pas été mise à jour"
+
+msgid "The language has been updated"
+msgstr "La langue a été mise à jour"
+
+msgid "The word has been updated"
+msgstr "Le mot a été mis à jour"
+
 # Products.php
 msgid "Our Products"
 msgstr "Nos produits"
 
 msgid "💊 Bulk Translation"
 msgstr "💊 Traduction Groupée"
+
+msgid "See the tutorial"
+msgstr "Voir le tutoriel"
+
+msgid "tutorialLink"
+msgstr "https://www.seo-sans-migraine.fr/premiere-traduction"
 
 msgid "Oops! The otters have lost the post in the river. Please try again 🦦"
 msgstr "Oops ! Les loutres ont perdu ton article dans la rivière. Réessayer 🦦"
@@ -653,6 +807,42 @@ msgstr "/languages"
 msgid "GPL2"
 msgstr "GPL2"
 
+#~ msgid ""
+#~ "You are on a post translated by Traduire Sans Migraine. If you want to "
+#~ "know what are the best SEO practices you can click <a target='_blank' "
+#~ "href='%s'>here</a>"
+#~ msgstr ""
+#~ "Tu es sur un article traduit par Traduire Sans Migraine. Si tu veux "
+#~ "connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
+#~ "href='%s'>ici</a>"
+
+#~ msgid "You may want to know this"
+#~ msgstr "Ça pourrait t’intéresser"
+
+#~ msgid ""
+#~ "This post is not associated with a language. Check the configuration and "
+#~ "try again."
+#~ msgstr ""
+#~ "Ce contenu n’est associé à aucune langue. Vérifies ta configuration puis "
+#~ "réessaie."
+
+#~ msgid "You're not finding a specific language?"
+#~ msgstr "Tu ne trouves pas la langue que tu souhaites ?"
+
+#~ msgid "Then come back here to translate your post."
+#~ msgstr "Puis reviens ici pour traduire ton article."
+
+#~ msgid "Open the translation window on save"
+#~ msgstr "Ouvrir la fenêtre de traduction lors de la sauvegarde"
+
+#~ msgid "Each time you're saving a post, the translation window will open."
+#~ msgstr ""
+#~ "A chaque fois que tu sauvegardes ton contenu, la fenêtre de traduction "
+#~ "s’ouvrira."
+
+#~ msgid "%s required at least one of the following plugins %s"
+#~ msgstr "%s requis au moins un des plugins suivants : %s"
+
 #, fuzzy
 #~| msgid "Missing required plugins"
 #~ msgid "missing required argument `%s'\", name);"
@@ -712,24 +902,14 @@ msgstr "GPL2"
 #~ msgid "tutoriel_screen_en.png"
 #~ msgstr "tutoriel_screen_fr.png"
 
-# /front/Pages/Editor/OnSave/OnSave.php
-#~ msgid "Post ID missing"
-#~ msgstr "Post ID manquant"
-
 #~ msgid "Token invalid"
 #~ msgstr "Clé d’accès invalide"
 
 #~ msgid "Post not found"
 #~ msgstr "Le post n’existe pas"
 
-#~ msgid "Token ID missing"
-#~ msgstr "Clés d’accès manquante"
-
 #~ msgid "Token not found"
 #~ msgstr "Clé d’accès n’existe pas"
-
-#~ msgid "Language missing"
-#~ msgstr "Le langage est manquant"
 
 # Author
 #~ msgid "Seo Sans Migraine"
