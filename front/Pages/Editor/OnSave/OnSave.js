@@ -216,6 +216,10 @@ function addListenerToButtonTranslate(modal) {
                     checkbox.closest(".language").remove();
                 }
             });
+            const suggestion = modal.querySelector(".traduire-sans-migraine-suggestion");
+            if (suggestion) {
+                suggestion.remove();
+            }
             await sendRequests(modal, languages, response.wpNonce);
         } else {
             modal.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
