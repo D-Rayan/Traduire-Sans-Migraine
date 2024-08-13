@@ -15,10 +15,16 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 18 Juillet 2024</h4><ul>
-            <li>Modification technique pour respecter les normes de WordPress</li>
-            <li>Ajout d'un système de glossaire et de gestion des langues</li>
-            <li>Ajout de message d'erreur lors d'un soucis de traduction</li>
+        "changelog" => "<h4>Mise à jour du 15 Août 2024</h4><ul>
+            <li>Meilleure gestion de Polylang (Installation, activation et configuration au sein de Traduire Sans Migraine)</li>
+            <li>Ajout de la posibilité de traduire les médias lors de la traduction de vos contenus</li>
+            <li>Ajout de la requête cible pour Yoast</li>
+            <li>Gestion du dictionnaire disponible au sein de la page de configuration</li>
+            <li>Gestion de la formalité au sein de la page de configuration</li>
+            <li>Correction de la traduction des liens internes pour Elementor</li>
+            <li>Amélioration de l'UX lors de la première installation</li>
+            <li>Ajout d'un message lors de la désactivation du plugin</li>
+            <li>Modification de la gestion des méta données des contenus</li>
         </ul>",
     ]
 );
