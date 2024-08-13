@@ -81,9 +81,15 @@ class Menu {
             "Redirecting to the tutorial",
             TextDomain::__("See the tutorial"),
             "manage_options",
-            "traduire-sans-migraine-bulk",
+            "traduire-sans-migraine-tutorial",
             function () {
-                wp_redirect(TextDomain::__("tutorialLink"));
+                // redirect to $url
+                $url = TextDomain::__("tutorialLink");
+                ?>
+                <script>
+                    window.location.href = "<?php echo $url; ?>";
+                </script>
+                <?php
                 exit;
             }
         );
