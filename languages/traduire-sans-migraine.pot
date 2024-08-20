@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 1.2.100\n"
+"Project-Id-Version: Traduire Sans Migraine 1.2.103\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-12T12:03:100\n"
+"POT-Creation-Date: 2024-08-20T10:12:020\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
 # shelved.patch
@@ -319,6 +319,9 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
+msgid "Here you can add words you don't want to translate. For example you may want to keep your brand the same in all the languages."
+msgstr ""
+
 msgid "Dictionary for %s"
 msgstr ""
 
@@ -338,6 +341,12 @@ msgstr ""
 
 # Settings.php
 msgid "Your settings have been saved."
+msgstr ""
+
+msgid "Installation 1/2"
+msgstr ""
+
+msgid "Installation 2/2"
 msgstr ""
 
 msgid "⚙️ Settings"
@@ -376,6 +385,9 @@ msgstr ""
 msgid "Translate the alt and the name of your media assets used inside your content."
 msgstr ""
 
+msgid "Translate the options for Yoast SEO"
+msgstr ""
+
 msgid "SEO Title"
 msgstr ""
 
@@ -400,7 +412,13 @@ msgstr ""
 msgid "The target request is the request you want to rank for. It will help you to optimize your post."
 msgstr ""
 
+msgid "Translate the options for Rank Math"
+msgstr ""
+
 msgid "Keywords are used by rank math to help you to optimize your post."
+msgstr ""
+
+msgid "Translate the options for SEOPress"
 msgstr ""
 
 msgid "Keywords are used by SEOPress to help you to optimize your post."
@@ -409,7 +427,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-msgid "What the otter should update when the post already exists?"
+msgid "What the otter should update when the content already exists?"
 msgstr ""
 
 msgid "Save"
@@ -451,6 +469,12 @@ msgstr ""
 msgid "Just select the language then add it."
 msgstr ""
 
+msgid "To continue, you need to authenticate your account."
+msgstr ""
+
+msgid "Just one more thing, configure your first two languages."
+msgstr ""
+
 msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
 
@@ -460,6 +484,10 @@ msgstr ""
 
 # Settings.php
 msgid "She have translated %s characters on %s"
+msgstr ""
+
+# Plugins.php
+msgid "By "
 msgstr ""
 
 # ReasonsDeactivate.php

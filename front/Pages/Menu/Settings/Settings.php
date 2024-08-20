@@ -119,12 +119,24 @@ class Settings {
         wp_die();
     }
 
-    private static function getTitle() {
+    private static function getTitle($account, $countLanguages) {
         ob_start();
-        ?>
-        <span><?php echo TSM__NAME; ?></span>
-        <span class="second-color"><?php echo TextDomain::__("⚙️ Settings"); ?></span>
-        <?php
+        if ($account === null) {
+            ?>
+            <span><?php echo TSM__NAME; ?></span>
+            <span class="second-color"><?php echo TextDomain::__("Installation 1/2"); ?></span>
+            <?php
+        } else if ($countLanguages < 2) {
+            ?>
+            <span><?php echo TSM__NAME; ?></span>
+            <span class="second-color"><?php echo TextDomain::__("Installation 2/2"); ?></span>
+            <?php
+        } else {
+            ?>
+            <span><?php echo TSM__NAME; ?></span>
+            <span class="second-color"><?php echo TextDomain::__("⚙️ Settings"); ?></span>
+            <?php
+        }
         return ob_get_clean();
     }
 
@@ -192,7 +204,7 @@ class Settings {
 
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             $settings["_yoast_wpseo_title"] = [
-                "before" => "Yoast SEO",
+                "before" => TextDomain::__("Translate the options for Yoast SEO"),
                 "checked" => $settingsInstance->settingIsEnabled("_yoast_wpseo_title"),
                 "label" => TextDomain::__("SEO Title"),
                 "tooltip" => TextDomain::__("The title is the title of your post. It is used in the search results.")
@@ -216,7 +228,7 @@ class Settings {
 
         if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             $settings["rank_math_description"] = [
-                "before" => "Rank Math",
+                "before" => TextDomain::__("Translate the options for Rank Math"),
                 "checked" => $settingsInstance->settingIsEnabled("rank_math_description"),
                 "label" => TextDomain::__("SEO Title"),
                 "tooltip" => TextDomain::__("The title is the title of your post. It is used in the search results.")
@@ -235,7 +247,7 @@ class Settings {
 
         if (is_plugin_active("wp-seopress/seopress.php")) {
             $settings["seopress_titles_desc"] = [
-                "before" => "SEOPress",
+                "before" => TextDomain::__("Translate the options for SEOPress"),
                 "checked" => $settingsInstance->settingIsEnabled("seopress_titles_desc"),
                 "label" => TextDomain::__("SEO Title"),
                 "tooltip" => TextDomain::__("The title is the title of your post. It is used in the search results.")
@@ -254,7 +266,7 @@ class Settings {
         ?>
         <div class="preferences">
             <div class="title"><?php echo TextDomain::__("Settings"); ?></div>
-            <div class="description"><?php echo TextDomain::__("What the otter should update when the post already exists?"); ?></div>
+            <div class="description"><?php echo TextDomain::__("What the otter should update when the content already exists?"); ?></div>
             <div class="content">
                 <div class="settings">
                     <?php
@@ -491,22 +503,11 @@ class Settings {
         <?php
         echo ob_get_clean();
     }
-    private static function getContent() {
-        $client = Client::getInstance();
-        $client->fetchAccount();
-        $redirect = $client->getRedirect();
-        $account = $client->getAccount();
+    private static function getContent($account, $redirect, $countLanguages) {
         ob_start();
         if (!$account) {
             self::renderLogInSection($redirect);
         } else {
-            $languageManager = new LanguageManager();
-            try {
-                $languages = $languageManager->getLanguageManager()->getLanguagesActives();
-            } catch (\Exception $e) {
-                $languages = [];
-            }
-            $countLanguages = count($languages);
             if ($countLanguages < 2) {
                 self::renderLanguagesInitialization();
             } else {
@@ -542,17 +543,43 @@ class Settings {
         return ob_get_clean();
     }
 
-    private static function getDescription() {
+    private static function getDescription($account, $countLanguages) {
         ob_start();
-        ?>
-        <span><?php echo TextDomain::__("Here you can configure the tool to make it perfect for your needs."); ?></span>
-        <?php
+        if ($account === null) {
+            ?>
+            <span><?php echo TextDomain::__("To continue, you need to authenticate your account."); ?></span>
+            <?php
+        } else if ($countLanguages < 2) {
+            ?>
+            <span><?php echo TextDomain::__("Just one more thing, configure your first two languages."); ?></span>
+            <?php
+        } else {
+            ?>
+            <span><?php echo TextDomain::__("Here you can configure the tool to make it perfect for your needs."); ?></span>
+            <?php
+        }
         return ob_get_clean();
     }
     static function render() {
-        $content = self::getContent();
-        $title = self::getTitle();
-        $description = self::getDescription();
+        $client = Client::getInstance();
+        $client->fetchAccount();
+        $redirect = $client->getRedirect();
+        $account = $client->getAccount();
+        $languages = [];
+
+        if ($account) {
+            $languageManager = new LanguageManager();
+            try {
+                $languages = $languageManager->getLanguageManager()->getLanguagesActives();
+            } catch (\Exception $e) {
+                $languages = [];
+            }
+        }
+        $countLanguages = count($languages);
+
+        $content = self::getContent($account, $redirect, $countLanguages);
+        $title = self::getTitle($account, $countLanguages);
+        $description = self::getDescription($account, $countLanguages);
         Menu::render($title, $description, $content);
     }
 }

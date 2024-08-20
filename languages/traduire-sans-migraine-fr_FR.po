@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-08-12T12:03:100\n"
+"POT-Creation-Date: 2024-08-20T10:12:020\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -356,6 +356,14 @@ msgstr "Supprimer"
 msgid "Add"
 msgstr "Ajouter"
 
+msgid ""
+"Here you can add words you don't want to translate. For example you may want "
+"to keep your brand the same in all the languages."
+msgstr ""
+"Ici tu peux ajouter des mots que tu ne veux pas traduire ou traduire d’une "
+"certaine manière. Par exemple tu peux choisir de garder le nom de ta marque "
+"dans toutes les langues."
+
 msgid "Dictionary for %s"
 msgstr "Dictionnaire pour %s"
 
@@ -383,6 +391,12 @@ msgstr ""
 # Settings.php
 msgid "Your settings have been saved."
 msgstr "Tes préférences ont été sauvegardés."
+
+msgid "Installation 1/2"
+msgstr "Installation 1/2"
+
+msgid "Installation 2/2"
+msgstr "Installation 2/2"
 
 msgid "⚙️ Settings"
 msgstr "⚙️ Préférences"
@@ -427,6 +441,9 @@ msgstr ""
 "Traduire les alternatives et le nom de vos médias qui sont utilisés dans ton "
 "contenu."
 
+msgid "Translate the options for Yoast SEO"
+msgstr "Traduire les options de Yoast SEO"
+
 msgid "SEO Title"
 msgstr "Titre SEO"
 
@@ -461,10 +478,16 @@ msgid ""
 msgstr ""
 "Les mots clés sont utilisés par Yoast pour t’aider à optimiser ton article."
 
+msgid "Translate the options for Rank Math"
+msgstr "Traduire les options de Rank Math"
+
 msgid "Keywords are used by rank math to help you to optimize your post."
 msgstr ""
 "Les mots clés sont utilisés par Rank math pour t’aider à optimiser ton "
 "article."
+
+msgid "Translate the options for SEOPress"
+msgstr "Traduire les options de SEOPress"
 
 msgid "Keywords are used by SEOPress to help you to optimize your post."
 msgstr ""
@@ -474,8 +497,8 @@ msgstr ""
 msgid "Settings"
 msgstr "Préférences"
 
-msgid "What the otter should update when the post already exists?"
-msgstr "Que devra mettre à jour la loutre lorsque l’article existe déjà ?"
+msgid "What the otter should update when the content already exists?"
+msgstr "Que devra mettre à jour la loutre lorsque le contenu existe déjà ?"
 
 msgid "Save"
 msgstr "Sauvegarder"
@@ -524,6 +547,12 @@ msgstr ""
 msgid "Just select the language then add it."
 msgstr "Sélectionne simplement la langue que tu veux ajouter."
 
+msgid "To continue, you need to authenticate your account."
+msgstr "Pour continuer, tu dois tout d’abord t’authentifier."
+
+msgid "Just one more thing, configure your first two languages."
+msgstr "Plus qu’une dernière chose, choisis tes 2 premières langues."
+
 msgid "Here you can configure the tool to make it perfect for your needs."
 msgstr ""
 "Ici tu peux configurer sans migraine pour qu’il corresponde à tes besoins."
@@ -535,6 +564,10 @@ msgstr "Elle a traduit %s caractère sur %s"
 # Settings.php
 msgid "She have translated %s characters on %s"
 msgstr "Elle a traduit %s caractères sur %s"
+
+# Plugins.php
+msgid "By "
+msgstr "Par "
 
 # ReasonsDeactivate.php
 msgid "Send & Deactivate"

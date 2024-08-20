@@ -139,7 +139,7 @@ class Dictionary {
         ob_start();
         ?>
         <input type="hidden" name="langTo" id="langTo" value="<?php echo $langTo; ?>" />
-        <p>Here you can add words or groups of words to explain how they must be translated into <?php echo $this->name; ?></p>
+        <p><?php echo TextDomain::__("Here you can add words you don't want to translate. For example you may want to keep your brand the same in all the languages."); ?></p>
         <div>
         <?php
         $lastLangFrom = "";

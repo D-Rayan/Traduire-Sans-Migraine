@@ -311,7 +311,7 @@ class TranslateHelper
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
             }
             if (isset($this->dataToTranslate["yoastFocusKeyword"])) {
-                update_post_meta($this->translatedPostId, "yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
+                update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
             }
         }
     }

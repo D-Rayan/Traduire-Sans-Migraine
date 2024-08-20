@@ -105,7 +105,7 @@ class StartTranslation
             if (!empty($metaKeywords) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("_yoast_wpseo_metakeywords"))) {
                 $this->dataToTranslate["metaKeywords"] = $metaKeywords;
             }
-            $focusKeyWords = $postMetas["yoast_wpseo_focuskw"][0] ?? "";
+            $focusKeyWords = $postMetas["_yoast_wpseo_focuskw"][0] ?? "";
             if (!empty($focusKeyWords) && (!$willBeAnUpdate || $this->settings->settingIsEnabled("yoast_wpseo_focuskw"))) {
                 $this->dataToTranslate["yoastFocusKeyword"] = $focusKeyWords;
             }

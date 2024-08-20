@@ -54,6 +54,8 @@ class Plugins {
             if (isset($links["deactivate"])) {
                 $links["deactivate"] = str_replace("<a", "<a data-wpnonce='" . wp_create_nonce("traduire-sans-migraine_plugins_reasons_deactivate") . "'", $links["deactivate"]);
             }
+            $links["settings"] = '<a href="' . admin_url('admin.php?page=traduire-sans-migraine') . '">' . TextDomain::__("Settings") . '</a>';
+            array_unshift($links, '<a href="https://www.seo-sans-migraine.fr/">' . TextDomain::__("By ") . '<span class="mark-by">Otter Corp</span></a>');
         }
         return $links;
     }
