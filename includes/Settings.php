@@ -14,6 +14,7 @@ if (!defined("ABSPATH")) {
 class Settings
 {
     private $settings;
+    private $token;
 
     public function __construct()
     {
@@ -21,6 +22,7 @@ class Settings
         if (!$this->settings) {
             $this->settings = [];
         }
+        $this->token = null;
     }
 
     public function checkRequirements()
@@ -113,10 +115,14 @@ class Settings
 
     public function getToken(): string
     {
+        if (!empty($this->token)) {
+            return $this->token;
+        }
         $token = get_option("seo_sans_migraine_token");
         if (empty($token)) {
             $token = $this->generateAndSaveToken();
         }
+        $this->token = $token;
 
         return $token;
     }

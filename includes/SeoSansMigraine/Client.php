@@ -50,14 +50,17 @@ class Client
     }
 
     public function sendDebugData($data) {
+        $this->client->setAuthorization($this->settings->getToken());
         return $this->client->post("/debugs", $data);
     }
 
     public function sendReasonDeactivate($data) {
+        $this->client->setAuthorization($this->settings->getToken());
         return $this->client->post("/reasons-deactivate", $data);
     }
 
     public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo, array $options = []): array {
+        $this->client->setAuthorization($this->settings->getToken());
         return $this->client->post("/translations", [
             "dataToTranslate" => $dataToTranslate,
             "codeFrom" => $codeFrom,
@@ -68,10 +71,12 @@ class Client
     }
 
     public function getTranslation($tokenId) {
+        $this->client->setAuthorization($this->settings->getToken());
         return $this->client->get("/translations/$tokenId");
     }
 
     public function fetchAllFinishedTranslations() {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->get("/translations");
         if (!$response["success"]) {
             return [];
@@ -80,6 +85,7 @@ class Client
     }
 
     public function getLanguages() {
+        $this->client->setAuthorization($this->settings->getToken());
         if ($this->getLanguagesResponse !== null) {
             return $this->getLanguagesResponse;
         }
@@ -96,6 +102,7 @@ class Client
     }
 
     public function getProducts() {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->get("/products");
         if (!$response["success"]) {
             return [];
@@ -105,6 +112,7 @@ class Client
     }
 
     public function loadDictionary($language) {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->get("/glossaries?langTo=$language");
         if (!$response["success"]) {
             return [];
@@ -114,6 +122,7 @@ class Client
     }
 
     public function updateWordToDictionary($id, $entry, $translation, $langFrom) {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->put("/glossaries/$id", [
             "entry" => $entry,
             "result" => $translation,
@@ -127,6 +136,7 @@ class Client
     }
 
     public function addWordToDictionary($entry, $translation, $langFrom, $langTo) {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->post("/glossaries", [
             "entry" => $entry,
             "result" => $translation,
@@ -141,6 +151,7 @@ class Client
     }
 
     public function deleteWordFromDictionary($id) {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->delete("/glossaries/$id");
         if (!$response["success"]) {
             return false;
@@ -150,6 +161,7 @@ class Client
     }
 
     public function updateLanguageSettings($slug, $formality = null, $country = null) {
+        $this->client->setAuthorization($this->settings->getToken());
         $body = [
             "slug" => $slug
         ];
@@ -168,6 +180,7 @@ class Client
     }
 
     public function enableLanguage($language) {
+        $this->client->setAuthorization($this->settings->getToken());
         $response = $this->client->post("/languages/enable", [
             "slug" => $language
         ]);
