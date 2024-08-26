@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-08-20T10:12:020\n"
+"POT-Creation-Date: 2024-08-26T10:13:220\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: FR\n"
@@ -695,13 +695,31 @@ msgstr ""
 "connaître les meilleurs pratiques SEO tu peux cliquer <a target='_blank' "
 "href='%s'>ici</a>"
 
+msgid "Live Update"
+msgstr "Traduction en direct"
+
 # GetPostNotifications.php
 msgid "We have detected %s internal link that is not translated."
 msgstr "Nous avons détectés %s lien interne qui n’est pas traduit."
 
+msgid "You have updated this content. Do you want to update the translation ?"
+msgstr ""
+"Tu as mis à jour ce contenu. Souhaites-tu mettre à jour la traduction ?"
+
+msgid "Update the translation"
+msgstr "Mettre à jour la traduction"
+
 # GetPostNotifications.php
 msgid "We have detected %s internal links that are not translated."
 msgstr "Nous avons détectés %s liens internes qui ne sont pas traduits."
+
+msgid ""
+"You have updated this content. Do you want to update the %s translations ?"
+msgstr ""
+"Tu as mis à jour ce contenu. Souhaites-tu mettre à jour les %s traductions ?"
+
+msgid "Update the %s translations"
+msgstr "Mettre à jour les %s traductions"
 
 msgid "We could not find the language. Please try again."
 msgstr "Nous ne trouvons plus la langue. Réessaye plus tard."
@@ -760,6 +778,9 @@ msgstr "La langue n’a pas été mise à jour"
 
 msgid "The language has been updated"
 msgstr "La langue a été mise à jour"
+
+msgid "Translations will be soon updated"
+msgstr "Les traductions vont être mise à jours"
 
 msgid "The word has been updated"
 msgstr "Le mot a été mis à jour"
@@ -1009,9 +1030,6 @@ msgstr "GPL2"
 
 #~ msgid "Sending content"
 #~ msgstr "Envoie du contenu"
-
-#~ msgid "Retrieve translation"
-#~ msgstr "Téléchargement de la traduction"
 
 #~ msgid "Saving translation"
 #~ msgstr "Sauvegarde de la traduction"

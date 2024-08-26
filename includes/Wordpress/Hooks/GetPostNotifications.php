@@ -56,14 +56,14 @@ class GetPostNotifications {
             wp_die();
         }
         $postId = $_GET["post_id"];
+        $context = $_GET["context"];
         $hasBeenTranslatedByTsm = get_post_meta($postId, "_has_been_translated_by_tsm", true);
         $notifications = [];
         if ($hasBeenTranslatedByTsm) {
             $linkTraduireSansMigrainePractices = TextDomain::__("https://www.seo-sans-migraine.fr/astuces-traduction-seo");
             $post = get_post($postId);
-            $languageManager = new LanguageManager();
             $linkManager = new LinkManager();
-            $currentLanguagePost = $languageManager->getLanguageManager()->getLanguageForPost($postId);
+            $currentLanguagePost = $this->languageManager->getLanguageManager()->getLanguageForPost($postId);
             $internalLinks = $linkManager->getIssuedInternalLinks($post->post_content, get_post_meta($postId, "_translated_by_tsm_from", true), $currentLanguagePost);
             $translatable = $internalLinks["translatable"];
             if (count($translatable) > 0) {
@@ -93,6 +93,32 @@ class GetPostNotifications {
                     "persist" => true,
                     "displayDefault" => false,
                     "buttons" => [],
+                ];
+            }
+        } else if ($context === "onSave") {
+            $translations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
+            $translationsCount = 0;
+            foreach ($translations as $translation) {
+                if (!empty($translation["postId"]) && $translation["postId"] != $postId) {
+                    $translationsCount++;
+                }
+            }
+            if ($translationsCount > 0) {
+                $notifications[] = [
+                    "title" => TextDomain::__("Live Update"),
+                    "message" => TextDomain::_n("You have updated this content. Do you want to update the translation ?", "You have updated this content. Do you want to update the %s translations ?", $translationsCount, $translationsCount),
+                    "logo" => "loutre_docteur_no_shadow.png",
+                    "type" => "success",
+                    "persist" => true,
+                    "displayDefault" => true,
+                    "buttons" => [
+                        [
+                            "label" => TextDomain::_n("Update the translation", "Update the %s translations", $translationsCount, $translationsCount),
+                            "type" => "primary",
+                            "action" => "updateTranslations",
+                            "wpNonce" => wp_create_nonce("traduire-sans-migraine_editor_update_translations"),
+                        ]
+                    ]
                 ];
             }
         }
