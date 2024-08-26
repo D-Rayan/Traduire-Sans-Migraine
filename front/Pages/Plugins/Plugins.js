@@ -1,5 +1,5 @@
 (() => {
-    const deactivateTSM = document.querySelector("tr[data-slug='traduire-sans-migraine'] .deactivate a");
+    const deactivateTSM = document.querySelector("tr[data-slug*='traduire-sans-migraine'] .deactivate a");
     if (deactivateTSM) {
         deactivateTSM.addEventListener("click", async (e) => {
             e.preventDefault();
