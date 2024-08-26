@@ -30,6 +30,16 @@ if (buttonUpgrade) {
     });
 }
 
+const buttonUpgradePlan = document.querySelector("#upgrade-plan-button");
+if (buttonUpgradePlan) {
+    buttonUpgradePlan.addEventListener("click", async () => {
+        const href = buttonUpgradePlan.dataset.href;
+        window.open(href, "_blank");
+    });
+}
+
+
+
 const buttonsDictionary = document.querySelectorAll("#dictionary-button");
 buttonsDictionary.forEach(button => {
     button.addEventListener("click", async (e) => {
