@@ -23,6 +23,10 @@ class Client
         $this->client = new BaseClient();
         $this->settings = new Settings();
         $this->account = null;
+        $getLanguage = get_option("tsm_languages");
+        if ($getLanguage !== false) {
+            $this->getLanguagesResponse = $getLanguage;
+        }
     }
 
     public function fetchAccount() {
@@ -98,6 +102,7 @@ class Client
             ];
         }
         $this->getLanguagesResponse = $response["data"];
+        update_option("tsm_languages", $response["data"]);
         return $response["data"];
     }
 
