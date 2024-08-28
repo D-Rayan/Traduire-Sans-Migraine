@@ -15,17 +15,12 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 26 Août 2024</h4><ul>
-            <li>Meilleure gestion de Polylang (Installation, activation et configuration au sein de Traduire Sans Migraine)</li>
-            <li>Ajout de la posibilité de traduire les médias lors de la traduction de vos contenus</li>
-            <li>Ajout de la requête cible pour Yoast</li>
-            <li>Gestion du dictionnaire disponible au sein de la page de configuration</li>
-            <li>Gestion de la formalité au sein de la page de configuration</li>
-            <li>Correction de la traduction des liens internes pour Elementor</li>
-            <li>Amélioration de l'UX lors de la première installation</li>
-            <li>Ajout d'un message lors de la désactivation du plugin</li>
-            <li>Modification de la gestion des méta données des contenus</li>
-            <li>Mise à jour de vos traductions en 1 clic</li>
+        "changelog" => "<h4>Mise à jour du 28 Août 2024</h4><ul>
+        <li>Ajouter des nouvelles langues plus facilement (en un clic) on s’occupe du paramétrage de A à Z</li>
+        <li><b>New</b> Le titre de tes images est désormais traduit, un vrai plus en SEO !</li> 
+        <li><b>Bug Fix</b> La requête cible de Yoast est désormais traduite</li>
+        <li><b>New</b> Tu peux ajouter un dictionnaire depuis ton espace : ça va te servir si tu veux qu’un mot ne soit pas traduit (par exemple votre nom de marque),</li>
+        <li><b>Bug Fix</b> Le bug des liens internes avec Elementor est corrigé, tu peux foncer !</li> 
         </ul>",
     ]
 );
