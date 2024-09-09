@@ -20,7 +20,6 @@ class TextDomain
         return $mofile;
     }
 
-
     public static function __($text, ...$args) {
         if (empty($args)) {
             return __($text, "traduire-sans-migraine");
@@ -38,5 +37,17 @@ class TextDomain
     // fake use for CLI
     public static function _f($text) {
         return $text;
+    }
+    private static $instance = null;
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+    public static function init() {
+        $instance = self::getInstance();
+        $instance->loadTextDomain();
     }
 }

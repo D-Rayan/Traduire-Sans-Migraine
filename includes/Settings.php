@@ -2,11 +2,6 @@
 
 namespace TraduireSansMigraine;
 
-use TraduireSansMigraine\Front\Components\Alert;
-use TraduireSansMigraine\Front\Components\Button;
-use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Wordpress\TextDomain;
-
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -18,81 +13,57 @@ class Settings
 
     public function __construct()
     {
-        $this->settings = get_option("seo_sans_migraine_settings");
-        if (!$this->settings) {
-            $this->settings = [];
-        }
         $this->token = null;
     }
 
-    public function checkRequirements()
+    private function loadSettings()
     {
-        return $this->checkPhp(true) && $this->checkPlugins(true);
-    }
-
-    private function checkPhp($printNotice = false)
-    {
-        $requiredMinimumPhpVersion = TSM__PHP_REQUIREMENT;
-        $phpIsValid = version_compare(PHP_VERSION, $requiredMinimumPhpVersion, ">=");
-        if (!$phpIsValid && $printNotice) {
-            add_action('admin_notices', [$this, "noticePhp"]);
-        }
-
-        return $phpIsValid;
-    }
-
-    public function noticePhp()
-    {
-        Alert::render(TextDomain::__("PHP version is too low"), TextDomain::__("%s required at least PHP %s", TSM__NAME, TSM__PHP_REQUIREMENT), "error");
-    }
-
-    private function checkPlugins($printNotice = false)
-    {
-        if (!function_exists('get_plugins')) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
-        $plugins = get_plugins();
-        if (!function_exists("pll_the_languages") && !defined('POLYLANG_VERSION')) {
-            foreach ($plugins as $path => $plugin) {
-                if (strpos($plugin["Name"], "Polylang") !== false) {
-                    activate_plugin($path);
-
-                    if ($printNotice) {
-                        add_action('admin_notices', function () {
-                            Alert::render(
-                                TextDomain::__("Missing required plugin"),
-                                TextDomain::__("Polylang is a dependence for %s so it has been activate automatically", TSM__NAME),
-                                "success"
-                            );
-                        });
-                    }
-
-                    break;
+        $this->settings = [
+            "yoastSEO" => [
+                "enabled" => true,
+                "available" => (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")),
+            ],
+            "rankMath" => [
+                "enabled" => true,
+                "available" => (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math"))
+            ],
+            "SEOPress" => [
+                "enabled" => true,
+                "available" => (is_plugin_active("wp-seopress/seopress.php"))
+            ],
+            "translateAssets" => [
+                "enabled" => true,
+                "available" => true
+            ],
+            "translateCategories" => [
+                "enabled" => true,
+                "available" => true
+            ],
+        ];
+        $settings = get_option("seo_sans_migraine_settings");
+        if (!empty($settings)) {
+            foreach ($settings as $key => $enabled) {
+                if (isset($this->settings[$key])) {
+                    $this->settings[$key]["enabled"] = $enabled == true;
+                    continue;
+                }
+                $oldKeys = [
+                    "rank_math_description" => "rankMath",
+                    "rank_math_title" => "rankMath",
+                    "rank_math_focus_keyword" => "rankMath",
+                    "seopress_titles_desc" => "SEOPress",
+                    "seopress_titles_title" => "SEOPress",
+                    "seopress_analysis_target_kw" => "SEOPress",
+                    "_yoast_wpseo_title" => "yoastSEO",
+                    "_yoast_wpseo_metadesc" => "yoastSEO",
+                    "_yoast_wpseo_metakeywords" => "yoastSEO",
+                    "yoast_wpseo_focuskw" => "yoastSEO",
+                ];
+                if (isset($oldKeys[$key])) {
+                    $this->settings[$oldKeys[$key]]["enabled"] = $enabled == true && $this->settings[$oldKeys[$key]]["enabled"] == true;
                 }
             }
         }
-
-        if (!function_exists("pll_the_languages") && !defined('POLYLANG_VERSION')) {
-            if ($printNotice) {
-                add_action('admin_notices', function () {
-                    Alert::render(
-                        TextDomain::__("Missing required plugin"),
-                        TextDomain::__("%s required Polylang to be installed and active", TSM__NAME)
-                        . " " . Button::getHTML(
-                            "Install",
-                            "primary",
-                            "install-required-plugins", [
-                            "wpNonce" => wp_create_nonce("traduire-sans-migraine_install_required_plugin"),
-                        ]),
-                        "error"
-                    );
-                });
-            }
-
-            return false;
-        }
-
-        return true;
     }
 
     public function generateAndSaveToken(): string
@@ -140,16 +111,17 @@ class Settings
     public function saveSettings($settings)
     {
         update_option("seo_sans_migraine_settings", $settings);
-        $this->settings = $settings;
     }
 
     public function getSettings()
     {
+        if (empty($this->settings)) { $this->loadSettings(); }
         return $this->settings;
     }
 
     public function settingIsEnabled($name)
     {
+        if (empty($this->settings)) { $this->loadSettings(); }
         return !isset($this->settings[$name]) || $this->settings[$name] == true;
     }
 }

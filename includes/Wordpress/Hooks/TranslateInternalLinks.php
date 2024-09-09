@@ -2,11 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
-use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -14,12 +9,8 @@ if (!defined("ABSPATH")) {
 }
 
 class TranslateInternalLinks {
-    private $languageManager;
-    private $linkManager;
     public function __construct()
     {
-        $this->languageManager = new LanguageManager();
-        $this->linkManager = new LinkManager();
     }
     public function loadHooksClient() {
         // nothing to load
@@ -41,6 +32,8 @@ class TranslateInternalLinks {
     }
 
     private function handleElementor($postId, $codeTo, $codeFrom) {
+        global $tsm;
+
         if (is_plugin_active("elementor/elementor.php")) {
             $postMetas = get_post_meta($postId);
             foreach ($postMetas as $key => $value) {
@@ -49,7 +42,7 @@ class TranslateInternalLinks {
                     if ($this->is_serialized($valueKey)) {
                         continue;
                     }
-                    $newValueKey = $this->linkManager->translateInternalLinks($valueKey, $codeFrom, $codeTo);
+                    $newValueKey = $tsm->getLinkManager()->translateInternalLinks($valueKey, $codeFrom, $codeTo);
                     if ($newValueKey !== $valueKey) {
                         if ($this->is_json($newValueKey)) {
                             $newValueKey = wp_slash($newValueKey);
@@ -71,7 +64,8 @@ class TranslateInternalLinks {
     }
 
     public function translateInternalLinks() {
-        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_translate_internal_links")) {
+        global $tsm;
+        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -89,13 +83,13 @@ class TranslateInternalLinks {
         }
         $post = get_post($_GET["post_id"]);
         $content = $post->post_content;
-        $language = $this->languageManager->getLanguageManager()->getLanguageForPost($post->ID);
-        $languages = $this->languageManager->getLanguageManager()->getLanguagesActives();
+        $language = $tsm->getPolylangManager()->getLanguageForPost($post->ID);
+        $languages = $tsm->getPolylangManager()->getLanguagesActives();
         foreach ($languages as $slug => $ignored) {
             if ($slug === $language) {
                 continue;
             }
-            $content = $this->linkManager->translateInternalLinks($content, $slug, $language);
+            $content = $tsm->getLinkManager()->translateInternalLinks($content, $slug, $language);
             $this->handleElementor($post->ID, $slug, $language);
         }
         wp_update_post([

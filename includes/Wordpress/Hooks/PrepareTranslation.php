@@ -3,7 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\TextDomain;
@@ -13,12 +13,8 @@ if (!defined("ABSPATH")) {
 }
 
 class PrepareTranslation {
-    private $clientSeoSansMigraine;
-    private $languageManager;
     public function __construct()
     {
-        $this->clientSeoSansMigraine = Client::getInstance();
-        $this->languageManager = new LanguageManager();
     }
     public function loadHooksClient() {
         // nothing to load
@@ -40,7 +36,7 @@ class PrepareTranslation {
     }
 
     public function prepareTranslation() {
-        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_editor_prepare_translate")) {
+        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -66,9 +62,9 @@ class PrepareTranslation {
     }
 
     public function prepareTranslationExecute($postId, $languages) {
-        global $wpdb;
+        global $wpdb, $tsm;
 
-        $result = $this->clientSeoSansMigraine->checkCredential();
+        $result = $tsm->getClient()->checkCredential();
         if (!$result) {
             return [
                 "success" => false,
@@ -79,7 +75,7 @@ class PrepareTranslation {
                 ]
             ];
         }
-        $originalTranslations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
+        $originalTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
         $translations = [];
         $originalPost = get_post($postId);
         $createdOnes = [];
@@ -107,8 +103,8 @@ class PrepareTranslation {
             }
         }
 
-        $this->languageManager->getLanguageManager()->saveAllTranslationsPost($translations);
-        $updatedTranslations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
+        $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
+        $updatedTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
         $errorCreationTranslations = false;
         $data = ["wpNonce" => []];
         foreach ($languages as $slug) {

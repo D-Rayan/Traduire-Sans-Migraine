@@ -5,13 +5,9 @@ namespace TraduireSansMigraine\Wordpress;
 use TraduireSansMigraine\Front\Pages\Menu\Bulk\Bulk;
 use TraduireSansMigraine\Front\Pages\Menu\Products\Products;
 use TraduireSansMigraine\Front\Pages\Menu\Settings\Settings;
+use TraduireSansMigraine\Front\SettingsPage;
 
 class Menu {
-
-    public function init() {
-        add_action("admin_menu", [$this, "addMenu"]);
-        add_action("admin_menu", [$this, "addSubMenu"]);
-    }
 
     public function loadMenuIcon() {
         add_action("admin_head", function() {
@@ -31,59 +27,53 @@ class Menu {
         });
     }
 
-    public function addMenu() {
-        if (defined("SANS_MIGRAINE_MENU")) {
-            return;
-        }
+    private function addCategorySansMigraine() {
         $this->loadMenuIcon();
         add_menu_page(
             TextDomain::__("Our Products"),
             "Traduire sans migraine",
             "manage_options",
-            "sans-migraine",
-            [$this, "renderMenu"],
+            "traduire-sans-migraine",
+            [$this, "renderProductsPage"],
             "dashicons-otter"
         );
         define("SANS_MIGRAINE_MENU", "sans-migraine");
-        $this->rewriteTextMenu();
     }
-
-    public function rewriteTextMenu() {
-        add_action("admin_footer", function() {
-            ?>
-            <script style="text/javascript">
-                const menuSanMigraine = document.querySelector("a[href*='page=sans-migraine'].wp-first-item");
-                menuSanMigraine.innerHTML = "<?php echo TextDomain::__("Our Products"); ?>";
-            </script>
-            <?php
-        });
-    }
-
-    public function addSubMenu() {
+    public function displayMenu() {
+        if (!defined("SANS_MIGRAINE_MENU")) {
+            $this->addCategorySansMigraine();
+        }
         add_submenu_page(
-            "sans-migraine",
+            "traduire-sans-migraine",
+            TextDomain::__("Our Products"),
+            TextDomain::__("Our Products"),
+            "manage_options",
+            "traduire-sans-migraine",
+            [$this, "renderSettingsPage"]
+        );
+        add_submenu_page(
+            "traduire-sans-migraine",
             "⚙️ Traduire Sans Migraine",
             TextDomain::__("⚙️ Settings"),
             "manage_options",
-            "traduire-sans-migraine",
-            [$this, "renderSubMenu"]
+            "traduire-sans-migraine#settings",
+            [$this, "renderSettingsPage"]
         );
         add_submenu_page(
-            "sans-migraine",
+            "traduire-sans-migraine",
             "⚙️ Traduire Sans Migraine",
             TextDomain::__("💊 Bulk Translation"),
             "manage_options",
-            "traduire-sans-migraine-bulk",
-            [$this, "renderBulkMenu"]
+            "traduire-sans-migraine#bulk",
+            [$this, "renderBulkPage"]
         );
         add_submenu_page(
-            "sans-migraine",
+            "traduire-sans-migraine",
             "Redirecting to the tutorial",
             TextDomain::__("See the tutorial"),
             "manage_options",
             "traduire-sans-migraine-tutorial",
             function () {
-                // redirect to $url
                 $url = TextDomain::__("tutorialLink");
                 ?>
                 <script>
@@ -95,15 +85,28 @@ class Menu {
         );
     }
 
-    public function renderMenu() {
-        Products::render();
+    public function renderProductsPage() {
+
     }
 
-    public function renderSubMenu() {
-        Settings::render();
+    public function renderSettingsPage() {
+        SettingsPage::render();
     }
 
-    public function renderBulkMenu() {
-        Bulk::render();
+    public function renderBulkPage() {
+
+    }
+
+    private static $instance = null;
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+    public static function init() {
+        $instance = self::getInstance();
+        add_action("admin_menu", [$instance, "displayMenu"]);
     }
 }

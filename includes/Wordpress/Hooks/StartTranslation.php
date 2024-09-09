@@ -3,7 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\TextDomain;
@@ -14,16 +14,12 @@ if (!defined("ABSPATH")) {
 
 class StartTranslation
 {
-    private $clientSeoSansMigraine;
-    private $languageManager;
     private $settings;
 
     private $dataToTranslate;
 
     public function __construct()
     {
-        $this->clientSeoSansMigraine = Client::getInstance();
-        $this->languageManager = new LanguageManager();
         $this->settings = new Settings();
         $this->dataToTranslate = [];
     }
@@ -62,7 +58,7 @@ class StartTranslation
             ], 400);
             wp_die();
         }
-        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_start_translate_" . $_GET["language"])) {
+        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine_editor_start_translate_" . $_GET["language"])) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -198,7 +194,9 @@ class StartTranslation
 
     private function prepareDataToTranslate($post, $codeTo)
     {
-        $translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($post->ID, $codeTo);
+        global $tsm;
+        
+        $translatedPostId = $tsm->getPolylangManager()->getTranslationPost($post->ID, $codeTo);
         $translatedPost = $translatedPostId ? get_post($translatedPostId) : null;
         $willBeAnUpdate = $translatedPost !== null && !strstr($translatedPost->post_name, "-traduire-sans-migraine");
         $this->dataToTranslate = [];
@@ -226,8 +224,10 @@ class StartTranslation
 
     public function handleCategories($categories, $codeTo)
     {
+        global $tsm;
+        
         foreach ($categories as $categoryId) {
-            $result = $this->languageManager->getLanguageManager()->getTranslationCategories([$categoryId], $codeTo);
+            $result = $tsm->getPolylangManager()->getTranslationCategories([$categoryId], $codeTo);
             if (empty($result)) {
                 $categoryName = get_cat_name($categoryId);
                 $this->dataToTranslate["categories_". $categoryId] = $categoryName;
@@ -237,7 +237,9 @@ class StartTranslation
 
     public function startTranslateExecute($post, $codeTo)
     {
-        $result = $this->clientSeoSansMigraine->checkCredential();
+        global $tsm;
+        
+        $result = $tsm->getClient()->checkCredential();
         if (!$result) {
             return [
                 "success" => false,
@@ -248,10 +250,10 @@ class StartTranslation
                 ]
             ];
         }
-        $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($post->ID);
+        $codeFrom = $tsm->getPolylangManager()->getLanguageForPost($post->ID);
         $this->prepareDataToTranslate($post, $codeTo);
 
-        $result = $this->clientSeoSansMigraine->startTranslation($this->dataToTranslate, $codeFrom, $codeTo, [
+        $result = $tsm->getClient()->startTranslation($this->dataToTranslate, $codeFrom, $codeTo, [
             "translateAssets" => $this->settings->settingIsEnabled("translateAssets")
         ]);
         if ($result["success"]) {

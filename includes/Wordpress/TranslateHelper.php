@@ -4,7 +4,7 @@ namespace TraduireSansMigraine\Wordpress;
 
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -23,7 +23,7 @@ class TranslateHelper
     private $error;
     private $success;
 
-    private $languageManager;
+    private $polylangManager;
     private $linkManager;
 
     private $postMetas;
@@ -33,7 +33,7 @@ class TranslateHelper
         $this->tokenId = $tokenId;
         $this->dataToTranslate = $translationData;
         $this->codeTo = $codeTo;
-        $this->languageManager = new LanguageManager();
+        $this->polylangManager = new PolylangManager();
         $this->linkManager = new LinkManager();
         $this->success = true;
     }
@@ -75,19 +75,19 @@ class TranslateHelper
     private function startTranslate()
     {
         try {
-            $this->codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($this->originalPost->ID);
+            $this->codeFrom = $this->polylangManager->getLanguageForPost($this->originalPost->ID);
             if (isset($this->dataToTranslate["content"])) {
                 $this->dataToTranslate["content"] = $this->linkManager->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
                 $this->handleAssetsTranslations();
             }
             foreach ($this->originalPost->post_category as $termId) {
-                $result = $this->languageManager->getLanguageManager()->getTranslationCategories([$termId], $this->codeTo);
+                $result = $this->polylangManager->getTranslationCategories([$termId], $this->codeTo);
                 if (empty($result) && isset($this->dataToTranslate["categories_" . $termId])) {
                     $this->createCategory($termId, $this->codeTo, $this->dataToTranslate["categories_" . $termId]);
                 }
             }
-            $this->dataToTranslate["categories"] = $this->languageManager->getLanguageManager()->getTranslationCategories($this->originalPost->post_category, $this->codeTo);
-            $this->translatedPostId = $this->languageManager->getLanguageManager()->getTranslationPost($this->originalPost->ID, $this->codeTo);
+            $this->dataToTranslate["categories"] = $this->polylangManager->getTranslationCategories($this->originalPost->post_category, $this->codeTo);
+            $this->translatedPostId = $this->polylangManager->getTranslationPost($this->originalPost->ID, $this->codeTo);
             if (!$this->translatedPostId) {
                 update_option("_seo_sans_migraine_state_" . $this->tokenId, [
                     "percentage" => 100,
@@ -171,11 +171,11 @@ class TranslateHelper
         if (is_wp_error($categoryTranslated)) {
             return;
         }
-        $allTranslationsTerms = $this->languageManager->getLanguageManager()->getAllTranslationsTerm($originalCategoryId);
+        $allTranslationsTerms = $this->polylangManager->getAllTranslationsTerm($originalCategoryId);
         if (isset($allTranslationsTerms[$codeTo])) {
             $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
         }
-        $this->languageManager->getLanguageManager()->saveAllTranslationsTerms($allTranslationsTerms);
+        $this->polylangManager->saveAllTranslationsTerms($allTranslationsTerms);
     }
 
     private function checkRequirements()

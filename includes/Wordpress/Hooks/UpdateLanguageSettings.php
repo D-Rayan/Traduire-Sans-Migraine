@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
@@ -35,7 +35,8 @@ class UpdateLanguageSettings {
     }
 
     public function updateLanguageSettings() {
-        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_update_language_settings")) {
+        global $tsm;
+        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -53,8 +54,7 @@ class UpdateLanguageSettings {
         }
         $country = (isset($_POST["country"])) ? strtoupper(str_replace("_", "-", $_POST["country"])) : null;
         $formality = (isset($_POST["formality"])) ? $_POST["formality"] : null;
-        $client = Client::getInstance();
-        $response = $client->updateLanguageSettings($_POST["slug"], $formality, $country);
+        $response = $tsm->getClient()->updateLanguageSettings($_POST["slug"], $formality, $country);
         if ($response === false) {
             wp_send_json_error([
                 "message" => TextDomain::__("The language has not been updated"),

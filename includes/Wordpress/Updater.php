@@ -20,12 +20,6 @@ class Updater {
 
     }
 
-    public function init() {
-        add_filter( 'plugins_api', array( $this, 'info' ), 10, 3 );
-        add_filter( 'site_transient_update_plugins', array( $this, 'update' ) );
-        add_action( 'upgrader_process_complete', array( $this, 'purge' ), 10, 2 );
-    }
-
     public function request(){
 
         $remote = get_transient( $this->cache_key );
@@ -154,5 +148,20 @@ class Updater {
             delete_transient( $this->cache_key );
         }
 
+    }
+
+    private static $instance = null;
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+    public static function init() {
+        $instance = self::getInstance();
+        add_filter( 'plugins_api', [ $instance, 'info' ], 10, 3 );
+        add_filter( 'site_transient_update_plugins', [ $instance, 'update' ] );
+        add_action( 'upgrader_process_complete', [ $instance, 'purge' ], 10, 2 );
     }
 }

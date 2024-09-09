@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
@@ -35,7 +35,8 @@ class AddNewLanguage {
     }
 
     public function addNewLanguage() {
-        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_add_new_language")) {
+        global $tsm;
+        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -52,11 +53,11 @@ class AddNewLanguage {
             wp_die();
         }
         $locale = $_POST["language"];
-        $languageManager = new LanguageManager();
+        $polylangManager = $tsm->getPolylangManager();
         $slug = substr($locale, 0, 2);
-        $client = Client::getInstance();
+        $client = $tsm->getClient();
         try {
-            $languages = $languageManager->getLanguageManager()->getLanguagesActives();
+            $languages = $polylangManager->getLanguagesActives();
             if (isset($languages[$slug])) {
                 if ($client->enableLanguage($slug)) {
                     wp_send_json_success([
@@ -76,7 +77,7 @@ class AddNewLanguage {
         } catch (\Exception $e) {
 
         }
-        if ($languageManager->getLanguageManager()->addLanguage($locale)) {
+        if ($polylangManager->addLanguage($locale)) {
             $client->enableLanguage($slug);
             wp_send_json_success([
                 "message" => TextDomain::__("The language has been added"),
@@ -101,3 +102,6 @@ class AddNewLanguage {
         return $instance;
     }
 }
+
+$AddNewLanguage = new AddNewLanguage();
+$AddNewLanguage->init();

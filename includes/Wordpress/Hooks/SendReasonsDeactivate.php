@@ -3,7 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\LinkManager;
@@ -14,11 +14,9 @@ if (!defined("ABSPATH")) {
 }
 
 class SendReasonsDeactivate {
-    private $clientSeoSansMigraine;
 
     public function __construct()
     {
-        $this->clientSeoSansMigraine = Client::getInstance();
     }
     public function loadHooksClient() {
         // nothing to load
@@ -40,7 +38,8 @@ class SendReasonsDeactivate {
     }
 
     public function sendReason() {
-        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_plugins_reasons_deactivate_send")) {
+        global $tsm;
+        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -56,7 +55,7 @@ class SendReasonsDeactivate {
             ], 400);
             wp_die();
         }
-        $result = $this->clientSeoSansMigraine->checkCredential();
+        $result = $tsm->getClient()->checkCredential();
         if (!$result) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
@@ -65,7 +64,7 @@ class SendReasonsDeactivate {
             ], 400);
             wp_die();
         }
-        $this->clientSeoSansMigraine->sendReasonDeactivate([
+        $tsm->getClient()->sendReasonDeactivate([
             "reason" => $_POST["reason"]
         ]);
         wp_die();

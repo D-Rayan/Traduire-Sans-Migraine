@@ -3,7 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\TextDomain;
@@ -13,12 +13,9 @@ if (!defined("ABSPATH")) {
 }
 
 class DebugHelper {
-    private $clientSeoSansMigraine;
-    private $languageManager;
+
     public function __construct()
     {
-        $this->clientSeoSansMigraine = Client::getInstance();
-        $this->languageManager = new LanguageManager();
     }
     public function loadHooksClient() {
         // nothing to load
@@ -40,7 +37,8 @@ class DebugHelper {
     }
 
     public function debugTranslation() {
-        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_debug")) {
+        global $tsm;
+        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -61,7 +59,7 @@ class DebugHelper {
         $originalPost = get_post($postId);
         $postMetas = get_post_meta($originalPost->ID);
 
-        $result = $this->clientSeoSansMigraine->checkCredential();
+        $result = $tsm->getClient()->checkCredential();
         if (!$result) {
             return [
                 "success" => false,
@@ -72,9 +70,9 @@ class DebugHelper {
                 ]
             ];
         }
-        $codeFrom = $this->languageManager->getLanguageManager()->getLanguageForPost($originalPost->ID);
+        $codeFrom = $tsm->getPolylangManager()->getLanguageForPost($originalPost->ID);
         $pluginsActives = get_option("active_plugins");
-        $response = $this->clientSeoSansMigraine->sendDebugData([
+        $response = $tsm->getClient()->sendDebugData([
             "post" => $originalPost,
             "postMetas" => $postMetas,
             "codeFrom" => $codeFrom,

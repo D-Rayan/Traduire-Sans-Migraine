@@ -3,7 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\LinkManager;
@@ -14,10 +14,8 @@ if (!defined("ABSPATH")) {
 }
 
 class UpdateTranslations {
-    private $languageManager;
     public function __construct()
     {
-        $this->languageManager = new LanguageManager();
     }
     public function loadHooksClient() {
         // nothing to load
@@ -40,7 +38,9 @@ class UpdateTranslations {
 
     public function updateTranslations()
     {
-        if (!isset($_GET["wp_nonce"]) || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_update_translations")) {
+        global $tsm;
+
+        if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -59,7 +59,7 @@ class UpdateTranslations {
         $postId = $_GET["post_id"];
         $post = get_post($postId);
         $StartTranslation = StartTranslation::getInstance();
-        $translations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
+        $translations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
         $responses = [];
         foreach ($translations as $langTo => $translation) {
             if (!empty($translation["postId"]) && $translation["postId"] != $postId) {

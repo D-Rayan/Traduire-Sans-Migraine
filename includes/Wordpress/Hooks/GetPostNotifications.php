@@ -3,7 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\LanguageManager;
+use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\LinkManager;
@@ -14,10 +14,8 @@ if (!defined("ABSPATH")) {
 }
 
 class GetPostNotifications {
-    private $languageManager;
     public function __construct()
     {
-        $this->languageManager = new LanguageManager();
     }
     public function loadHooksClient() {
         // nothing to load
@@ -39,7 +37,8 @@ class GetPostNotifications {
     }
 
     public function getPostNotifications() {
-        if (!isset($_GET["wp_nonce"])  || !wp_verify_nonce($_GET["wp_nonce"], "traduire-sans-migraine_editor_get_post_notifications")) {
+        global $tsm;
+        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -62,9 +61,8 @@ class GetPostNotifications {
         if ($hasBeenTranslatedByTsm) {
             $linkTraduireSansMigrainePractices = TextDomain::__("https://www.seo-sans-migraine.fr/astuces-traduction-seo");
             $post = get_post($postId);
-            $linkManager = new LinkManager();
-            $currentLanguagePost = $this->languageManager->getLanguageManager()->getLanguageForPost($postId);
-            $internalLinks = $linkManager->getIssuedInternalLinks($post->post_content, get_post_meta($postId, "_translated_by_tsm_from", true), $currentLanguagePost);
+            $currentLanguagePost = $tsm->getPolylangManager()->getLanguageForPost($postId);
+            $internalLinks = $tsm->getLinkManager()->getIssuedInternalLinks($post->post_content, get_post_meta($postId, "_translated_by_tsm_from", true), $currentLanguagePost);
             $translatable = $internalLinks["translatable"];
             if (count($translatable) > 0) {
                 $notifications[] = [
@@ -96,7 +94,7 @@ class GetPostNotifications {
                 ];
             }
         } else if ($context === "onSave") {
-            $translations = $this->languageManager->getLanguageManager()->getAllTranslationsPost($postId);
+            $translations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
             $translationsCount = 0;
             foreach ($translations as $translation) {
                 if (!empty($translation["postId"]) && $translation["postId"] != $postId) {

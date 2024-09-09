@@ -79,7 +79,7 @@ class BaseClient
                 'status' => $httpCode,
                 'data' => null
             ];
-        } else if ($httpCode >= 400) {
+        } else if ($httpCode >= 300) {
             $result = [
                 'success' => false,
                 'error' => json_decode($response, true),
