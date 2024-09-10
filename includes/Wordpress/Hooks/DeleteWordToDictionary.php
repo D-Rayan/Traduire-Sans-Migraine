@@ -69,12 +69,7 @@ class DeleteWordToDictionary {
         ]);
         wp_die();
     }
-
-    public static function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
-    }
 }
+
+$DeleteWordToDictionary = new DeleteWordToDictionary();
+$DeleteWordToDictionary->init();

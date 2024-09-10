@@ -2,8 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Front\Pages\Menu\Bulk\Dictionary;
-use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
@@ -98,28 +96,12 @@ class AddWordToDictionary {
             ], 400);
             wp_die();
         }
-        $Dictionary = new Dictionary();
-        ob_start();
-        $Dictionary->renderRow($langFrom, $entry, $result, $response, $langTo);
-        $updatedRow = ob_get_clean();
-        ob_start();
-        $Dictionary->renderNewRow($langFrom, $langTo);
-        $newRow = ob_get_clean();
         wp_send_json_success([
-            "message" => TextDomain::__("The word has been added"),
-            "title" => "",
-            "logo" => "loutre_docteur_no_shadow.png",
-            "updatedRow" => $updatedRow,
-            "newRow" => $newRow
+            "id" => $response,
         ]);
         wp_die();
     }
-
-    public static function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
-    }
 }
+
+$AddWordToDictionary = new AddWordToDictionary();
+$AddWordToDictionary->init();

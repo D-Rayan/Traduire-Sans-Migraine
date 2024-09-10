@@ -11,6 +11,7 @@ if (!defined("ABSPATH")) {
 class PolylangManager
 {
     private $languagesAllowed;
+    private $glossaries;
     private $languagesPolylang;
     public function __construct()
     {
@@ -226,10 +227,24 @@ class PolylangManager
     }
 
     public function getLanguages() {
+        global $tsm;
+
         try {
             $enabledLanguages = $this->getLanguagesActives();
         } catch (\Exception $e) {
             $enabledLanguages = [];
+        }
+
+        try {
+            $account = $tsm->getClient()->getAccount();
+            if (isset($account["slugs"]["allowed"])) {
+                $languagesEnabledOnTSM = $account["slugs"]["allowed"];
+            } else {
+                $languagesEnabledOnTSM = [];
+            }
+        } catch (\Exception $e) {
+            $languagesEnabledOnTSM = [];
+            $account = null;
         }
 
         $languages = [];
@@ -239,6 +254,20 @@ class PolylangManager
                 continue;
             }
             $slug = strtolower(substr($language["language"], 0, 2));
+            $glossaries = [];
+            foreach ($this->glossaries as $glossary) {
+                if ($glossary["target_lang"] === $slug) {
+                    $glossaries[] = $glossary["source_lang"];
+                }
+            }
+            $options = [];
+            if (isset($account["slugs"]["options"][$slug])) {
+                $options = $account["slugs"]["options"][$slug];
+                if (isset($options["country"])) {
+                    $tmp = explode("-", $options["country"]);
+                    $options["country"] = strtolower($tmp[0]) . "_" . strtoupper($tmp[1]);
+                }
+            }
             $languages[] = [
                 "slug" => $slug,
                 "locale" => $polylangLanguage["locale"],
@@ -247,6 +276,9 @@ class PolylangManager
                 "simple_name" => explode(" ", $language["name"])[0],
                 "supports_formality" => $language["supports_formality"],
                 "flag" => $polylangLanguage["flag"],
+                "glossaries" => $glossaries,
+                "tsmEnabled" => in_array($slug, $languagesEnabledOnTSM),
+                "options" => $options
             ];
         }
         usort($languages, function ($a, $b) {
@@ -287,6 +319,7 @@ class PolylangManager
             global $tsm;
             $response = $tsm->getClient()->getLanguages();
             $this->languagesAllowed = $response["complete"];
+            $this->glossaries = $response["glossaries"];
         }
 
         return $this->languagesAllowed;

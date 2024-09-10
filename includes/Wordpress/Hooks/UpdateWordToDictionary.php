@@ -113,3 +113,6 @@ class UpdateWordToDictionary {
         return $instance;
     }
 }
+
+$UpdateWordToDictionary = new UpdateWordToDictionary();
+$UpdateWordToDictionary->init();

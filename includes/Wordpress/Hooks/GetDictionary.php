@@ -10,7 +10,7 @@ if (!defined("ABSPATH")) {
     exit;
 }
 
-class UpdateLanguageSettings {
+class GetDictionary {
 
     public function __construct()
     {
@@ -20,7 +20,7 @@ class UpdateLanguageSettings {
     }
 
     public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_update_language_settings", [$this, "updateLanguageSettings"]);
+        add_action("wp_ajax_traduire-sans-migraine_get_dictionary", [$this, "getDictionary"]);
     }
 
     public function loadHooks() {
@@ -34,9 +34,9 @@ class UpdateLanguageSettings {
         $this->loadHooks();
     }
 
-    public function updateLanguageSettings() {
+    public function getDictionary() {
         global $tsm;
-        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
+        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
                 "title" => "",
@@ -44,7 +44,7 @@ class UpdateLanguageSettings {
             ], 400);
             wp_die();
         }
-        if (!isset($_POST["slug"])) {
+        if (!isset($_GET["slug"])) {
             wp_send_json_error([
                 "message" => TextDomain::__("The slug is missing"),
                 "title" => "",
@@ -52,21 +52,9 @@ class UpdateLanguageSettings {
             ], 400);
             wp_die();
         }
-        $country = (isset($_POST["country"])) ? strtoupper(str_replace("_", "-", $_POST["country"])) : null;
-        $formality = (isset($_POST["formality"])) ? $_POST["formality"] : null;
-        $response = $tsm->getClient()->updateLanguageSettings($_POST["slug"], $formality, $country);
-        if ($response === false) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The language has not been updated"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
-            wp_die();
-        }
+        $client = $tsm->getClient();
         wp_send_json_success([
-            "message" => TextDomain::__("The language has been updated"),
-            "title" => "",
-            "logo" => "loutre_docteur_no_shadow.png"
+            "dictionary" => $client->loadDictionary($_GET["slug"])
         ]);
         wp_die();
     }
@@ -80,5 +68,5 @@ class UpdateLanguageSettings {
     }
 }
 
-$UpdateLanguageSettings = new UpdateLanguageSettings();
-$UpdateLanguageSettings->init();
+$GetDictionary = new GetDictionary();
+$GetDictionary->init();
