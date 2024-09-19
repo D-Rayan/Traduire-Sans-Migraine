@@ -52,9 +52,10 @@ class UpdateLanguageSettings {
             ], 400);
             wp_die();
         }
+        $slug = $_POST["slug"];
         $country = (isset($_POST["country"])) ? strtoupper(str_replace("_", "-", $_POST["country"])) : null;
         $formality = (isset($_POST["formality"])) ? $_POST["formality"] : null;
-        $response = $tsm->getClient()->updateLanguageSettings($_POST["slug"], $formality, $country);
+        $response = $tsm->getClient()->updateLanguageSettings($slug, $formality, $country);
         if ($response === false) {
             wp_send_json_error([
                 "message" => TextDomain::__("The language has not been updated"),
@@ -62,6 +63,10 @@ class UpdateLanguageSettings {
                 "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
+        }
+        if ($country) {
+            $polylangManager = $tsm->getPolylangManager();
+            $polylangManager->updateLanguage($slug, $country);
         }
         wp_send_json_success([
             "message" => TextDomain::__("The language has been updated"),

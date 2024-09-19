@@ -4,6 +4,7 @@ namespace TraduireSansMigraine\Languages;
 
 use PLL_Admin_Model;
 use TraduireSansMigraine\Wordpress\TextDomain;
+use WP_Error;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -32,6 +33,7 @@ class PolylangManager
                 "name" => $language->name,
                 "flag" => $language->flag,
                 "code" => $language->slug,
+                "term_group" => $language->term_group,
             ];
         }
 
@@ -223,6 +225,33 @@ class PolylangManager
         } catch (\Exception $e) {
         }
         ob_get_clean();
+        return true;
+    }
+
+    public function updateLanguage($slug, $localeDeepL) {
+        $options = get_option( 'polylang' );
+        $model = new PLL_Admin_Model($options);
+        $model->set_languages_ready();
+
+        $languagePolylang = $this->getLanguagePolylangByIncompleteLocale($localeDeepL);
+        if (!$languagePolylang) {
+            return false;
+        }
+        $languages = $this->getLanguagesActives();
+        if (!isset($languages[$slug])) {
+            return false;
+        }
+        $langId = $languages[$slug]["id"];
+        $language_added = $model->update_language( array_merge([
+            "lang_id" => $langId,
+            "slug" => $languagePolylang["code"],
+            "term_group" => $languages[$slug]["term_group"],
+        ], $languagePolylang));
+
+        if ( $language_added instanceof WP_Error ) {
+            return $language_added->get_error_message();
+        }
+
         return true;
     }
 
