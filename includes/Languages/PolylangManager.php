@@ -301,6 +301,7 @@ class PolylangManager
                 "slug" => $slug,
                 "locale" => $polylangLanguage["locale"],
                 "enabled" => isset($enabledLanguages[$slug]),
+                "default" => isset($enabledLanguages[$slug]) ? $enabledLanguages[$slug]["default"] : false,
                 "name" => $language["name"],
                 "simple_name" => explode(" ", $language["name"])[0],
                 "supports_formality" => $language["supports_formality"],
@@ -316,7 +317,7 @@ class PolylangManager
         return $languages;
     }
 
-    private function getLanguagePolylangByIncompleteLocale(string $incompleteLocale) {
+    public function getLanguagePolylangByIncompleteLocale($incompleteLocale){
         $bestMatch = null;
         $incompleteLocaleLower = strtolower($incompleteLocale);
         foreach ($this->languagesPolylang as $language) {

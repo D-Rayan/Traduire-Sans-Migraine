@@ -2,87 +2,32 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
+use TraduireSansMigraine\Wordpress\DAO\DAOQueue;
 use TraduireSansMigraine\Wordpress\Hooks\PrepareTranslation;
 use TraduireSansMigraine\Wordpress\Hooks\StartTranslation;
 
 class Queue {
-    private $queue = [];
-    const QUEUE_OPTION = "traduire_sans_migraine_queue";
-    const QUEUE_OPTION_STATE = "traduire_sans_migraine_queue_state";
-    public function __construct() {
-        $this->loadQueue();
-    }
-
-    private function loadQueue() {
-        $this->queue = get_option(self::QUEUE_OPTION, []);
-    }
-
-    private function saveQueue() {
-        update_option(self::QUEUE_OPTION, $this->queue);
-    }
-    public function getQueue() {
-        return $this->queue;
-    }
-
-    public function add($items) {
-        $validItems = array_filter($items, function ($item) {
-            return isset($item["ID"]);
-        });
-        $allItemsAreCompleted = true;
-        foreach ($this->queue as $item) {
-            $allItemsAreCompleted = $allItemsAreCompleted && $item["processed"];
-        }
-        if ($allItemsAreCompleted) {
-            $this->queue = [];
-        }
-        $this->queue = array_merge($this->queue, $validItems);
-        $this->saveQueue();
-        if ($this->getState() === "idle") {
-            $this->startNextProcess();
-        }
-    }
+    private $nextItem;
+    public function __construct() {}
 
     // item should be in format array with ID
-    public function isFromQueue($postId) {
-        return $this->getFromQueue($postId) !== false;
-    }
-
-    public function getFromQueue($postId) {
-        foreach ($this->queue as $queueItem) {
-            if (isset($queueItem["ID"]) && intval($queueItem["ID"]) === intval($postId)) {
-                return $queueItem;
-            }
-        }
-        return false;
-    }
-
-    public function remove($item) {
-        $this->queue = array_filter($this->queue, function ($queueItem) use ($item) {
-            return $queueItem["ID"] !== $item["ID"];
-        });
-        $this->saveQueue();
-    }
-
-    public function updateItem($item) {
-        $this->queue = array_map(function ($queueItem) use ($item) {
-            if (intval($queueItem["ID"]) !== intval($item["ID"])) {
-                return $queueItem;
-            }
-            return $item;
-        }, $this->queue);
-        $this->saveQueue();
+    public function isFromQueue($postId, $slugTo) {
+        return DAOQueue::getItemByPostId($postId, $slugTo) !== null;
     }
 
     public function getNextItem() {
-        $validQueue = array_filter($this->queue, function ($item) {
-            return isset($item["ID"]) && !isset($item["processed"]);
-        });
-        $firstItem = reset($validQueue);
-        return $firstItem ?: null;
+        if (null === $this->nextItem) {
+            $this->nextItem = DAOQueue::getNextItem();
+        }
+        return $this->nextItem;
     }
 
-    public function stopQueue() {
-        $this->updateState("idle");
+    public function invalidateNextItem() {
+        $this->nextItem = null;
+    }
+
+    public function isAlreadyInQueue($postId, $slugTo) {
+        return DAOQueue::getItemByPostId($postId, $slugTo) !== null;
     }
 
     public function startNextProcess() {
@@ -90,29 +35,33 @@ class Queue {
         if ($this->getState() !== "idle" || null === $nextItem) {
             return false;
         }
-        $this->updateState("processing");
-        // start Translation
-        $result = PrepareTranslation::getInstance()->prepareTranslationExecute($nextItem["ID"], [$nextItem["languageTo"]]);
+        DAOQueue::setItemAsProcessing($nextItem->ID);
+        $result = PrepareTranslation::getInstance()->prepareTranslationExecute($nextItem->ID, [$nextItem->slugTo]);
         if (!$result["success"]) {
-            $nextItem["processed"] = true;
-            $nextItem["data"] = $result["data"];
-            $nextItem["error"] = true;
-            $this->updateItem($nextItem);
-            $this->updateState("idle");
+            if (isset($result["data"]["error"]) && $result["data"]["error"] === "loginRequired") {
+                DAOQueue::setItemAsPause($nextItem->ID, $result["data"]);
+                return false;
+            }
+            DAOQueue::setItemAsError($nextItem->ID, $result["data"]);
+            $this->invalidateNextItem();
             return $this->startNextProcess();
         }
         $post = get_post($nextItem["ID"]);
         $result = StartTranslation::getInstance()->startTranslateExecute($post, $nextItem["languageTo"]);
+
         if (!$result["success"]) {
-            $nextItem["processed"] = true;
-            $nextItem["data"] = $result["data"];
-            $nextItem["error"] = true;
-            $this->updateItem($nextItem);
-            $this->updateState("idle");
+            if (isset($result["data"]["reachedMaxQuota"]) || (isset($result["data"]["error"]) && $result["data"]["error"] === "loginRequired")) {
+                DAOQueue::setItemAsPause($nextItem->ID, $result["data"]);
+            } else if (isset($result["data"]["reachedMaxLanguages"])) {
+                DAOQueue::setItemAsError($nextItem->ID, $result["data"]);
+            } else {
+                DAOQueue::setItemAsError($nextItem->ID, $result["data"]);
+            }
+            $this->invalidateNextItem();
             return $this->startNextProcess();
         }
-        $nextItem["data"] = $result["data"];
-        $this->updateItem($nextItem);
+        DAOQueue::setItemAsDone($nextItem->ID, $result["data"]);
+        $this->invalidateNextItem();
         return true;
     }
 
@@ -124,16 +73,15 @@ class Queue {
         return $instance;
     }
 
-    public function deleteQueue() {
-        delete_option(self::QUEUE_OPTION);
-        $this->updateState("idle");
-    }
-
-    private function updateState($state) {
-        update_option(self::QUEUE_OPTION_STATE, $state);
-    }
-
     public function getState() {
-        return get_option(self::QUEUE_OPTION_STATE, "idle");
+        $nextItem = $this->getNextItem();
+        if (null === $nextItem) {
+            return DAOQueue::$STATE["PENDING"];
+        }
+        return $nextItem->state;
+    }
+
+    public function addToQueue($postId, $languageTo) {
+        return DAOQueue::addToQueue($postId, $languageTo, DAOQueue::$ORIGINS["QUEUE"]);
     }
 }

@@ -66,14 +66,7 @@ class PrepareTranslation {
 
         $result = $tsm->getClient()->checkCredential();
         if (!$result) {
-            return [
-                "success" => false,
-                "data" => [
-                    "title" => TextDomain::__("An error occurred"),
-                    "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
-                    "logo" => "loutre_triste.png"
-                ]
-            ];
+            return seoSansMigraine_returnLoginError();
         }
         $originalTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
         $translations = [];
@@ -106,9 +99,8 @@ class PrepareTranslation {
         $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
         $updatedTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
         $errorCreationTranslations = false;
-        $data = ["wpNonce" => []];
+        $data = [];
         foreach ($languages as $slug) {
-            $data["wpNonce"][$slug] = wp_create_nonce("traduire-sans-migraine_editor_start_translate_" . $slug);
             if (isset($updatedTranslations[$slug]["postId"]) && !empty(isset($updatedTranslations[$slug]["postId"]))) {
                 continue;
             }
@@ -119,11 +111,7 @@ class PrepareTranslation {
         if ($errorCreationTranslations) {
             return [
                 "success" => false,
-                "data" => [
-                    "title" => TextDomain::__("An error occurred"),
-                    "message" => TextDomain::__("We could not create all the translations. Please try again."),
-                    "logo" => "loutre_triste.png"
-                ]
+                "data" => "An error occurred while preparing the translations. Please try again."
             ];
         }
         return ["success" => true, "data" => $data];

@@ -241,14 +241,7 @@ class StartTranslation
         
         $result = $tsm->getClient()->checkCredential();
         if (!$result) {
-            return [
-                "success" => false,
-                "data" => [
-                    "title" => TextDomain::__("An error occurred"),
-                    "message" => TextDomain::__("We could not authenticate you. Please check the plugin settings."),
-                    "logo" => "loutre_triste.png"
-                ]
-            ];
+            return seoSansMigraine_returnLoginError();
         }
         $codeFrom = $tsm->getPolylangManager()->getLanguageForPost($post->ID);
         $this->prepareDataToTranslate($post, $codeTo);
@@ -257,60 +250,25 @@ class StartTranslation
             "translateAssets" => $this->settings->settingIsEnabled("translateAssets")
         ]);
         if ($result["success"]) {
-            $tokenId = $result["data"]["tokenId"];
-            update_option("_seo_sans_migraine_state_" . $tokenId, [
-                "percentage" => 50,
-                "status" => Step::$STEP_STATE["PROGRESS"],
-                "message" => [
-                    "id" => TextDomain::_f("The otters are translating your post 🦦"),
-                    "args" => []
-                ]
-            ]);
-            update_option("_seo_sans_migraine_postId_" . $tokenId, $post->ID);
             if (isset($result["data"]["backgroundProcess"])) {
-                update_option("_seo_sans_migraine_backgroundProcess", $result["data"]["backgroundProcess"]);
+                update_option("_seo_sans_migraine_backgroundProcess", $result["data"]["backgroundProcess"], false);
             }
         } else if (!empty($result) && isset($result["error"]) && $result["error"]["code"] === "U004403-001") {
             $result["data"] = [
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("You have reached your monthly quota."),
-                "logo" => "loutre_triste.png",
-                "buttons" => [
-                    [
-                        "label" => TextDomain::__("Get more credits"),
-                        "type" => "primary",
-                        "url" => TSM__CLIENT_LOGIN_DOMAIN . "?key=" . $this->settings->getToken()
-                    ]
-                ],
-                "semi-persist" => true
+                "reachedMaxQuota" => true,
             ];
         } else if (!empty($result) && isset($result["error"]) && ($result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003")) {
             $result["data"] = [
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("You have reached your languages quota."),
-                "logo" => "loutre_triste.png",
-                "buttons" => [
-                    [
-                        "label" => TextDomain::__("Check my account"),
-                        "type" => "primary",
-                        "url" => TSM__CLIENT_LOGIN_DOMAIN . "?key=" . $this->settings->getToken()
-                    ]
-                ],
-                "persist" => true
+                "reachedMaxLanguages" => true,
             ];
         } else if (!empty($result) && isset($result["error"])) {
             $result["data"] = [
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("It's a bit weird, but we could not translate your post. Please try again."),
-                "logo" => "loutre_triste.png",
-                "persist" => false,
                 "error" => $result["error"]
             ];
         }
         return [
             "success" => $result["success"],
-            "data" => $result["data"],
-            "debug" => $result
+            "data" => $result["data"]
         ];
     }
 

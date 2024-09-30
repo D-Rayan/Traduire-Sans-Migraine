@@ -16,9 +16,11 @@ namespace TraduireSansMigraine;
 
 use TraduireSansMigraine\Front\EditorPage;
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Wordpress\DAO\DAOQueue;
 use TraduireSansMigraine\Wordpress\Hooks\Hooks;
 use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\OfflineProcess;
+use TraduireSansMigraine\Wordpress\Queue;
 use TraduireSansMigraine\Wordpress\Requirements;
 use TraduireSansMigraine\Wordpress\RestAPI\RestAPI;
 use TraduireSansMigraine\Wordpress\TextDomain;
@@ -59,6 +61,7 @@ class TraduireSansMigraine {
 
     public function init() {
         $this->handleJSON();
+        DAOQueue::init();
         Updater::init();
         TextDomain::init();
         register_activation_hook(__FILE__, [$this, "setPluginAsEnabled"]);
