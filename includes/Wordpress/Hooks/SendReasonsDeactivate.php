@@ -2,11 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\PolylangManager;
-use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\LinkManager;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -69,12 +64,7 @@ class SendReasonsDeactivate {
         ]);
         wp_die();
     }
-
-    public static function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
-    }
 }
+
+$SendReasonsDeactivate = new SendReasonsDeactivate();
+$SendReasonsDeactivate->init();

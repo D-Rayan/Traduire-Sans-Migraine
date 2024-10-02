@@ -16,7 +16,11 @@ class PolylangManager
     private $languagesPolylang;
     public function __construct()
     {
-        $this->languagesPolylang = include POLYLANG_DIR . '/settings/languages.php';
+        if (defined("POLYLANG_DIR")) {
+            $this->languagesPolylang = include POLYLANG_DIR . '/settings/languages.php';
+        } else {
+            $this->languagesPolylang = [];
+        }
     }
     public function getLanguagesActives(): array
     {

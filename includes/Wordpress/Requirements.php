@@ -2,9 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
-use TraduireSansMigraine\Front\Components\Alert;
-use TraduireSansMigraine\Front\Components\Button;
-
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -19,38 +16,17 @@ class Requirements
         if (!$this->havePolylang()) {
             if ($this->activatePolylangIfAvailable()) {
                 add_action('admin_notices', function () {
-                    Alert::render(
-                        TextDomain::__("Missing required plugin"),
-                        TextDomain::__("Polylang is a dependence for %s so it has been activate automatically", TSM__NAME),
-                        "success"
-                    );
+                    render_seoSansMigraine_alert("Missing required plugin", "Polylang is a dependence for Seo Sans Migraine so it has been activate automatically", "info");
                 });
                 return false;
             }
-            add_action('admin_notices', function () {
-                Alert::render(
-                    TextDomain::__("Missing required plugin"),
-                    TextDomain::__("%s required Polylang to be installed and active", TSM__NAME)
-                    . " " . Button::getHTML(
-                        "Install",
-                        "primary",
-                        "install-required-plugins", [
-                        "wpNonce" => wp_create_nonce("traduire-sans-migraine_install_required_plugin"),
-                    ]),
-                    "error"
-                );
-            });
-            add_action("wp_ajax_traduire-sans-migraine_install_required_plugin", [$this, "installRequiredPlugins"]);
-            return false;
+            $this->installRequiredPlugins();
         }
         return true;
     }
 
     public function installRequiredPlugins() {
         if (!current_user_can('install_plugins')) {
-            wp_die();
-        }
-        if (!isset($_POST["wp_nonce"])  || !wp_verify_nonce($_POST["wp_nonce"], "traduire-sans-migraine_install_required_plugin")) {
             wp_die();
         }
         include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
@@ -71,7 +47,7 @@ class Requirements
     }
 
     public function noticePhp() {
-        Alert::render(TextDomain::__("PHP version is too low"), TextDomain::__("%s required at least PHP %s", TSM__NAME, TSM__PHP_REQUIREMENT), "error");
+        render_seoSansMigraine_alert("PHP version is too low", sprintf("%s required at least PHP %s", TSM__NAME, TSM__PHP_REQUIREMENT), "error");
     }
 
     public function activatePolylangIfAvailable() {
