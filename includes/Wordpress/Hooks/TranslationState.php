@@ -6,6 +6,7 @@ use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
+use TraduireSansMigraine\Wordpress\Action;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -38,11 +39,7 @@ class TranslationState {
 
     public function getTranslateState() {
         if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
         if (!isset($_GET["tokenId"])) {
@@ -54,31 +51,12 @@ class TranslationState {
             wp_die();
         }
         $tokenId = $_GET["tokenId"];
-        $state = get_option("_seo_sans_migraine_state_" . $tokenId, [
-            "percentage" => 25,
-            "status" => Step::$STEP_STATE["PROGRESS"],
-            "message" => [
-                "id" => TextDomain::_f("We will create and translate your post 💡"),
-                "args" => []
-            ]
-        ]);
-        if (!$state) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the state of the translation"),
-                "logo" => "loutre_triste.png"
-            ], 400);
+        $action = Action::loadByToken($tokenId);
+        if (!$action) {
+            wp_send_json_error([], 400);
             wp_die();
         }
-        if (isset($state["status"]) && $state["status"] === Step::$STEP_STATE["DONE"]) {
-            delete_option("_seo_sans_migraine_state_" . $tokenId);
-            delete_option("_seo_sans_migraine_postId_" . $tokenId);
-        }
-        if (isset($state["message"])) {
-            $state["html"] = TextDomain::__($state["message"]["id"], ...$state["message"]["args"]);
-        }
-        $state["wpNonce"] = wp_create_nonce("traduire-sans-migraine_editor_get_state_translate");
-        echo json_encode(["success" => true, "data" => $state]);
+        echo json_encode(["success" => true, "data" => $action]);
         wp_die();
     }
     public static function getInstance() {

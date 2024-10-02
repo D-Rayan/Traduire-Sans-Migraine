@@ -2,12 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
-use TraduireSansMigraine\Front\Pages\Menu\Bulk\Bulk;
-use TraduireSansMigraine\Front\Pages\Menu\Products\Products;
-use TraduireSansMigraine\Front\Pages\Menu\Settings\Settings;
-use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Wordpress\Hooks\RestAPI;
 
 class OfflineProcess {
 
@@ -40,7 +35,7 @@ class OfflineProcess {
         $key = "_seo_sans_migraine_backgroundProcess";
         $instance = self::getInstance();
         if (get_option($key) === "offline") {
-            add_action("admin_init", [$instance, "addBackgroundProcess"]);
+            add_action(wp_doing_ajax() ? "fetchTranslationsBackground" : "admin_init", [$instance, "addBackgroundProcess"]);
         }
     }
 }

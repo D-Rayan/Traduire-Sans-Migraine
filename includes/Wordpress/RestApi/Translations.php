@@ -2,7 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\RestAPI;
 
-use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\TranslateHelper;
 
 if (!defined("ABSPATH")) {
@@ -18,7 +17,7 @@ class Translations
 
     public function setTranslations($data) {
         global $tsm;
-        set_time_limit(0); // Can be a long process cause of the lock system
+        set_time_limit(0);
         if (!isset($data["id"]) || !isset($data["dataToTranslate"]) || !isset($data["codeTo"]) || !isset($data["domainKey"])) {
             return new \WP_REST_Response(["success" => false, "error" => "Missing parameters"], 400);
         }
@@ -31,7 +30,7 @@ class Translations
         if ($TranslateHelper->isSuccess()) {
             $response = new \WP_REST_Response($data, 200);
         } else {
-            $response = new \WP_REST_Response(["success" => false, "error" => $TranslateHelper->getError()], 500);
+            $response = new \WP_REST_Response(["success" => false, "error" => $TranslateHelper->getResponse()], 500);
         }
         return $response;
     }

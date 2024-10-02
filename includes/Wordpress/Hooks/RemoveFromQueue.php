@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\DAO\DAOQueue;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -34,28 +34,20 @@ class RemoveFromQueue {
 
     public function removeFromQueue() {
         if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
+            wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
+            wp_die();
+        }
+        if (!isset($_GET["actionId"]) || !is_numeric($_GET["actionId"])) {
             wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
+                "message" => TextDomain::__("The item id is not valid")
             ], 400);
             wp_die();
         }
-        if (!isset($_GET["itemId"]) || !is_numeric($_GET["itemId"])) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The item id is not valid"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
-            wp_die();
-        }
-        $itemId = $_GET["itemId"];
-        $rowsDeleted = DAOQueue::removeItem($itemId);
+        $actionId = $_GET["actionId"];
+        $rowsDeleted = DAOActions::removeAction($actionId);
         if ($rowsDeleted !== 1) {
             wp_send_json_error([
                 "message" => TextDomain::__("The item was not removed"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
         }

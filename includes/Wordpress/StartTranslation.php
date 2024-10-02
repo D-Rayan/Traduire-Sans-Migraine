@@ -1,12 +1,8 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress;
 
-use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\PolylangManager;
-use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -22,68 +18,6 @@ class StartTranslation
     {
         $this->settings = new Settings();
         $this->dataToTranslate = [];
-    }
-
-    public function loadHooksClient()
-    {
-        // nothing to load
-    }
-
-    public function loadHooksAdmin()
-    {
-        add_action("wp_ajax_traduire-sans-migraine_editor_start_translate", [$this, "startTranslate"]);
-    }
-
-    public function loadHooks()
-    {
-        if (is_admin()) {
-            $this->loadHooksAdmin();
-        } else {
-            $this->loadHooksClient();
-        }
-    }
-
-    public function init()
-    {
-        $this->loadHooks();
-    }
-
-    public function startTranslate()
-    {
-        if (!isset($_GET["post_id"]) || !isset($_GET["language"])) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the post or the language asked. Please try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
-            wp_die();
-        }
-        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine_editor_start_translate_" . $_GET["language"])) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
-            wp_die();
-        }
-        $postId = $_GET["post_id"];
-        $codeTo = $_GET["language"];
-        $post = get_post($postId);
-        if (!$post) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the post. Please try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
-            wp_die();
-        }
-        $result = $this->startTranslateExecute($post, $codeTo);
-        if ($result["success"]) {
-            $result["data"]["wpNonce"] = wp_create_nonce("traduire-sans-migraine_editor_get_state_translate");
-            wp_send_json_success($result["data"]);
-        } else {
-            wp_send_json_error($result, 400);
-        }
     }
 
     private function handleYoast($postMetas, $willBeAnUpdate)
@@ -256,6 +190,7 @@ class StartTranslation
         } else if (!empty($result) && isset($result["error"]) && $result["error"]["code"] === "U004403-001") {
             $result["data"] = [
                 "reachedMaxQuota" => true,
+                "estimatedQuota" => intval(explode(": ", $result["error"]["message"])[1])
             ];
         } else if (!empty($result) && isset($result["error"]) && ($result["error"]["code"] === "U004403-002" || $result["error"]["code"] === "U004403-003")) {
             $result["data"] = [

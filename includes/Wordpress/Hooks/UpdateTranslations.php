@@ -3,10 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\PolylangManager;
-use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\LinkManager;
+use TraduireSansMigraine\Wordpress\StartTranslation;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {

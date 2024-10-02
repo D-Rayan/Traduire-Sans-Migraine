@@ -2,70 +2,114 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
-use TraduireSansMigraine\Wordpress\DAO\DAOQueue;
-use TraduireSansMigraine\Wordpress\Hooks\PrepareTranslation;
-use TraduireSansMigraine\Wordpress\Hooks\StartTranslation;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 
 class Queue {
-    private $nextItem;
+    private $nextAction;
     public function __construct() {}
 
-    // item should be in format array with ID
-    public function isFromQueue($postId, $slugTo) {
-        return DAOQueue::getItemByPostId($postId, $slugTo) !== null;
-    }
-
-    public function getNextItem() {
-        if (null === $this->nextItem) {
-            $this->nextItem = DAOQueue::getNextItem();
+    private function getNextAction() {
+        if (!$this->nextAction) {
+            $data = DAOActions::getNextOrCurrentAction();
+            if (!$data) {
+                return null;
+            }
+            $this->nextAction = new Action($data);
         }
-        return $this->nextItem;
-    }
-
-    public function invalidateNextItem() {
-        $this->nextItem = null;
-    }
-
-    public function isAlreadyInQueue($postId, $slugTo) {
-        return DAOQueue::getItemByPostId($postId, $slugTo) !== null;
+        return $this->nextAction;
     }
 
     public function startNextProcess() {
-        $nextItem = $this->getNextItem();
-        if ($this->getState() !== "idle" || null === $nextItem) {
-            return false;
+        $nextAction = $this->getNextAction();
+        if ($this->getState() === DAOActions::$STATE["PAUSE"]) {
+            $this->checkIfPauseResolved();
+            return;
         }
-        DAOQueue::setItemAsProcessing($nextItem->ID);
-        $result = PrepareTranslation::getInstance()->prepareTranslationExecute($nextItem->ID, [$nextItem->slugTo]);
-        if (!$result["success"]) {
-            if (isset($result["data"]["error"]) && $result["data"]["error"] === "loginRequired") {
-                DAOQueue::setItemAsPause($nextItem->ID, $result["data"]);
-                return false;
+        if ($this->getState() !== DAOActions::$STATE["PENDING"]) {
+            if (!empty($nextAction->getLock()) && strtotime($nextAction->getUpdatedAt()) < strtotime("-15 seconds")) {
+                $nextAction->releaseLock()->setAsPending()->save();
+                $this->startNextProcess();
             }
-            DAOQueue::setItemAsError($nextItem->ID, $result["data"]);
-            $this->invalidateNextItem();
-            return $this->startNextProcess();
+            return;
         }
-        $post = get_post($nextItem["ID"]);
-        $result = StartTranslation::getInstance()->startTranslateExecute($post, $nextItem["languageTo"]);
-
-        if (!$result["success"]) {
-            if (isset($result["data"]["reachedMaxQuota"]) || (isset($result["data"]["error"]) && $result["data"]["error"] === "loginRequired")) {
-                DAOQueue::setItemAsPause($nextItem->ID, $result["data"]);
-            } else if (isset($result["data"]["reachedMaxLanguages"])) {
-                DAOQueue::setItemAsError($nextItem->ID, $result["data"]);
-            } else {
-                DAOQueue::setItemAsError($nextItem->ID, $result["data"]);
-            }
-            $this->invalidateNextItem();
-            return $this->startNextProcess();
+        if ($nextAction === null) {
+            return;
         }
-        DAOQueue::setItemAsDone($nextItem->ID, $result["data"]);
-        $this->invalidateNextItem();
-        return true;
+        $nextAction->execute();
     }
 
-    public static function getInstance() {
+    public function getActionsEnriched() {
+        $queue = DAOActions::getActionsForQueue();
+        foreach ($queue as $key => $item) {
+            $translationMap = !empty($item["translationMap"]) ? unserialize($item["translationMap"]) : [];
+            $slug = $item["slugTo"];
+            $translationId = isset($translationMap[$slug]) ? $translationMap[$slug] : null;
+            $translation = $translationId ? get_post($translationId) : null;
+            $isTranslated = !empty($translation);
+            $translationIsUpdated = $translation && $translation->post_modified > $item["post_modified"];
+            $translationMap[$slug] = [
+                "translation" => $isTranslated ? [
+                    "ID" => $translation->ID,
+                    "title" => $translation->post_title,
+                ] : null,
+                "translationIsUpdated" => $translationIsUpdated,
+            ];
+            $queue[$key]["post"] = [
+                "ID" => $item["postId"],
+                "post_title" => $item["post_title"],
+                "post_author" => $item["post_author"],
+                "post_status" => $item["post_status"],
+                "translationMap" => $translationMap,
+            ];
+            $queue[$key]["response"] = empty($item["response"]) ? [] : json_decode($item["response"], true);
+            unset($queue[$key]["postId"]);
+            unset($queue[$key]["post_title"]);
+            unset($queue[$key]["post_author"]);
+            unset($queue[$key]["post_status"]);
+            unset($queue[$key]["translationMap"]);
+        }
+        return $queue;
+    }
+
+    public function isQueueDone() {
+        $nextAction = $this->getNextAction();
+        return $nextAction === null;
+    }
+    public function setAsArchived() {
+        DAOActions::setAsArchivedAllDoneActions();
+    }
+
+    public function checkIfPauseResolved() {
+        global $tsm;
+        $nextAction = $this->getNextAction();
+        if ($nextAction === null) {
+            return;
+        }
+        if ($nextAction->getState() !== DAOActions::$STATE["PAUSE"]) {
+            return;
+        }
+        if ($nextAction->isLoginRequired() && $tsm->getClient()->checkCredential()) {
+            $nextAction->setResponse([])->setAsPending()->save();
+        }
+        if ($nextAction->isLanguagesIssue() && $tsm->getClient()->fetchAccount()) {
+            $account = $tsm->getClient()->getAccount();
+            $maxSlugs = $account["slugs"]["max"];
+            $currentSlugs = $account["slugs"]["current"];
+            $allowedSlugs = $account["slugs"]["allowed"];
+            if ($maxSlugs > $currentSlugs || in_array($nextAction->getSlugTo(), $allowedSlugs)) {
+                $nextAction->setResponse([])->setAsPending()->save();
+            }
+        }
+        if ($nextAction->isQuotaIssue() && $tsm->getClient()->fetchAccount()) {
+            $account = $tsm->getClient()->getAccount();
+            $quotaLeft = $account["quota"]["max"] == -1 || $account["quota"]["bonus"] == -1 ? PHP_INT_MAX : $account["quota"]["max"] + $account["quota"]["bonus"] - $account["quota"]["current"];
+            if ($quotaLeft >= $nextAction->getEstimatedQuota()) {
+                $nextAction->setResponse([])->setAsPending()->save();
+            }
+        }
+    }
+
+    public static function getInstance(): Queue {
         static $instance = null;
         if (null === $instance) {
             $instance = new static();
@@ -73,15 +117,16 @@ class Queue {
         return $instance;
     }
 
-    public function getState() {
-        $nextItem = $this->getNextItem();
-        if (null === $nextItem) {
-            return DAOQueue::$STATE["PENDING"];
+    private function getState() {
+        $nextAction = $this->getNextAction();
+        if (null === $nextAction) {
+            return DAOActions::$STATE["PENDING"];
         }
-        return $nextItem->state;
+        return $nextAction->getState();
     }
 
-    public function addToQueue($postId, $languageTo) {
-        return DAOQueue::addToQueue($postId, $languageTo, DAOQueue::$ORIGINS["QUEUE"]);
+    public static function init() {
+        $instance = self::getInstance();
+        add_action(wp_doing_ajax() ? "startNextProcess" : "admin_init", [$instance, "startNextProcess"]);
     }
 }

@@ -2,7 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\Queue;
+use TraduireSansMigraine\Wordpress\Action;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -37,24 +38,18 @@ class AddToQueue {
         if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error([
                 "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
         }
         if (!isset($_POST["postId"]) || !is_numeric($_POST["postId"])) {
             wp_send_json_error([
                 "message" => TextDomain::__("The post id is not valid"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
         }
         if (!isset($_POST["languageTo"]) || !is_string($_POST["languageTo"])) {
             wp_send_json_error([
                 "message" => TextDomain::__("The language to is not valid"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
         }
@@ -64,26 +59,24 @@ class AddToQueue {
         if ($languageFrom === $languageTo) {
             wp_send_json_error([
                 "message" => TextDomain::__("The post is already in the target language"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
         }
-        $queue = Queue::getInstance();
-        if ($queue->isAlreadyInQueue($postId, $languageTo)) {
+        $existingAction = Action::loadByPostId($postId, $languageTo);
+        if ($existingAction && $existingAction->willBeProcessing()) {
             wp_send_json_error([
                 "message" => TextDomain::__("The post is already in the queue"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
             ], 400);
             wp_die();
         }
-        $queueId = $queue->addToQueue($postId, $languageTo);
-        if ($queue->getState() === "idle") {
-            // $queue->startNextProcess();
-        }
+        $action = new Action([
+            "postId" => $postId,
+            "slugTo" => $languageTo,
+            "origin" => DAOActions::$ORIGINS["QUEUE"]
+        ]);
+        $action->save();
         wp_send_json_success([
-            "ID" => $queueId
+            "ID" => $action->getID()
         ]);
         wp_die();
     }

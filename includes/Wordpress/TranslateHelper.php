@@ -3,8 +3,8 @@
 namespace TraduireSansMigraine\Wordpress;
 
 
-use TraduireSansMigraine\Front\Components\Step;
 use TraduireSansMigraine\Languages\PolylangManager;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -12,42 +12,38 @@ if (!defined("ABSPATH")) {
 
 class TranslateHelper
 {
-    private $tokenId;
     private $dataToTranslate;
     private $codeTo;
     private $codeFrom;
     private $originalPost;
     private $translatedPostId;
-
-
-    private $error;
-    private $success;
-
     private $polylangManager;
     private $linkManager;
 
     private $postMetas;
 
+    private $action;
+
     public function __construct($tokenId, $translationData, $codeTo)
     {
-        $this->tokenId = $tokenId;
         $this->dataToTranslate = $translationData;
         $this->codeTo = $codeTo;
         $this->polylangManager = new PolylangManager();
         $this->linkManager = new LinkManager();
-        $this->success = true;
+        $this->action = Action::loadByToken($tokenId);
     }
 
     public function handleTranslationResult()
     {
         $this->checkRequirements();
-        if (!$this->success) {
+        if ($this->action->getState() !== DAOActions::$STATE["PROCESSING"]) {
             return;
         }
         $this->startTranslate();
     }
 
-    private function handleDefaultMetaPosts() {
+    private function handleDefaultMetaPosts()
+    {
         foreach ($this->postMetas as $key => $value) {
             $valueKey = $value[0];
             if ($this->is_json($valueKey)) {
@@ -60,7 +56,8 @@ class TranslateHelper
         }
     }
 
-    private function replaceValue($value) {
+    private function replaceValue($value)
+    {
         if (is_array($value)) {
             foreach ($value as $key => $val) {
                 $value[$key] = $this->replaceValue($val);
@@ -88,35 +85,10 @@ class TranslateHelper
             }
             $this->dataToTranslate["categories"] = $this->polylangManager->getTranslationCategories($this->originalPost->post_category, $this->codeTo);
             $this->translatedPostId = $this->polylangManager->getTranslationPost($this->originalPost->ID, $this->codeTo);
-            if (!$this->translatedPostId) {
-                update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                    "percentage" => 100,
-                    "status" => Step::$STEP_STATE["ERROR"],
-                    "message" => [
-                        "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
-                        "args" => []
-                    ]
-                ]);
-                $this->success = false;
-                return;
-            }
-            $translatedPost = get_post($this->translatedPostId);
-            if (!$translatedPost) {
-                update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                    "percentage" => 100,
-                    "status" => Step::$STEP_STATE["ERROR"],
-                    "message" => [
-                        "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
-                        "args" => []
-                    ]
-                ]);
-                $this->success = false;
-                return;
-            }
             $this->postMetas = get_post_meta($this->originalPost->ID);
-
-            if (strstr($translatedPost->post_name, "-traduire-sans-migraine")) {
-                $this->updateTemporaryPostToRealOne();
+            $translatedPost = $this->translatedPostId ? get_post($this->translatedPostId) : null;
+            if (!$translatedPost) {
+                $this->createPost();
             } else {
                 $this->updatePost();
             }
@@ -126,42 +98,19 @@ class TranslateHelper
             $this->handleSEOPress();
             $this->handleElementor();
             $this->handleACF();
-            $urlPost = get_admin_url(null, "post.php?post=" . $this->translatedPostId . "&action=edit");
-            $htmlPost = "<a href='" . $urlPost . "' target='_blank'>" . $urlPost . "</a>";
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["DONE"],
-                "message" => [
-                    "id" => TextDomain::_f("The otters have finished the translation 🦦, Check it right here %s"),
-                    "args" => [$htmlPost]
-                ]
-            ]);
-            $this->success = true;
-            $Queue = Queue::getInstance();
-            $nextItem = $Queue->getNextItem();
-            if (!empty($nextItem) && intval($nextItem["ID"]) === intval($this->originalPost->ID)) {
-                $Queue->stopQueue();
-                $nextItem["processed"] = true;
-                $Queue->updateItem($nextItem);
-                $Queue->startNextProcess();
+            if ($this->action->isFromQueue()) {
+                $this->action->setAsDone();
+            } else {
+                $this->action->setAsArchived();
             }
+            $this->action->save();
         } catch (\Exception $e) {
-            $Queue = Queue::getInstance();
-            $nextItem = $Queue->getNextItem();
-            if (intval($nextItem["ID"]) === intval($this->originalPost->ID)) {
-                $Queue->stopQueue();
-                $nextItem["processed"] = true;
-                $nextItem["data"] = ["message" => $e->getMessage(), "title" => "error", "logo" => "loutre_triste.png"];
-                $nextItem["error"] = true;
-                $Queue->updateItem($nextItem);
-                $Queue->startNextProcess();
-            }
-            $this->success = false;
-            $this->error = $e->getMessage();
+            $this->action->setAsError()->setResponse(["error" => $e->getMessage()])->save();
         }
     }
 
-    private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated) {
+    private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated)
+    {
         $category = get_term($originalCategoryId, "category");
         $categoryTranslated = wp_insert_term($categoryNameTranslated, "category", [
             "slug" => sanitize_title($categoryNameTranslated),
@@ -180,63 +129,24 @@ class TranslateHelper
 
     private function checkRequirements()
     {
+        if (!$this->action) {
+            return;
+        }
         if ($this->dataToTranslate === false) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "message" => [
-                    "id" => TextDomain::_f("Oops! The otters have lost the translation in the river. Please try again 🦦"),
-                    "args" => []
-                ]
-            ]);
-            $this->success = false;
-            $this->error = "Data to translate not found";
+            $this->action->setAsError()->setResponse(["error" => "Data to translate not found"])->save();
             return;
         }
-        $postId = get_option("_seo_sans_migraine_postId_" . $this->tokenId);
-        update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-            "percentage" => 75,
-            "status" => Step::$STEP_STATE["PROGRESS"],
-            "message" => [
-                "id" => TextDomain::_f("The otters works on your SEO optimization 🦦"),
-                "args" => []
-            ]
-        ]);
-        if (!$postId) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "message" => [
-                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
-                    "args" => []
-                ]
-            ]);
-            delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
-
-            $this->success = false;
-            $this->error = "Post not found";
-            return;
-        }
-        $this->originalPost = get_post($postId);
+        $this->originalPost = get_post($this->action->getPostId());
         if (!$this->originalPost) {
-            update_option("_seo_sans_migraine_state_" . $this->tokenId, [
-                "percentage" => 100,
-                "status" => Step::$STEP_STATE["ERROR"],
-                "message" => [
-                    "id" => TextDomain::_f("Oops! The otters have lost the post in the river. Please try again 🦦"),
-                    "args" => []
-                ]
-            ]);
-            delete_option("_seo_sans_migraine_postId_" . $this->tokenId);
-            $this->success = false;
-            $this->error = "Post not found";
+            $this->action->setAsError()->setResponse(["error" => "Post not found"])->save();
             return;
         }
+        $this->action->setResponse(["percentage" => 75])->save();
     }
 
 
-
-    private function updateTemporaryPostToRealOne() {
+    private function updateTemporaryPostToRealOne()
+    {
         global $wpdb;
         if (!isset($this->dataToTranslate["slug"])) {
             $this->dataToTranslate["slug"] = $this->originalPost->post_name . "-traduire-sans-migraine-" . $this->codeTo;
@@ -279,7 +189,44 @@ class TranslateHelper
         update_post_meta($this->translatedPostId, '_tsm_first_visit_after_translation', "true");
     }
 
-    private function updatePost() {
+    private function createPost() {
+        global $tsm, $wpdb;
+        $originalTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($this->originalPost->ID);
+        $translations = [];
+
+        foreach ($originalTranslations as $slug => $translation) {
+            if ($translation["postId"]) {
+                $translations[$slug] = $translation["postId"];
+            }
+        }
+
+        $postName = isset($this->dataToTranslate["slug"]) ? $this->dataToTranslate["slug"] : $this->originalPost->post_name . "-" . $this->codeTo;
+        $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $postName);
+        $exists = $wpdb->get_var($query);
+        if (!empty($exists)) {
+            $postName .= "-" . time();
+        }
+
+        $postData = [
+            'ID' => $this->translatedPostId,
+            'post_name' => $postName,
+            'post_status' => "draft",
+            'post_type' => $this->originalPost->post_type,
+            'post_author' => $this->originalPost->post_author,
+            'post_title' => isset($this->dataToTranslate["title"]) ? $this->dataToTranslate["title"] : $this->originalPost->post_title,
+            'post_content' => isset($this->dataToTranslate["content"]) ? $this->dataToTranslate["content"] : $this->originalPost->post_content,
+        ];
+        if (isset($this->dataToTranslate["categories"])) {
+            $postData['post_category'] = $this->dataToTranslate["categories"];
+        }
+        if (isset($this->dataToTranslate["excerpt"])) {
+            $postData["post_excerpt"] = $this->dataToTranslate["excerpt"];
+        }
+        $translations[$this->action->getSlugTo()] = wp_insert_post($postData, true);
+        $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
+    }
+    private function updatePost()
+    {
         $updatePostData = [
             'ID' => $this->translatedPostId,
             'post_category' => $this->dataToTranslate["categories"]
@@ -299,7 +246,8 @@ class TranslateHelper
         wp_update_post($updatePostData);
     }
 
-    private function handleYoast() {
+    private function handleYoast()
+    {
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             if (isset($this->dataToTranslate["metaTitle"])) {
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
@@ -316,7 +264,8 @@ class TranslateHelper
         }
     }
 
-    private function handleACF() {
+    private function handleACF()
+    {
         if (is_plugin_active("advanced-custom-fields/acf.php")) {
             foreach ($this->dataToTranslate as $key => $value) {
                 if (strstr($key, "acf_")) {
@@ -337,7 +286,8 @@ class TranslateHelper
         }
     }
 
-    private function handleRankMath() {
+    private function handleRankMath()
+    {
         if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             if (isset($this->dataToTranslate["rankMathDescription"])) {
                 update_post_meta($this->translatedPostId, "rank_math_description", $this->dataToTranslate["rankMathDescription"]);
@@ -351,7 +301,8 @@ class TranslateHelper
         }
     }
 
-    private function handleSEOPress() {
+    private function handleSEOPress()
+    {
         if (is_plugin_active("wp-seopress/seopress.php")) {
             if (isset($this->dataToTranslate["seopress_titles_desc"])) {
                 update_post_meta($this->translatedPostId, "seopress_titles_desc", $this->dataToTranslate["seopress_titles_desc"]);
@@ -365,16 +316,19 @@ class TranslateHelper
         }
     }
 
-    private function is_json($string) {
+    private function is_json($string)
+    {
         json_decode($string);
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
-    private function is_serialized($string) {
+    private function is_serialized($string)
+    {
         return ($string == serialize(false) || @unserialize($string) !== false);
     }
 
-    private function handleElementor() {
+    private function handleElementor()
+    {
         if (is_plugin_active("elementor/elementor.php")) {
             foreach ($this->postMetas as $key => $value) {
                 if (strstr($key, "elementor")) {
@@ -392,7 +346,8 @@ class TranslateHelper
         }
     }
 
-    private function handleAssetsTranslations() {
+    private function handleAssetsTranslations()
+    {
         $content = $this->dataToTranslate["content"];
         foreach ($this->dataToTranslate as $key => $value) {
             if (!strstr($key, "src-")) {
@@ -416,9 +371,10 @@ class TranslateHelper
         $this->dataToTranslate["content"] = $content;
     }
 
-    private function duplicateMedia($mediaId, $name) {
-        if ( ! function_exists( 'wp_crop_image' ) ) {
-            include( ABSPATH . 'wp-admin/includes/image.php' );
+    private function duplicateMedia($mediaId, $name)
+    {
+        if (!function_exists('wp_crop_image')) {
+            include(ABSPATH . 'wp-admin/includes/image.php');
         }
         $media = get_post($mediaId);
         if (!$media) {
@@ -456,13 +412,13 @@ class TranslateHelper
         return $newMediaId;
     }
 
-    public function getError()
-    {
-        return $this->error;
-    }
-
     public function isSuccess()
     {
-        return $this->success;
+        return $this->action->getState() === DAOActions::$STATE["DONE"] || $this->action->getState() === DAOActions::$STATE["ARCHIVED"];
+    }
+
+    public function getResponse()
+    {
+        return $this->action->getResponse();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\Queue;
+use TraduireSansMigraine\Wordpress\Action;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -106,12 +106,11 @@ class GetPosts {
     }
 
     private function filterPosts($posts, $languagesTranslated) {
-        /*
-         *
-         */
-        $Queue = Queue::getInstance();
         $filteredPosts = [];
         foreach ($posts as $post) {
+            if (empty($post->post_title)) {
+                continue;
+            }
             $translationMap = !empty($post->translationMap) ? unserialize($post->translationMap) : [];
             $shouldSkip = false;
             $post->translationMap = [];
@@ -123,11 +122,11 @@ class GetPosts {
                 $translationId = isset($translationMap[$slug]) ? $translationMap[$slug] : null;
                 $translation = $translationId ? get_post($translationId) : null;
                 $isTranslated = !empty($translation);
-                $isInQueue = $Queue->isFromQueue($post->ID, $slug);
+                $aRelatedActionExist = Action::loadByPostId($post->ID, $slug);
                 $translationIsUpdated = $translation && $translation->post_modified > $post->post_modified;
 
                 $shouldKeepIt = $shouldBeDone && $isTranslated && $translationIsUpdated;
-                $shouldKeepIt = $shouldKeepIt || ($shouldBeNotTranslated && !$isTranslated && !$isInQueue);
+                $shouldKeepIt = $shouldKeepIt || ($shouldBeNotTranslated && !$isTranslated && (!$aRelatedActionExist || !$aRelatedActionExist->willBeProcessing()));
                 $shouldKeepIt = $shouldKeepIt || ($shouldBeNotUpdated && $isTranslated && !$translationIsUpdated);
                 $shouldKeepIt = $shouldKeepIt || ($shouldBeDone && $isTranslated && $translationIsUpdated);
 
