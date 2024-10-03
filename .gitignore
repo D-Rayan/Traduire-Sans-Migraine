@@ -3,3 +3,4 @@
 env.php
 node_modules
 *.min.css
+front/build
