@@ -133,6 +133,19 @@ class DAOActions
         return $wpdb->get_row("SELECT * FROM $tableName WHERE postId = $postId AND slugTo = '$slugTo' AND state != '". self::$STATE["ARCHIVED"] ."' ORDER BY ID DESC LIMIT 1", ARRAY_A);
     }
 
+    public static function getActionsByPostId($postId)
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        return $wpdb->get_results("SELECT * FROM $tableName WHERE ID IN (SELECT MAX(ID) FROM $tableName WHERE postId = $postId GROUP BY slugTo)", ARRAY_A);
+    }
+
+    public static function getActionPaused() {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        return $wpdb->get_row("SELECT * FROM $tableName WHERE state = '". self::$STATE["PAUSE"] ."' ORDER BY ID DESC LIMIT 1", ARRAY_A);
+    }
+
     public static function get($id)
     {
         global $wpdb;

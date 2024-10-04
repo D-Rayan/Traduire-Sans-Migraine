@@ -69,6 +69,18 @@ class Action {
         return empty($args) ? null : new Action($args);
     }
 
+    public static function getActionPaused() {
+        $args = DAOActions::getActionPaused();
+        return empty($args) ? null : new Action($args);
+    }
+
+    public static function getActionsByPostId($postId) {
+        $actions = DAOActions::getActionsByPostId($postId);
+        return array_map(function($action) {
+            return new Action($action);
+        }, $actions);
+    }
+
     public function isFromQueue() {
         return $this->getOrigin() == DAOActions::$ORIGINS["QUEUE"];
     }
@@ -136,7 +148,7 @@ class Action {
                 Queue::getInstance()->startNextProcess();
             }
         } else {
-            if (Queue::getInstance()->isQueueDone()) {
+            if (Queue::getInstance()->isQueueDone() && $this->getOrigin() == DAOActions::$ORIGINS["QUEUE"]) {
                 Queue::getInstance()->setAsArchived();
             }
             $this->ID = DAOActions::createAction($this->postId, $this->slugTo, $this->origin);
@@ -147,7 +159,7 @@ class Action {
         return $this;
     }
 
-    public function toArray() {
+    public function toArray($forClient = false) {
         $data = [
             "postId" => $this->getPostId(),
             "slugTo" => $this->getSlugTo(),
@@ -163,10 +175,14 @@ class Action {
         if (!empty($this->getState())) {
             $data["state"] = $this->getState();
         }
-        if (!empty($this->getResponse())) {
-            $data["response"] = json_encode($this->getResponse());
+        if (!$forClient) {
+            if (!empty($this->getResponse())) {
+                $data["response"] = json_encode($this->getResponse());
+            } else {
+                $data["response"] = json_encode([]);
+            }
         } else {
-            $data["response"] = json_encode([]);
+            $data["response"] = $this->getResponse();
         }
         if (!empty($this->getCreatedAt())) {
             $data["createdAt"] = $this->getCreatedAt();

@@ -2,10 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Front\Components\Step;
-use TraduireSansMigraine\Languages\PolylangManager;
-use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\Action;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
@@ -13,7 +9,7 @@ if (!defined("ABSPATH")) {
     exit;
 }
 
-class TranslationState {
+class GetAction {
     public function __construct()
     {
 
@@ -23,7 +19,7 @@ class TranslationState {
     }
 
     public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_editor_get_state_translate", [$this, "getTranslateState"]);
+        add_action("wp_ajax_traduire-sans-migraine_editor_get_action", [$this, "getAction"]);
     }
 
     public function loadHooks() {
@@ -37,12 +33,12 @@ class TranslationState {
         $this->loadHooks();
     }
 
-    public function getTranslateState() {
+    public function getAction() {
         if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
-        if (!isset($_GET["tokenId"])) {
+        if (!isset($_GET["actionId"])) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
                 "message" => TextDomain::__("We could not find the request ID."),
@@ -50,20 +46,16 @@ class TranslationState {
             ], 400);
             wp_die();
         }
-        $tokenId = $_GET["tokenId"];
-        $action = Action::loadByToken($tokenId);
+        $actionId = $_GET["actionId"];
+        $action = Action::loadById($actionId);
         if (!$action) {
             wp_send_json_error([], 400);
             wp_die();
         }
-        echo json_encode(["success" => true, "data" => $action]);
+        echo json_encode(["success" => true, "data" => $action->toArray()]);
         wp_die();
     }
-    public static function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
-    }
 }
+
+$GetAction = new GetAction();
+$GetAction->init();

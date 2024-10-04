@@ -72,7 +72,7 @@ class AddToQueue {
         $action = new Action([
             "postId" => $postId,
             "slugTo" => $languageTo,
-            "origin" => DAOActions::$ORIGINS["QUEUE"]
+            "origin" => isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"]
         ]);
         $action->save();
         wp_send_json_success([
