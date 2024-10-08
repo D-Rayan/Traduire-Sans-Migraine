@@ -65,7 +65,7 @@ class AddToQueue {
         $existingAction = Action::loadByPostId($postId, $languageTo);
         if ($existingAction && $existingAction->willBeProcessing()) {
             wp_send_json_error([
-                "message" => TextDomain::__("The post is already in the queue"),
+                "message" => TextDomain::__("The action is already in the queue"),
             ], 400);
             wp_die();
         }

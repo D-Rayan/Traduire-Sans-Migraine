@@ -15,7 +15,7 @@ function seoSansMigraine_returnNonceError()
     return [
         "success" => false,
         "data" => [
-            "error" => "loginRequired"
+            "error" => "nonceError"
         ]
     ];
 }

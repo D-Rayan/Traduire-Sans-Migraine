@@ -83,7 +83,7 @@ class GetActionsByPost {
         if (!isset($_GET["postId"])) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the request ID."),
+                "message" => TextDomain::__("We could not find the post ID."),
                 "logo" => "loutre_triste.png"
             ], 400);
             wp_die();
@@ -95,7 +95,7 @@ class GetActionsByPost {
         if (empty($this->post)) {
             wp_send_json_error([
                 "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the request ID."),
+                "message" => TextDomain::__("We could not find the post."),
                 "logo" => "loutre_triste.png"
             ], 400);
             wp_die();

@@ -165,7 +165,7 @@ class DAOActions
                             ) AS translationMap  FROM $tableName actions
                         LEFT JOIN $wpdb->posts posts ON posts.ID = actions.postId
                         WHERE actions.state != '". self::$STATE["ARCHIVED"] ."' 
-                        ORDER BY actions.ID ASC", ARRAY_A);
+                         ORDER BY actions.origin DESC, actions.ID ASC", ARRAY_A);
     }
 
     public static function removeAction($itemId)
