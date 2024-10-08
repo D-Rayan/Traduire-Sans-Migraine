@@ -36,7 +36,7 @@ class Translations
     }
 
     public function registerEndpoints() {
-        register_rest_route( 'seo-sans-migraine', '/translations/(?P<id>\d+)', [
+        register_rest_route( 'seo-sans-migraine', '/translations', [
             'methods' => 'POST',
             'callback' => [$this, "setTranslations"],
             'permission_callback' => function () {

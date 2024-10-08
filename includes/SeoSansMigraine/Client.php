@@ -63,6 +63,7 @@ class Client
             "codeTo" => $codeTo,
             "restUrl" => get_rest_url(),
             "translateAssets" => $options["translateAssets"] ?? false,
+            "version" => TSM__VERSION
         ]);
     }
 
