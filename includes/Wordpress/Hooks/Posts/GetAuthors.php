@@ -1,9 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
-
-use TraduireSansMigraine\Wordpress\Queue;
-use TraduireSansMigraine\Wordpress\TextDomain;
+namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -42,11 +39,7 @@ class GetAuthors
     public function getAuthors()
     {
         if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
 

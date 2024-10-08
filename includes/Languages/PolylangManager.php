@@ -3,7 +3,6 @@
 namespace TraduireSansMigraine\Languages;
 
 use PLL_Admin_Model;
-use TraduireSansMigraine\Wordpress\TextDomain;
 use WP_Error;
 
 if (!defined("ABSPATH")) {
@@ -25,7 +24,7 @@ class PolylangManager
     public function getLanguagesActives(): array
     {
         if (!function_exists("pll_languages_list")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_languages_list"));
+            throw new \Exception("pll_missing");
         }
 
         $languages = pll_languages_list(['fields' => []]);
@@ -47,7 +46,7 @@ class PolylangManager
     public function getLanguageForPost(string $postId): string
     {
         if (!function_exists("pll_get_post_language")) {
-            throw new \Exception(TextDomain::__("Polylang seems to not be configured correctly.", "pll_get_post_language"));
+            throw new \Exception("pll_missing");
         }
 
         return pll_get_post_language($postId, "slug");
@@ -56,7 +55,7 @@ class PolylangManager
     public function getTranslationPost(string $postId, string $codeLanguage)
     {
         if (!function_exists("pll_get_post")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_post"));
+            throw new \Exception("pll_missing");
         }
 
         $postId = pll_get_post($postId, $codeLanguage);
@@ -67,7 +66,7 @@ class PolylangManager
     public function setLanguageForPost(string $postId, string $codeLanguage)
     {
         if (!function_exists("pll_set_post_language")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_set_post_language"));
+            throw new \Exception("pll_missing");
         }
 
         pll_set_post_language($postId, $codeLanguage);
@@ -110,7 +109,7 @@ class PolylangManager
     public function saveAllTranslationsPost(array $translationsMap)
     {
         if (!function_exists("pll_save_post_translations")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_save_post_translations"));
+            throw new \Exception("pll_missing");
         }
 
         $languages = $this->getLanguagesActives();
@@ -128,7 +127,7 @@ class PolylangManager
     public function saveAllTranslationsTerms(array $translationsMap)
     {
         if (!function_exists("pll_save_term_translations")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_save_term_translations"));
+            throw new \Exception("pll_missing");
         }
 
         $languages = $this->getLanguagesActives();
@@ -147,7 +146,7 @@ class PolylangManager
     function getTranslationCategories(array $categories, string $codeLanguage): array
     {
         if (!function_exists("pll_get_term")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_get_term"));
+            throw new \Exception("pll_missing");
         }
 
         $results = [];
@@ -164,7 +163,7 @@ class PolylangManager
     public function getCurrentLanguage(): string
     {
         if (!function_exists("pll_current_language")) {
-            throw new \Exception(TextDomain::__("%s not existing.", "pll_current_language"));
+            throw new \Exception("pll_missing");
         }
 
         return pll_current_language("slug");

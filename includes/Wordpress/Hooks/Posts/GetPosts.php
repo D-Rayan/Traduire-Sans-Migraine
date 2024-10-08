@@ -1,53 +1,52 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
 use TraduireSansMigraine\Wordpress\Action;
-use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class GetPosts {
+class GetPosts
+{
     public function __construct()
     {
     }
-    public function loadHooksClient() {
-        // nothing to load
+
+    public function init()
+    {
+        $this->loadHooks();
     }
 
-    public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_get_posts", [$this, "getPosts"]);
-    }
-
-    public function loadHooks() {
+    public function loadHooks()
+    {
         if (is_admin()) {
             $this->loadHooksAdmin();
         } else {
             $this->loadHooksClient();
         }
     }
-    public function init() {
-        $this->loadHooks();
+
+    public function loadHooksAdmin()
+    {
+        add_action("wp_ajax_traduire-sans-migraine_get_posts", [$this, "getPosts"]);
     }
 
-    public function getPosts() {
+    public function loadHooksClient()
+    {
+        // nothing to load
+    }
+
+    public function getPosts()
+    {
         global $tsm;
-        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+        if (!isset($_POST["wpNonce"]) || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
+            wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
         if (!isset($_POST["from"])) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The parameter from is missing"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
         $slugFrom = $_POST["from"];
@@ -57,11 +56,7 @@ class GetPosts {
         $postStatus = ["publish", "draft", "future"];
         $languages = $tsm->getPolylangManager()->getLanguagesActives();
         if (!isset($languages[$slugFrom])) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The language from is not valid"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
             wp_die();
         }
         $languagesTranslated = [];
@@ -83,16 +78,16 @@ class GetPosts {
                 switch ($filterName) {
                     case "post_author":
                         $postAuthors = array_intersect($postAuthors, $filterValue);
-                    break;
+                        break;
                     case "post_status":
                         $postStatus = array_intersect($postStatus, $filterValue);
-                    break;
+                        break;
                     default:
                         if (!isset($languagesTranslated[$filterName])) {
                             break;
                         }
                         $languagesTranslated[$filterName] = array_intersect($languagesTranslated[$filterName], $filterValue);
-                    break;
+                        break;
                 }
             }
         }
@@ -105,7 +100,44 @@ class GetPosts {
         wp_die();
     }
 
-    private function filterPosts($posts, $languagesTranslated) {
+    private function getAuthorsIDFromDB()
+    {
+        global $wpdb;
+        $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_status IN ('publish', 'draft')");
+        $authors = [];
+        foreach ($posts as $post) {
+            $authorId = $post->post_author;
+            $authors[] = $authorId;
+        }
+        return $authors;
+    }
+
+    private function searchPosts($fromTermId, $authors = [], $postStatus = [], $sortField = "ID", $sortOrder = "DESC")
+    {
+        global $wpdb;
+        $queryFetchPosts = $wpdb->prepare(
+            "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
+                                trTaxonomyTo.taxonomy = 'post_translations' AND 
+                                trTaxonomyTo.term_taxonomy_id IN (
+                                    SELECT trTo.term_taxonomy_id FROM wp_term_relationships trTo WHERE trTo.object_id = posts.ID
+                                )
+                            ) AS translationMap FROM $wpdb->posts posts
+                        LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
+                        WHERE 
+                            posts.post_type IN ('page', 'post') AND 
+                            posts.post_status IN ('" . implode("','", $postStatus) . "') AND 
+                            posts.post_author IN (" . implode(",", $authors) . ") AND 
+                            trFrom.term_taxonomy_id = $fromTermId AND 
+                            (posts.post_title NOT LIKE '%Translation of post%' OR posts.post_content != 'This content is temporary... It will be either deleted or updated soon.' OR posts.post_status != 'draft')
+                        ORDER BY posts.$sortField $sortOrder
+                        "
+        );
+
+        return $wpdb->get_results($queryFetchPosts);
+    }
+
+    private function filterPosts($posts, $languagesTranslated)
+    {
         $filteredPosts = [];
         foreach ($posts as $post) {
             if (empty($post->post_title)) {
@@ -149,39 +181,7 @@ class GetPosts {
         }
         return $filteredPosts;
     }
-    private function searchPosts($fromTermId, $authors = [], $postStatus = [], $sortField = "ID", $sortOrder = "DESC") {
-        global $wpdb;
-        $queryFetchPosts = $wpdb->prepare(
-            "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
-                                trTaxonomyTo.taxonomy = 'post_translations' AND 
-                                trTaxonomyTo.term_taxonomy_id IN (
-                                    SELECT trTo.term_taxonomy_id FROM wp_term_relationships trTo WHERE trTo.object_id = posts.ID
-                                )
-                            ) AS translationMap FROM $wpdb->posts posts
-                        LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
-                        WHERE 
-                            posts.post_type IN ('page', 'post') AND 
-                            posts.post_status IN ('" . implode("','", $postStatus) . "') AND 
-                            posts.post_author IN (" . implode(",", $authors) . ") AND 
-                            trFrom.term_taxonomy_id = $fromTermId AND 
-                            (posts.post_title NOT LIKE '%Translation of post%' OR posts.post_content != 'This content is temporary... It will be either deleted or updated soon.' OR posts.post_status != 'draft')
-                        ORDER BY posts.$sortField $sortOrder
-                        "
-        );
-
-        return $wpdb->get_results($queryFetchPosts);
-    }
-
-    private function getAuthorsIDFromDB() {
-        global $wpdb;
-        $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_status IN ('publish', 'draft')");
-        $authors = [];
-        foreach ($posts as $post) {
-            $authorId = $post->post_author;
-            $authors[] = $authorId;
-        }
-        return $authors;
-    }
 }
+
 $GetPosts = new GetPosts();
 $GetPosts->init();

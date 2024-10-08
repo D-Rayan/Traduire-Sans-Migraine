@@ -1,8 +1,7 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
-use TraduireSansMigraine\Wordpress\Action;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -39,20 +38,12 @@ class GetPost {
             wp_die();
         }
         if (!isset($_GET["postId"])) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The parameter postId is missing"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
         $post = get_post($_GET["postId"], ARRAY_A);
         if (empty($post)) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The post does not exist"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 404);
             wp_die();
         }
         $post["translations"] = [];

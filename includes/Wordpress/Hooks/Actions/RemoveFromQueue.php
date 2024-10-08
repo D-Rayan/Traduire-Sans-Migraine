@@ -1,9 +1,9 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
-use TraduireSansMigraine\Wordpress\TextDomain;
+
 
 if (!defined("ABSPATH")) {
     exit;
@@ -38,17 +38,13 @@ class RemoveFromQueue {
             wp_die();
         }
         if (!isset($_GET["actionId"]) || !is_numeric($_GET["actionId"])) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The item id is not valid")
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
         $actionId = $_GET["actionId"];
         $rowsDeleted = DAOActions::removeAction($actionId);
         if ($rowsDeleted !== 1) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The item was not removed"),
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
             wp_die();
         }
         wp_send_json_success([

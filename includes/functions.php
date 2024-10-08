@@ -20,6 +20,26 @@ function seoSansMigraine_returnNonceError()
     ];
 }
 
+function seoSansMigraine_returnErrorIsset()
+{
+    return [
+        "success" => false,
+        "data" => [
+            "error" => "issetError"
+        ]
+    ];
+}
+
+function seoSansMigraine_returnErrorForImpossibleReasons()
+{
+    return [
+        "success" => false,
+        "data" => [
+            "error" => "retry"
+        ]
+    ];
+}
+
 function render_seoSansMigraine_alert($title, $message, $type)
 {
     ?>

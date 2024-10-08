@@ -16,9 +16,19 @@ class Hooks
     public function __construct() {
     }
 
+    private function rglob($pattern, $flags = 0) {
+        $files = glob($pattern, $flags);
+        foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
+            $files = array_merge(
+                [], $files, $this->rglob($dir . "/" . basename($pattern), $flags)
+            );
+        }
+        return $files;
+    }
+
     public function loadHooks() {
         // maybe load just the hooks that will be used thanks to action variable
-        $files = glob(__DIR__ . '/*.php');
+        $files = $this->rglob(__DIR__ . '/*.php');
         if ($files === false) {
             throw new RuntimeException("Failed to glob for function files");
         }

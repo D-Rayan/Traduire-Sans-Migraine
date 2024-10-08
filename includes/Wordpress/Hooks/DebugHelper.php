@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\TextDomain;
+
 
 if (!defined("ABSPATH")) {
     exit;
@@ -39,11 +39,7 @@ class DebugHelper {
             wp_die();
         }
         if (!isset($_POST["postId"]) || !isset($_POST["code"])) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the post asked. Please try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
         $postId = $_POST["postId"];
@@ -66,16 +62,10 @@ class DebugHelper {
             "code" => $code
         ]);
         if ($response["success"]) {
-            wp_send_json_success([
-                "title" => TextDomain::__("Debug data sent"),
-                "message" => TextDomain::__("The debug data has been sent to the developers. Thank you for your help!"),
-                "logo" => "loutre_docteur_no_shadow.png"
-            ]);
+            wp_send_json_success([]);
         } else {
             wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not send the debug data. Please try again. Verify the code you entered."),
-                "logo" => "loutre_triste.png"
+                "message" => 'check_debug_code'
             ], 400);
         }
 

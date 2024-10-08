@@ -1,9 +1,9 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
 use TraduireSansMigraine\Wordpress\Action;
-use TraduireSansMigraine\Wordpress\TextDomain;
+
 
 if (!defined("ABSPATH")) {
     exit;
@@ -39,11 +39,7 @@ class GetAction {
             wp_die();
         }
         if (!isset($_GET["actionId"])) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the request ID."),
-                "logo" => "loutre_triste.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
         $actionId = $_GET["actionId"];

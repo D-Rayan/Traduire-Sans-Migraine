@@ -2,36 +2,51 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\TextDomain;
-
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class TranslateInternalLinks {
+class TranslateInternalLinks
+{
     public function __construct()
     {
     }
-    public function loadHooksClient() {
-        // nothing to load
+
+    public static function getInstance()
+    {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
     }
 
-    public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_editor_translate_internal_links", [$this, "translateInternalLinks"]);
+    public function init()
+    {
+        $this->loadHooks();
     }
 
-    public function loadHooks() {
+    public function loadHooks()
+    {
         if (is_admin()) {
             $this->loadHooksAdmin();
         } else {
             $this->loadHooksClient();
         }
     }
-    public function init() {
-        $this->loadHooks();
+
+    public function loadHooksAdmin()
+    {
+        add_action("wp_ajax_traduire-sans-migraine_editor_translate_internal_links", [$this, "translateInternalLinks"]);
     }
 
-    private function handleElementor($postId, $codeTo, $codeFrom) {
+    public function loadHooksClient()
+    {
+        // nothing to load
+    }
+
+    private function handleElementor($postId, $codeTo, $codeFrom)
+    {
         global $tsm;
 
         if (is_plugin_active("elementor/elementor.php")) {
@@ -54,31 +69,20 @@ class TranslateInternalLinks {
         }
     }
 
-    private function is_json($string) {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
-    }
-
-    private function is_serialized($string) {
+    private function is_serialized($string)
+    {
         return ($string == serialize(false) || @unserialize($string) !== false);
     }
 
-    public function translateInternalLinks() {
+    public function translateInternalLinks()
+    {
         global $tsm;
-        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+        if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
+            wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
         if (!isset($_GET["post_id"]) || !get_post_meta($_GET["post_id"], "_has_been_translated_by_tsm", true)) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the post. Please try again."),
-                "logo" => "loutre_triste.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
             wp_die();
         }
         $post = get_post($_GET["post_id"]);
@@ -100,11 +104,9 @@ class TranslateInternalLinks {
         wp_die();
     }
 
-    public static function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
+    private function is_json($string)
+    {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 }

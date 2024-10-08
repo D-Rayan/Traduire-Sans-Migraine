@@ -1,15 +1,25 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress\Hooks\Languages;
 
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class GetProducts
+class GetLanguages
 {
+
     public function __construct()
     {
+    }
+
+    public static function getInstance()
+    {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
     }
 
     public function init()
@@ -28,7 +38,7 @@ class GetProducts
 
     public function loadHooksAdmin()
     {
-        add_action("wp_ajax_traduire-sans-migraine_get_products", [$this, "getProducts"]);
+        add_action("wp_ajax_traduire-sans-migraine_get_languages", [$this, "getLanguages"]);
     }
 
     public function loadHooksClient()
@@ -36,20 +46,21 @@ class GetProducts
         // nothing to load
     }
 
-    public function getProducts()
+    public function getLanguages()
     {
         global $tsm;
         if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
-        $products = $tsm->getClient()->getProducts();
+        $polylangManager = $tsm->getPolylangManager();
+        $languages = $polylangManager->getLanguages();
         wp_send_json_success([
-            "products" => $products
+            "languages" => $languages
         ]);
         wp_die();
     }
 }
 
-$GetProducts = new GetProducts();
-$GetProducts->init();
+$GetLanguages = new GetLanguages();
+$GetLanguages->init();

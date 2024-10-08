@@ -1,10 +1,9 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks;
+namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
 use TraduireSansMigraine\Wordpress\Action;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
-use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -81,11 +80,7 @@ class GetActionsByPost {
             wp_die();
         }
         if (!isset($_GET["postId"])) {
-            wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the post ID."),
-                "logo" => "loutre_triste.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
         do_action("fetchTranslationsBackground");
@@ -94,10 +89,8 @@ class GetActionsByPost {
         $this->post = get_post($postId, ARRAY_A);
         if (empty($this->post)) {
             wp_send_json_error([
-                "title" => TextDomain::__("An error occurred"),
-                "message" => TextDomain::__("We could not find the post."),
-                "logo" => "loutre_triste.png"
-            ], 400);
+                "message" => "post_not_found"
+            ], 404);
             wp_die();
         }
         $actions = [];

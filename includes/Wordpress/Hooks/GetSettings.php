@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\TextDomain;
+
 
 if (!defined("ABSPATH")) {
     exit;
@@ -34,11 +34,7 @@ class GetSettings {
     public function getSettings() {
         global $tsm;
         if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
-            wp_send_json_error([
-                "message" => TextDomain::__("The security code is expired. Reload your page and retry"),
-                "title" => "",
-                "logo" => "loutre_docteur_no_shadow.png"
-            ], 400);
+            wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
         $settings = $tsm->getSettings()->getSettings();
