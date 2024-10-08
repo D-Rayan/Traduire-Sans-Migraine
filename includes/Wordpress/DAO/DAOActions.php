@@ -66,6 +66,9 @@ class DAOActions
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
+
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
     }
 
     private static $instance = null;
