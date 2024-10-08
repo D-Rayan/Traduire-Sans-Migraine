@@ -5,9 +5,6 @@ namespace TraduireSansMigraine\Wordpress\DAO;
 class DAOActions
 {
 
-    private $currentVersion;
-    private static $TABLE_NAME = "tsm_actions";
-
     public static $ORIGINS = ['QUEUE' => 0, 'EDITOR' => 1000];
     public static $STATE = [
         'PENDING' => 'PENDING',
@@ -17,11 +14,30 @@ class DAOActions
         'PAUSE' => 'PAUSE',
         'ARCHIVED' => 'ARCHIVED',
     ];
+    private static $TABLE_NAME = "tsm_actions";
+    private static $instance = null;
+    private $currentVersion;
     private $optionVersion = "tsm_actions_db_version";
 
     public function __construct()
     {
         $this->currentVersion = get_site_option($this->optionVersion) || '0.0.0';
+    }
+
+    public static function init()
+    {
+        $instance = self::getInstance();
+        if ($instance->needUpdateDatabase()) {
+            $instance->updateDatabase();
+        }
+    }
+
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+        return self::$instance;
     }
 
     public function needUpdateDatabase()
@@ -66,27 +82,6 @@ class DAOActions
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
-
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
-    }
-
-    private static $instance = null;
-
-    public static function getInstance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
-    public static function init()
-    {
-        $instance = self::getInstance();
-        if ($instance->needUpdateDatabase()) {
-            $instance->updateDatabase();
-        }
     }
 
     /**
@@ -133,7 +128,7 @@ class DAOActions
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE postId = $postId AND slugTo = '$slugTo' AND state != '". self::$STATE["ARCHIVED"] ."' ORDER BY ID DESC LIMIT 1", ARRAY_A);
+        return $wpdb->get_row("SELECT * FROM $tableName WHERE postId = $postId AND slugTo = '$slugTo' AND state != '" . self::$STATE["ARCHIVED"] . "' ORDER BY ID DESC LIMIT 1", ARRAY_A);
     }
 
     public static function getActionsByPostId($postId)
@@ -143,10 +138,11 @@ class DAOActions
         return $wpdb->get_results("SELECT * FROM $tableName WHERE ID IN (SELECT MAX(ID) FROM $tableName WHERE postId = $postId GROUP BY slugTo)", ARRAY_A);
     }
 
-    public static function getActionPaused() {
+    public static function getActionPaused()
+    {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE state = '". self::$STATE["PAUSE"] ."' ORDER BY ID DESC LIMIT 1", ARRAY_A);
+        return $wpdb->get_row("SELECT * FROM $tableName WHERE state = '" . self::$STATE["PAUSE"] . "' ORDER BY ID DESC LIMIT 1", ARRAY_A);
     }
 
     public static function get($id)
@@ -167,7 +163,7 @@ class DAOActions
                                 )
                             ) AS translationMap  FROM $tableName actions
                         LEFT JOIN $wpdb->posts posts ON posts.ID = actions.postId
-                        WHERE actions.state != '". self::$STATE["ARCHIVED"] ."' 
+                        WHERE actions.state != '" . self::$STATE["ARCHIVED"] . "' 
                          ORDER BY actions.origin DESC, actions.ID ASC", ARRAY_A);
     }
 
@@ -189,13 +185,15 @@ class DAOActions
         return $wpdb->get_row("SELECT * FROM $tableName WHERE state IN ('" . self::$STATE["PENDING"] . "', '" . self::$STATE["PAUSE"] . "', '" . self::$STATE["PROCESSING"] . "') ORDER BY origin DESC, ID ASC LIMIT 1", ARRAY_A);
     }
 
-    public static function releaseLock($id, $lock) {
+    public static function releaseLock($id, $lock)
+    {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, ['lock' => NULL], ['ID' => $id, 'lock' => $lock]);
     }
 
-    public static function setAsArchivedAllDoneActions() {
+    public static function setAsArchivedAllDoneActions()
+    {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, ['state' => self::$STATE["ARCHIVED"]], ['state' => self::$STATE["DONE"]]);
