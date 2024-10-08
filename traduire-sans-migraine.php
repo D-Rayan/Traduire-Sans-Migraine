@@ -96,8 +96,8 @@ class TraduireSansMigraine
     {
         global $wpdb;
         update_option('tsm-has-been-activated', true, false);
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
+        //$wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
+        //$wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
     }
 
     public function displayMessageEnabled()
