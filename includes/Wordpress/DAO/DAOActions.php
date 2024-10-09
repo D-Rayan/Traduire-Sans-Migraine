@@ -24,7 +24,7 @@ class DAOActions
         $this->currentVersion = get_site_option($this->optionVersion) || '0.0.0';
     }
 
-    public static function init()
+    public static function updateDatabaseIfNeeded()
     {
         $instance = self::getInstance();
         if ($instance->needUpdateDatabase()) {

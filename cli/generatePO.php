@@ -7,25 +7,26 @@ if (!$file) {
 }
 fwrite($file, "msgid \"\"\n");
 fwrite($file, "msgstr \"\"\n");
-fwrite($file, "\"Project-Id-Version: ".TSM__NAME." ".TSM__VERSION."\\n\"\n");
+fwrite($file, "\"Project-Id-Version: " . TSM__NAME . " " . TSM__VERSION . "\\n\"\n");
 fwrite($file, "\"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\\n\"\n");
 fwrite($file, "\"Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\\n\"\n");
 fwrite($file, "\"Language-Team: EN\\n\"\n");
 fwrite($file, "\"MIME-Version: 1.0\\n\"\n");
 fwrite($file, "\"Content-Type: text/plain; charset=UTF-8\\n\"\n");
 fwrite($file, "\"Content-Transfer-Encoding: 8bit\\n\"\n");
-fwrite($file, "\"POT-Creation-Date: ".date("Y-m-d") . "T". date("H:i:sZ")."\\n\"\n");
+fwrite($file, "\"POT-Creation-Date: " . date("Y-m-d") . "T" . date("H:i:sZ") . "\\n\"\n");
 fwrite($file, "\"X-Generator: Seo Sans Migraine\\n\"\n");
-fwrite($file, "\"X-Domain: ".TSM__TEXT_DOMAIN."\\n\"\n");
+fwrite($file, "\"X-Domain: " . TSM__TEXT_DOMAIN . "\\n\"\n");
 
-function readFilesThroughDir($dir, $msgIds = ["PLACEHOLDER_VERSION" => true]) {
+function readFilesThroughDir($dir, $msgIds = ["PLACEHOLDER_VERSION" => true])
+{
     global $file;
     $includes = scandir($dir);
     foreach ($includes as $include) {
         if ($include === "." || $include === "..") {
             continue;
         }
-        if (in_array($include, ["cli", ".github", "node_modules"])) {
+        if (in_array($include, ["cli", ".github", "node_modules", "build"])) {
             continue;
         }
         $path = $dir . "/" . $include;

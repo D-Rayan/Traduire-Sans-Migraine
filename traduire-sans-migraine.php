@@ -68,10 +68,10 @@ class TraduireSansMigraine
         }
         if ($this->isPluginGotEnabled()) {
             add_action("admin_init", [$this, "displayMessageEnabled"]);
+            DAOActions::updateDatabaseIfNeeded();
         }
         Updater::init();
         $this->handleJSON();
-        DAOActions::init();
         OfflineProcess::init();
         Queue::init();
         Menu::init();
@@ -98,7 +98,7 @@ class TraduireSansMigraine
 
     private function handleJSON()
     {
-        if (empty($_POST)) {
+        if (empty($_POST) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT')) {
             $file_content_input = file_get_contents('php://input');
             if (!empty($file_content_input)) {
                 $_POST = json_decode($file_content_input, true);
@@ -110,7 +110,7 @@ class TraduireSansMigraine
     {
         delete_option('tsm-has-been-activated');
         add_action("admin_notices", function () {
-            render_seoSansMigraine_alert("Traduire Sans Migraine est activé !", sprintf("Tu ne sais pas par où commencer ? Aucun soucis il te suffit de cliquer <a href='%s'>ici</a> et de suivre les étapes", admin_url("admin.php?page=traduire-sans-migraine")), "success");
+            render_seoSansMigraine_alert(TextDomain::__("Traduire Sans Migraine is enabled!"), TextDomain::__("You don't know where to start? Just click <a href='%s'>here</a> and follow the instructions", admin_url("admin.php?page=traduire-sans-migraine")), "success");
         });
     }
 

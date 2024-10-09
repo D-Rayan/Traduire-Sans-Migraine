@@ -37,6 +37,9 @@ class TranslateHelper
 
     public function handleTranslationResult()
     {
+        if (!$this->action) {
+            return;
+        }
         $this->checkRequirements();
         if ($this->action->getState() !== DAOActions::$STATE["PROCESSING"]) {
             return;

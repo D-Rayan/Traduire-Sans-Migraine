@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 2.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-10-09T10:13:240\n"
+"POT-Creation-Date: 2024-10-09T13:50:180\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: EN\n"
@@ -45,19 +45,29 @@ msgid ""
 msgstr ""
 "Traduire Sans Migraine nécessite Polylang pour fonctionner. Nous avons "
 "trouvé Polylang sur vote site et l’avons activé automatiquement. Pour "
-"désactiver Polylang, désactivez Traduire Sans Migraine dans un premier "
-"temps."
+"désactiver Polylang, désactivez Traduire Sans Migraine dans un premier temps."
 
 msgid ""
 "Traduire Sans Migraine needs polylang to works. Don't worry you can install "
 "it simply by clicking on the button below."
 msgstr ""
-"Traduire Sans Migraine nécessite Polylang pour fonctionner. Pas "
-"d’inquiétude il te suffit tout simplement de cliquer sur le bouton. (Cela "
-"peut prendre presque une minute)"
+"Traduire Sans Migraine nécessite Polylang pour fonctionner. Pas d’inquiétude "
+"il te suffit tout simplement de cliquer sur le bouton. (Cela peut prendre "
+"presque une minute)"
 
 msgid "Install Polylang"
 msgstr "Installer Polylang"
+
+# Text Domain
+msgid "Traduire Sans Migraine is enabled!"
+msgstr "Traduire Sans Migraine est activé !"
+
+msgid ""
+"You don't know where to start? Just click <a href='%s'>here</a> and follow "
+"the instructions"
+msgstr ""
+"Tu ne sais pas par où commencer ? Clique juste <a href='%s'>ici</a> et suis "
+"les instructions"
 
 # Plugin Name
 msgid "PLACEHOLDER_NAME"
@@ -97,4 +107,10 @@ msgstr "GPL2"
 
 # shelved.patch
 #~ msgid "An error occurred"
+#~ msgstr "Une erreur est survenue"
+
+# shelved.patch
+#, fuzzy
+#~| msgid "An error occurred"
+#~ msgid "An error occurred. Please try again."
 #~ msgstr "Une erreur est survenue"
