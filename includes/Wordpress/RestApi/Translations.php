@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\RestAPI;
+namespace TraduireSansMigraine\Wordpress\RestApi;
 
 use TraduireSansMigraine\Wordpress\TranslateHelper;
 use WP_REST_Response;

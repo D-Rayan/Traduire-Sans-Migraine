@@ -24,7 +24,7 @@ use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\OfflineProcess;
 use TraduireSansMigraine\Wordpress\Queue;
 use TraduireSansMigraine\Wordpress\Requirements;
-use TraduireSansMigraine\Wordpress\RestAPIA\RestAPI;
+use TraduireSansMigraine\Wordpress\RestApi\RestAPI;
 use TraduireSansMigraine\Wordpress\TextDomain;
 use TraduireSansMigraine\Wordpress\Updater;
 

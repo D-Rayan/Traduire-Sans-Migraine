@@ -1,9 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\RestAPI;
-
-use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\TranslateHelper;
+namespace TraduireSansMigraine\Wordpress\RestApi;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -12,24 +9,28 @@ if (!defined("ABSPATH")) {
 class RestAPI
 {
 
-    public function __construct() {
+    public function __construct()
+    {
     }
 
-    public function loadHooks() {
-        add_action( 'rest_api_init', [Ping::getInstance(), "registerEndpoints"]);
-        add_action( 'rest_api_init', [Translations::getInstance(), "registerEndpoints"]);
-    }
-
-    public static function init() {
+    public static function init()
+    {
         $instance = self::getInstance();
         $instance->loadHooks();
     }
 
-    public static function getInstance() {
+    public static function getInstance()
+    {
         static $instance = null;
         if (null === $instance) {
             $instance = new static();
         }
         return $instance;
+    }
+
+    public function loadHooks()
+    {
+        add_action('rest_api_init', [Ping::getInstance(), "registerEndpoints"]);
+        add_action('rest_api_init', [Translations::getInstance(), "registerEndpoints"]);
     }
 }
