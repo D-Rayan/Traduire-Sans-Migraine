@@ -56,18 +56,21 @@ class TraduireSansMigraine
 
     public function init()
     {
-        $this->handleJSON();
-        DAOActions::init();
-        Updater::init();
         TextDomain::init();
-        register_activation_hook(__FILE__, [$this, "setPluginAsEnabled"]);
-        register_deactivation_hook(__FILE__, [$this, "removeAllSettings"]);
         if (Requirements::getInstance()->handleRequirements() === false) {
             return;
+        }
+        register_activation_hook(__FILE__, [$this, "setPluginAsEnabled"]);
+        register_deactivation_hook(__FILE__, [$this, "removeAllSettings"]);
+        if (isset($_GET["tsm"]) && $_GET["tsm"] === "polylang_installed") {
+            $this->setPluginAsEnabled();
         }
         if ($this->isPluginGotEnabled()) {
             add_action("admin_init", [$this, "displayMessageEnabled"]);
         }
+        Updater::init();
+        $this->handleJSON();
+        DAOActions::init();
         OfflineProcess::init();
         Queue::init();
         Menu::init();
@@ -75,6 +78,20 @@ class TraduireSansMigraine
         PluginsPage::init();
         RestAPI::init();
         Hooks::init();
+    }
+
+    public function setPluginAsEnabled()
+    {
+        global $wpdb;
+
+        update_option('tsm-has-been-activated', true, false);
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
+    }
+
+    private function isPluginGotEnabled()
+    {
+        return get_option('tsm-has-been-activated', false);
     }
 
     private function handleJSON()
@@ -85,19 +102,6 @@ class TraduireSansMigraine
                 $_POST = json_decode($file_content_input, true);
             }
         }
-    }
-
-    private function isPluginGotEnabled()
-    {
-        return get_option('tsm-has-been-activated', false);
-    }
-
-    public function setPluginAsEnabled()
-    {
-        global $wpdb;
-        update_option('tsm-has-been-activated', true, false);
-        //$wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
-        //$wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
     }
 
     public function displayMessageEnabled()

@@ -2,17 +2,20 @@
 
 namespace TraduireSansMigraine\Languages;
 
+use Exception;
 use PLL_Admin_Model;
 use WP_Error;
 
 if (!defined("ABSPATH")) {
     exit;
 }
+
 class PolylangManager
 {
     private $languagesAllowed;
     private $glossaries;
     private $languagesPolylang;
+
     public function __construct()
     {
         if (defined("POLYLANG_DIR")) {
@@ -21,10 +24,37 @@ class PolylangManager
             $this->languagesPolylang = [];
         }
     }
+
+    public function getLanguageForPost(string $postId): string
+    {
+        if (!function_exists("pll_get_post_language")) {
+            return "";
+        }
+
+        return pll_get_post_language($postId, "slug");
+    }
+
+    public function getAllTranslationsPost(string $postId): array
+    {
+        $languages = $this->getLanguagesActives();
+
+        $results = [];
+        foreach ($languages as $language) {
+            $results[$language["code"]] = [
+                "name" => $language["name"],
+                "flag" => $language["flag"],
+                "code" => $language["code"],
+                "postId" => $this->getTranslationPost($postId, $language["code"])
+            ];
+        }
+
+        return $results;
+    }
+
     public function getLanguagesActives(): array
     {
         if (!function_exists("pll_languages_list")) {
-            throw new \Exception("pll_missing");
+            return [];
         }
 
         $languages = pll_languages_list(['fields' => []]);
@@ -43,50 +73,15 @@ class PolylangManager
         return $results;
     }
 
-    public function getLanguageForPost(string $postId): string
-    {
-        if (!function_exists("pll_get_post_language")) {
-            throw new \Exception("pll_missing");
-        }
-
-        return pll_get_post_language($postId, "slug");
-    }
-
     public function getTranslationPost(string $postId, string $codeLanguage)
     {
         if (!function_exists("pll_get_post")) {
-            throw new \Exception("pll_missing");
+            return null;
         }
 
         $postId = pll_get_post($postId, $codeLanguage);
 
         return $postId && get_post_status($postId) !== "trash" ? $postId : null;
-    }
-
-    public function setLanguageForPost(string $postId, string $codeLanguage)
-    {
-        if (!function_exists("pll_set_post_language")) {
-            throw new \Exception("pll_missing");
-        }
-
-        pll_set_post_language($postId, $codeLanguage);
-    }
-
-    public function getAllTranslationsPost(string $postId): array
-    {
-        $languages = $this->getLanguagesActives();
-
-        $results = [];
-        foreach ($languages as $language) {
-            $results[$language["code"]] = [
-                "name" => $language["name"],
-                "flag" => $language["flag"],
-                "code" => $language["code"],
-                "postId" => $this->getTranslationPost($postId, $language["code"])
-            ];
-        }
-
-        return $results;
     }
 
     public function getAllTranslationsTerm(string $termId): array
@@ -109,7 +104,7 @@ class PolylangManager
     public function saveAllTranslationsPost(array $translationsMap)
     {
         if (!function_exists("pll_save_post_translations")) {
-            throw new \Exception("pll_missing");
+            return;
         }
 
         $languages = $this->getLanguagesActives();
@@ -127,7 +122,7 @@ class PolylangManager
     public function saveAllTranslationsTerms(array $translationsMap)
     {
         if (!function_exists("pll_save_term_translations")) {
-            throw new \Exception("pll_missing");
+            return;
         }
 
         $languages = $this->getLanguagesActives();
@@ -146,7 +141,7 @@ class PolylangManager
     function getTranslationCategories(array $categories, string $codeLanguage): array
     {
         if (!function_exists("pll_get_term")) {
-            throw new \Exception("pll_missing");
+            return [];
         }
 
         $results = [];
@@ -160,79 +155,59 @@ class PolylangManager
         return $results;
     }
 
-    public function getCurrentLanguage(): string
-    {
-        if (!function_exists("pll_current_language")) {
-            throw new \Exception("pll_missing");
-        }
-
-        return pll_current_language("slug");
-    }
-
-    public function getDefaultLanguage()
-    {
-        $languages = $this->getLanguagesActives();
-
-        foreach ($languages as $language) {
-            if ($language["default"]) {
-                return $language;
-            }
-        }
-
-        return false;
-    }
-
-    public function getLanguageManagerName(): string
-    {
-        return "Polylang";
-    }
-
     public function addLanguage(string $locale): bool
     {
-        $options = get_option( 'polylang' );
+        if (!class_exists("PLL_Admin_Model")) {
+            return false;
+        }
+        $options = get_option('polylang');
         $model = new PLL_Admin_Model($options);
         $model->set_languages_ready();
         $is_first_language = !function_exists("pll_languages_list");
-        $all_languages   = include POLYLANG_DIR . '/settings/languages.php';
+        $all_languages = include POLYLANG_DIR . '/settings/languages.php';
         $saved_languages = array();
 
         require_once ABSPATH . 'wp-admin/includes/translation-install.php';
-        if (!isset($all_languages[ $locale ])) {
+        if (!isset($all_languages[$locale])) {
             return false;
         }
-        $saved_languages = $all_languages[ $locale ];
+        $saved_languages = $all_languages[$locale];
 
         $saved_languages['slug'] = $saved_languages['code'];
-        $saved_languages['rtl'] = (int) ( 'rtl' === $saved_languages['dir'] );
+        $saved_languages['rtl'] = (int)('rtl' === $saved_languages['dir']);
         $saved_languages['term_group'] = 0; // Default term_group.
 
-        $language_added = $model->add_language( $saved_languages );
+        $language_added = $model->add_language($saved_languages);
 
-        if ( $language_added instanceof WP_Error && array_key_exists( 'pll_non_unique_slug', $language_added->errors ) ) {
-            $saved_languages['slug'] = strtolower( str_replace( '_', '-', $saved_languages['locale'] ) );
-            $language_added = $model->add_language( $saved_languages );
+        if ($language_added instanceof WP_Error && array_key_exists('pll_non_unique_slug', $language_added->errors)) {
+            $saved_languages['slug'] = strtolower(str_replace('_', '-', $saved_languages['locale']));
+            $language_added = $model->add_language($saved_languages);
         }
 
-        if ( $language_added instanceof WP_Error ) {
+        if ($language_added instanceof WP_Error) {
             return false;
         }
 
-        if ( 'en_US' !== $locale && current_user_can( 'install_languages' ) ) {
-            wp_download_language_pack( $locale );
+        if ('en_US' !== $locale && current_user_can('install_languages')) {
+            wp_download_language_pack($locale);
         }
         ob_start();
         try {
             if ($is_first_language) {
                 $model->set_language_in_mass();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
         ob_get_clean();
         return true;
     }
 
-    public function updateLanguage($slug, $localeDeepL) {
-        $options = get_option( 'polylang' );
+    public function updateLanguage($slug, $localeDeepL)
+    {
+        if (!class_exists("PLL_Admin_Model")) {
+            return false;
+        }
+        $options = get_option('polylang');
         $model = new PLL_Admin_Model($options);
         $model->set_languages_ready();
 
@@ -245,25 +220,54 @@ class PolylangManager
             return false;
         }
         $langId = $languages[$slug]["id"];
-        $language_added = $model->update_language( array_merge([
+        $language_added = $model->update_language(array_merge([
             "lang_id" => $langId,
             "slug" => $languagePolylang["code"],
             "term_group" => $languages[$slug]["term_group"],
         ], $languagePolylang));
 
-        if ( $language_added instanceof WP_Error ) {
+        if ($language_added instanceof WP_Error) {
             return $language_added->get_error_message();
         }
 
         return true;
     }
 
-    public function getLanguages() {
+    public function getLanguagePolylangByIncompleteLocale($incompleteLocale)
+    {
+        $bestMatch = null;
+        $incompleteLocaleLower = strtolower($incompleteLocale);
+        foreach ($this->languagesPolylang as $language) {
+            if (!isset($language["code"]) || !isset($language["locale"])) {
+                continue;
+            }
+            $slug = strtolower($language["code"]);
+            $locale = strtolower($language["locale"]);
+            if ($locale === $incompleteLocaleLower
+                || $locale === str_replace("-", "_", $incompleteLocaleLower)
+                || $locale === str_replace("_", "-", $incompleteLocaleLower)) {
+                return $language;
+            }
+            if ($locale === $incompleteLocaleLower . "_" . $incompleteLocaleLower) {
+                return $language;
+            }
+            if ($locale === $incompleteLocaleLower . "-" . $incompleteLocaleLower) {
+                return $language;
+            }
+            if ($slug === $incompleteLocaleLower) {
+                $bestMatch = $language;
+            }
+        }
+        return $bestMatch;
+    }
+
+    public function getLanguages()
+    {
         global $tsm;
 
         try {
             $enabledLanguages = $this->getLanguagesActives();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $enabledLanguages = [];
         }
 
@@ -274,7 +278,7 @@ class PolylangManager
             } else {
                 $languagesEnabledOnTSM = [];
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $languagesEnabledOnTSM = [];
             $account = null;
         }
@@ -320,34 +324,8 @@ class PolylangManager
         return $languages;
     }
 
-    public function getLanguagePolylangByIncompleteLocale($incompleteLocale){
-        $bestMatch = null;
-        $incompleteLocaleLower = strtolower($incompleteLocale);
-        foreach ($this->languagesPolylang as $language) {
-            if (!isset($language["code"]) || !isset($language["locale"])) {
-                continue;
-            }
-            $slug = strtolower($language["code"]);
-            $locale = strtolower($language["locale"]);
-            if ($locale === $incompleteLocaleLower
-                || $locale === str_replace("-", "_", $incompleteLocaleLower)
-                || $locale === str_replace("_", "-", $incompleteLocaleLower)) {
-                return $language;
-            }
-            if ($locale === $incompleteLocaleLower . "_" . $incompleteLocaleLower) {
-                return $language;
-            }
-            if ($locale === $incompleteLocaleLower . "-" . $incompleteLocaleLower) {
-                return $language;
-            }
-            if ($slug === $incompleteLocaleLower) {
-                $bestMatch = $language;
-            }
-        }
-        return $bestMatch;
-    }
-
-    private function getLanguagesAllowed() {
+    private function getLanguagesAllowed()
+    {
         if (!isset($this->languagesAllowed)) {
             global $tsm;
             $response = $tsm->getClient()->getLanguages();

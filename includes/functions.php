@@ -40,26 +40,51 @@ function seoSansMigraine_returnErrorForImpossibleReasons()
     ];
 }
 
+
+$styleBeenPrinted = false;
 function render_seoSansMigraine_alert($title, $message, $type)
 {
+    global $styleBeenPrinted;
+    if (!$styleBeenPrinted) {
+        $styleBeenPrinted = true;
+        ?>
+        <style>
+            #notice-tsm p {
+                margin: 0;
+            }
+
+            #notice-tsm .title {
+                font-weight: bold;
+                padding: 0;
+            }
+
+            #notice-tsm {
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 5px;
+                color: white;
+                box-shadow: unset;
+                border-left: unset;
+            }
+
+            #notice-tsm.error {
+                background-color: #F44336;
+            }
+
+            #notice-tsm.success {
+                background-color: #4CAF50;
+            }
+
+            #notice-tsm.info {
+                background-color: #2196F3;
+            }
+        </style>
+        <?php
+    }
     ?>
-    <div class="notice" style="
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            background-color: <?php echo $type === "error" ? "#f44336" : ($type === "success" ? "#4CAF50" : "#2196F3"); ?>;
-            color: white;
-            box-shadow: unset;
-            border-left: unset;
-            ">
-        <p style="
-            font-weight: bold;
-            margin: 0;
-            padding: 0;
-        "><?php echo $title; ?></p>
-        <p style="
-            margin: 0;
-            ">
+    <div class="notice <?php echo $type; ?>" id="notice-tsm">
+        <p class="title"><?php echo $title; ?></p>
+        <p class="message">
             <?php echo $message; ?>
         </p>
     </div>

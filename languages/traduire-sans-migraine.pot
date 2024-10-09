@@ -1,16 +1,15 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 2.0.0\n"
+"Project-Id-Version: Traduire Sans Migraine 2.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-08T15:04:320\n"
+"POT-Creation-Date: 2024-10-09T10:13:240\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
-
 # EditorPage.php
 msgid "Translate 💊"
 msgstr ""
@@ -29,6 +28,23 @@ msgid "See the tutorial"
 msgstr ""
 
 msgid "tutorialLink"
+msgstr ""
+
+# Requirements.php
+msgid "Traduire Sans Migraine"
+msgstr ""
+
+msgid "Traduire Sans Migraine needs polylang to works. We found it on your website and enabled it automatically. If you really want to disable Polylang first disable Traduire Sans Migraine."
+msgstr ""
+
+msgid "Traduire Sans Migraine needs polylang to works. Don't worry you can install it simply by clicking on the button below."
+msgstr ""
+
+msgid "Install Polylang"
+msgstr ""
+
+# Plugin Name
+msgid "PLACEHOLDER_NAME"
 msgstr ""
 
 # Plugin URI

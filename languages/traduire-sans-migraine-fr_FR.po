@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 2.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-10-08T15:04:320\n"
+"POT-Creation-Date: 2024-10-09T10:13:240\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: EN\n"
@@ -33,6 +33,35 @@ msgstr "Voir le tutoriel"
 
 msgid "tutorialLink"
 msgstr "https://www.seo-sans-migraine.fr/premiere-traduction"
+
+# Text Domain
+msgid "Traduire Sans Migraine"
+msgstr "Traduire Sans Migraine"
+
+msgid ""
+"Traduire Sans Migraine needs polylang to works. We found it on your website "
+"and enabled it automatically. If you really want to disable Polylang first "
+"disable Traduire Sans Migraine."
+msgstr ""
+"Traduire Sans Migraine nécessite Polylang pour fonctionner. Nous avons "
+"trouvé Polylang sur vote site et l’avons activé automatiquement. Pour "
+"désactiver Polylang, désactivez Traduire Sans Migraine dans un premier "
+"temps."
+
+msgid ""
+"Traduire Sans Migraine needs polylang to works. Don't worry you can install "
+"it simply by clicking on the button below."
+msgstr ""
+"Traduire Sans Migraine nécessite Polylang pour fonctionner. Pas "
+"d’inquiétude il te suffit tout simplement de cliquer sur le bouton. (Cela "
+"peut prendre presque une minute)"
+
+msgid "Install Polylang"
+msgstr "Installer Polylang"
+
+# Plugin Name
+msgid "PLACEHOLDER_NAME"
+msgstr ""
 
 # Plugin URI
 msgid "https://www.seo-sans-migraine.com/translate-without-headache"
@@ -65,3 +94,7 @@ msgstr "/languages"
 # License
 msgid "GPL2"
 msgstr "GPL2"
+
+# shelved.patch
+#~ msgid "An error occurred"
+#~ msgstr "Une erreur est survenue"
