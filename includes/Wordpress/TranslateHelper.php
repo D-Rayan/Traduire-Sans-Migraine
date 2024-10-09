@@ -3,8 +3,10 @@
 namespace TraduireSansMigraine\Wordpress;
 
 
+use Exception;
 use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use WP_Error;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -42,31 +44,21 @@ class TranslateHelper
         $this->startTranslate();
     }
 
-    private function handleDefaultMetaPosts()
+    private function checkRequirements()
     {
-        foreach ($this->postMetas as $key => $value) {
-            $valueKey = $value[0];
-            if ($this->is_json($valueKey)) {
-                $valueKey = wp_slash($valueKey);
-            } else if ($this->is_serialized($valueKey)) {
-                $valueKey = unserialize($valueKey);
-            }
-            $valueKey = $this->replaceValue($valueKey);
-            update_post_meta($this->translatedPostId, $key, $valueKey);
+        if (!$this->action) {
+            return;
         }
-    }
-
-    private function replaceValue($value)
-    {
-        if (is_array($value)) {
-            foreach ($value as $key => $val) {
-                $value[$key] = $this->replaceValue($val);
-            }
-        } else if (is_string($value)) {
-            $value = $this->linkManager->translateInternalLinks($value, $this->codeFrom, $this->codeTo);
-            $value = str_replace($this->originalPost->ID, $this->translatedPostId, $value);
+        if ($this->dataToTranslate === false) {
+            $this->action->setAsError()->setResponse(["error" => "Data to translate not found"])->save();
+            return;
         }
-        return $value;
+        $this->originalPost = get_post($this->action->getPostId());
+        if (!$this->originalPost) {
+            $this->action->setAsError()->setResponse(["error" => "Post not found"])->save();
+            return;
+        }
+        $this->action->setResponse(["percentage" => 75])->save();
     }
 
     private function startTranslate()
@@ -103,246 +95,12 @@ class TranslateHelper
             } else {
                 $this->action->setAsArchived();
             }
+            update_post_meta($this->translatedPostId, '_has_been_translated_by_tsm', "true");
+            update_post_meta($this->translatedPostId, '_translated_by_tsm_from', $this->codeFrom);
+            update_post_meta($this->translatedPostId, '_tsm_first_visit_after_translation', "true");
             $this->action->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->action->setAsError()->setResponse(["error" => $e->getMessage()])->save();
-        }
-    }
-
-    private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated)
-    {
-        $category = get_term($originalCategoryId, "category");
-        $categoryTranslated = wp_insert_term($categoryNameTranslated, "category", [
-            "slug" => sanitize_title($categoryNameTranslated),
-            "description" => $category->description,
-            "parent" => $category->parent
-        ]);
-        if (is_wp_error($categoryTranslated)) {
-            return;
-        }
-        $allTranslationsTerms = $this->polylangManager->getAllTranslationsTerm($originalCategoryId);
-        if (isset($allTranslationsTerms[$codeTo])) {
-            $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
-        }
-        $this->polylangManager->saveAllTranslationsTerms($allTranslationsTerms);
-    }
-
-    private function checkRequirements()
-    {
-        if (!$this->action) {
-            return;
-        }
-        if ($this->dataToTranslate === false) {
-            $this->action->setAsError()->setResponse(["error" => "Data to translate not found"])->save();
-            return;
-        }
-        $this->originalPost = get_post($this->action->getPostId());
-        if (!$this->originalPost) {
-            $this->action->setAsError()->setResponse(["error" => "Post not found"])->save();
-            return;
-        }
-        $this->action->setResponse(["percentage" => 75])->save();
-    }
-
-
-    private function updateTemporaryPostToRealOne()
-    {
-        global $wpdb;
-        if (!isset($this->dataToTranslate["slug"])) {
-            $this->dataToTranslate["slug"] = $this->originalPost->post_name . "-traduire-sans-migraine-" . $this->codeTo;
-        }
-        $this->dataToTranslate["slug"] = sanitize_title($this->dataToTranslate["slug"]);
-
-        $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $this->dataToTranslate["slug"]);
-        $exists = $wpdb->get_var($query);
-        if (!empty($exists)) {
-            $this->dataToTranslate["slug"] .= "-" . $this->codeTo . "-" . time();
-        }
-
-        $updatePostData = [
-            'ID' => $this->translatedPostId,
-            'post_name' => $this->dataToTranslate["slug"],
-        ];
-
-
-        if (isset($this->dataToTranslate["title"])) {
-            $updatePostData['post_title'] = $this->dataToTranslate["title"];
-        }
-        if (isset($this->dataToTranslate["content"])) {
-            $updatePostData['post_content'] = $this->dataToTranslate["content"];
-        }
-        if (isset($this->dataToTranslate["categories"])) {
-            $updatePostData['post_category'] = $this->dataToTranslate["categories"];
-        }
-
-        if (isset($this->dataToTranslate["excerpt"])) {
-            $updatePostData["post_excerpt"] = $this->dataToTranslate["excerpt"];
-        }
-        wp_update_post($updatePostData);
-
-        $thumbnailId = isset($this->postMetas["_thumbnail_id"]) ? $this->postMetas["_thumbnail_id"][0] : null;
-        if (!empty($thumbnailId)) {
-            update_post_meta($this->translatedPostId, '_thumbnail_id', $thumbnailId);
-        }
-        update_post_meta($this->translatedPostId, '_has_been_translated_by_tsm', "true");
-        update_post_meta($this->translatedPostId, '_translated_by_tsm_from', $this->codeFrom);
-        update_post_meta($this->translatedPostId, '_tsm_first_visit_after_translation', "true");
-    }
-
-    private function createPost() {
-        global $tsm, $wpdb;
-        $originalTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($this->originalPost->ID);
-        $translations = [];
-
-        foreach ($originalTranslations as $slug => $translation) {
-            if ($translation["postId"]) {
-                $translations[$slug] = $translation["postId"];
-            }
-        }
-
-        $postName = isset($this->dataToTranslate["slug"]) ? $this->dataToTranslate["slug"] : $this->originalPost->post_name . "-" . $this->codeTo;
-        $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $postName);
-        $exists = $wpdb->get_var($query);
-        if (!empty($exists)) {
-            $postName .= "-" . time();
-        }
-
-        $postData = [
-            'ID' => $this->translatedPostId,
-            'post_name' => $postName,
-            'post_status' => "draft",
-            'post_type' => $this->originalPost->post_type,
-            'post_author' => $this->originalPost->post_author,
-            'post_title' => isset($this->dataToTranslate["title"]) ? $this->dataToTranslate["title"] : $this->originalPost->post_title,
-            'post_content' => isset($this->dataToTranslate["content"]) ? $this->dataToTranslate["content"] : $this->originalPost->post_content,
-        ];
-        if (isset($this->dataToTranslate["categories"])) {
-            $postData['post_category'] = $this->dataToTranslate["categories"];
-        }
-        if (isset($this->dataToTranslate["excerpt"])) {
-            $postData["post_excerpt"] = $this->dataToTranslate["excerpt"];
-        }
-        $translations[$this->action->getSlugTo()] = wp_insert_post($postData, true);
-        $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
-    }
-    private function updatePost()
-    {
-        $updatePostData = [
-            'ID' => $this->translatedPostId,
-            'post_category' => $this->dataToTranslate["categories"]
-        ];
-        if (isset($this->dataToTranslate["content"])) {
-            $updatePostData["post_content"] = $this->dataToTranslate["content"];
-        }
-        if (isset($this->dataToTranslate["title"])) {
-            $updatePostData["post_title"] = $this->dataToTranslate["title"];
-        }
-        if (isset($this->dataToTranslate["excerpt"])) {
-            $updatePostData["post_excerpt"] = $this->dataToTranslate["excerpt"];
-        }
-        if (isset($this->dataToTranslate["slug"])) {
-            $updatePostData["post_name"] = sanitize_title($this->dataToTranslate["slug"]);
-        }
-        wp_update_post($updatePostData);
-    }
-
-    private function handleYoast()
-    {
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
-            if (isset($this->dataToTranslate["metaTitle"])) {
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
-            }
-            if (isset($this->dataToTranslate["metaDescription"])) {
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_metadesc", $this->dataToTranslate["metaDescription"]);
-            }
-            if (isset($this->dataToTranslate["metaKeywords"])) {
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
-            }
-            if (isset($this->dataToTranslate["yoastFocusKeyword"])) {
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
-            }
-        }
-    }
-
-    private function handleACF()
-    {
-        if (is_plugin_active("advanced-custom-fields/acf.php")) {
-            foreach ($this->dataToTranslate as $key => $value) {
-                if (strstr($key, "acf_")) {
-                    $key = substr($key, 4);
-                    if (isset($this->postMetas[$key]) && isset($this->postMetas["_" . $key])) {
-                        if ($this->is_json($value)) {
-                            $value = wp_slash($value);
-                        }
-                        if ($this->is_serialized($value)) {
-                            $value = unserialize($value);
-                        }
-
-                        update_post_meta($this->translatedPostId, $key, $value);
-                        update_post_meta($this->translatedPostId, "_" . $key, $this->postMetas["_" . $key][0]);
-                    }
-                }
-            }
-        }
-    }
-
-    private function handleRankMath()
-    {
-        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
-            if (isset($this->dataToTranslate["rankMathDescription"])) {
-                update_post_meta($this->translatedPostId, "rank_math_description", $this->dataToTranslate["rankMathDescription"]);
-            }
-            if (isset($this->dataToTranslate["rankMathTitle"])) {
-                update_post_meta($this->translatedPostId, "rank_math_title", $this->dataToTranslate["rankMathTitle"]);
-            }
-            if (isset($this->dataToTranslate["rankMathFocusKeyword"])) {
-                update_post_meta($this->translatedPostId, "rank_math_focus_keyword", $this->dataToTranslate["rankMathFocusKeyword"]);
-            }
-        }
-    }
-
-    private function handleSEOPress()
-    {
-        if (is_plugin_active("wp-seopress/seopress.php")) {
-            if (isset($this->dataToTranslate["seopress_titles_desc"])) {
-                update_post_meta($this->translatedPostId, "seopress_titles_desc", $this->dataToTranslate["seopress_titles_desc"]);
-            }
-            if (isset($this->dataToTranslate["seopress_titles_title"])) {
-                update_post_meta($this->translatedPostId, "seopress_titles_title", $this->dataToTranslate["seopress_titles_title"]);
-            }
-            if (isset($this->dataToTranslate["seopress_analysis_target_kw"])) {
-                update_post_meta($this->translatedPostId, "seopress_analysis_target_kw", $this->dataToTranslate["seopress_analysis_target_kw"]);
-            }
-        }
-    }
-
-    private function is_json($string)
-    {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
-    }
-
-    private function is_serialized($string)
-    {
-        return ($string == serialize(false) || @unserialize($string) !== false);
-    }
-
-    private function handleElementor()
-    {
-        if (is_plugin_active("elementor/elementor.php")) {
-            foreach ($this->postMetas as $key => $value) {
-                if (strstr($key, "elementor")) {
-                    $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
-                    $valueKey = $this->linkManager->translateInternalLinks($valueKey, $this->codeFrom, $this->codeTo);
-                    if ($this->is_json($valueKey)) {
-                        $valueKey = wp_slash($valueKey);
-                    }
-                    if ($this->is_serialized($valueKey)) {
-                        $valueKey = unserialize($valueKey);
-                    }
-                    update_post_meta($this->translatedPostId, $key, $valueKey);
-                }
-            }
         }
     }
 
@@ -360,7 +118,7 @@ class TranslateHelper
                 continue;
             }
             $newMediaId = $this->duplicateMedia($mediaId, $newName);
-            if ($newMediaId instanceof \WP_Error || !$newMediaId) {
+            if ($newMediaId instanceof WP_Error || !$newMediaId) {
                 continue;
             }
             $content = str_replace($originalUrlAsset, wp_get_attachment_url($newMediaId), $content);
@@ -404,12 +162,216 @@ class TranslateHelper
             "post_author" => $media->post_author,
         ];
         $newMediaId = wp_insert_post($newMedia);
-        if ($newMediaId instanceof \WP_Error) {
+        if ($newMediaId instanceof WP_Error) {
             return $newMediaId;
         }
         $attachmentData = wp_generate_attachment_metadata($newMediaId, $media->guid);
         wp_update_attachment_metadata($newMediaId, $attachmentData);
         return $newMediaId;
+    }
+
+    private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated)
+    {
+        $category = get_term($originalCategoryId, "category");
+        $categoryTranslated = wp_insert_term($categoryNameTranslated, "category", [
+            "slug" => sanitize_title($categoryNameTranslated),
+            "description" => $category->description,
+            "parent" => $category->parent
+        ]);
+        if (is_wp_error($categoryTranslated)) {
+            return;
+        }
+        $allTranslationsTerms = $this->polylangManager->getAllTranslationsTerm($originalCategoryId);
+        if (isset($allTranslationsTerms[$codeTo])) {
+            $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
+        }
+        $this->polylangManager->saveAllTranslationsTerms($allTranslationsTerms);
+    }
+
+    private function createPost()
+    {
+        global $tsm, $wpdb;
+        $originalTranslations = $tsm->getPolylangManager()->getAllTranslationsPost($this->originalPost->ID);
+        $translations = [];
+
+        foreach ($originalTranslations as $slug => $translation) {
+            if ($translation["postId"]) {
+                $translations[$slug] = $translation["postId"];
+            }
+        }
+
+        $postName = isset($this->dataToTranslate["slug"]) ? $this->dataToTranslate["slug"] : $this->originalPost->post_name . "-" . $this->codeTo;
+        $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $postName);
+        $exists = $wpdb->get_var($query);
+        if (!empty($exists)) {
+            $postName .= "-" . time();
+        }
+
+        $postData = [
+            'ID' => $this->translatedPostId,
+            'post_name' => $postName,
+            'post_status' => "draft",
+            'post_type' => $this->originalPost->post_type,
+            'post_author' => $this->originalPost->post_author,
+            'post_title' => isset($this->dataToTranslate["title"]) ? $this->dataToTranslate["title"] : $this->originalPost->post_title,
+            'post_content' => isset($this->dataToTranslate["content"]) ? $this->dataToTranslate["content"] : $this->originalPost->post_content,
+        ];
+        if (isset($this->dataToTranslate["categories"])) {
+            $postData['post_category'] = $this->dataToTranslate["categories"];
+        }
+        if (isset($this->dataToTranslate["excerpt"])) {
+            $postData["post_excerpt"] = $this->dataToTranslate["excerpt"];
+        }
+        $translations[$this->action->getSlugTo()] = wp_insert_post($postData, true);
+        $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
+    }
+
+    private function updatePost()
+    {
+        $updatePostData = [
+            'ID' => $this->translatedPostId,
+            'post_category' => $this->dataToTranslate["categories"]
+        ];
+        if (isset($this->dataToTranslate["content"])) {
+            $updatePostData["post_content"] = $this->dataToTranslate["content"];
+        }
+        if (isset($this->dataToTranslate["title"])) {
+            $updatePostData["post_title"] = $this->dataToTranslate["title"];
+        }
+        if (isset($this->dataToTranslate["excerpt"])) {
+            $updatePostData["post_excerpt"] = $this->dataToTranslate["excerpt"];
+        }
+        if (isset($this->dataToTranslate["slug"])) {
+            $updatePostData["post_name"] = sanitize_title($this->dataToTranslate["slug"]);
+        }
+        wp_update_post($updatePostData);
+    }
+
+    private function handleDefaultMetaPosts()
+    {
+        foreach ($this->postMetas as $key => $value) {
+            $valueKey = $value[0];
+            if ($this->is_json($valueKey)) {
+                $valueKey = wp_slash($valueKey);
+            } else if ($this->is_serialized($valueKey)) {
+                $valueKey = unserialize($valueKey);
+            }
+            $valueKey = $this->replaceValue($valueKey);
+            update_post_meta($this->translatedPostId, $key, $valueKey);
+        }
+    }
+
+    private function is_json($string)
+    {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+
+    private function is_serialized($string)
+    {
+        return ($string == serialize(false) || @unserialize($string) !== false);
+    }
+
+    private function replaceValue($value)
+    {
+        if (is_array($value)) {
+            foreach ($value as $key => $val) {
+                $value[$key] = $this->replaceValue($val);
+            }
+        } else if (is_string($value)) {
+            $value = $this->linkManager->translateInternalLinks($value, $this->codeFrom, $this->codeTo);
+            $value = str_replace($this->originalPost->ID, $this->translatedPostId, $value);
+        }
+        return $value;
+    }
+
+    private function handleYoast()
+    {
+        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
+            if (isset($this->dataToTranslate["metaTitle"])) {
+                update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
+            }
+            if (isset($this->dataToTranslate["metaDescription"])) {
+                update_post_meta($this->translatedPostId, "_yoast_wpseo_metadesc", $this->dataToTranslate["metaDescription"]);
+            }
+            if (isset($this->dataToTranslate["metaKeywords"])) {
+                update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
+            }
+            if (isset($this->dataToTranslate["yoastFocusKeyword"])) {
+                update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
+            }
+        }
+    }
+
+    private function handleRankMath()
+    {
+        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
+            if (isset($this->dataToTranslate["rankMathDescription"])) {
+                update_post_meta($this->translatedPostId, "rank_math_description", $this->dataToTranslate["rankMathDescription"]);
+            }
+            if (isset($this->dataToTranslate["rankMathTitle"])) {
+                update_post_meta($this->translatedPostId, "rank_math_title", $this->dataToTranslate["rankMathTitle"]);
+            }
+            if (isset($this->dataToTranslate["rankMathFocusKeyword"])) {
+                update_post_meta($this->translatedPostId, "rank_math_focus_keyword", $this->dataToTranslate["rankMathFocusKeyword"]);
+            }
+        }
+    }
+
+    private function handleSEOPress()
+    {
+        if (is_plugin_active("wp-seopress/seopress.php")) {
+            if (isset($this->dataToTranslate["seopress_titles_desc"])) {
+                update_post_meta($this->translatedPostId, "seopress_titles_desc", $this->dataToTranslate["seopress_titles_desc"]);
+            }
+            if (isset($this->dataToTranslate["seopress_titles_title"])) {
+                update_post_meta($this->translatedPostId, "seopress_titles_title", $this->dataToTranslate["seopress_titles_title"]);
+            }
+            if (isset($this->dataToTranslate["seopress_analysis_target_kw"])) {
+                update_post_meta($this->translatedPostId, "seopress_analysis_target_kw", $this->dataToTranslate["seopress_analysis_target_kw"]);
+            }
+        }
+    }
+
+    private function handleElementor()
+    {
+        if (is_plugin_active("elementor/elementor.php")) {
+            foreach ($this->postMetas as $key => $value) {
+                if (strstr($key, "elementor")) {
+                    $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
+                    $valueKey = $this->linkManager->translateInternalLinks($valueKey, $this->codeFrom, $this->codeTo);
+                    if ($this->is_json($valueKey)) {
+                        $valueKey = wp_slash($valueKey);
+                    }
+                    if ($this->is_serialized($valueKey)) {
+                        $valueKey = unserialize($valueKey);
+                    }
+                    update_post_meta($this->translatedPostId, $key, $valueKey);
+                }
+            }
+        }
+    }
+
+    private function handleACF()
+    {
+        if (is_plugin_active("advanced-custom-fields/acf.php")) {
+            foreach ($this->dataToTranslate as $key => $value) {
+                if (strstr($key, "acf_")) {
+                    $key = substr($key, 4);
+                    if (isset($this->postMetas[$key]) && isset($this->postMetas["_" . $key])) {
+                        if ($this->is_json($value)) {
+                            $value = wp_slash($value);
+                        }
+                        if ($this->is_serialized($value)) {
+                            $value = unserialize($value);
+                        }
+
+                        update_post_meta($this->translatedPostId, $key, $value);
+                        update_post_meta($this->translatedPostId, "_" . $key, $this->postMetas["_" . $key][0]);
+                    }
+                }
+            }
+        }
     }
 
     public function isSuccess()

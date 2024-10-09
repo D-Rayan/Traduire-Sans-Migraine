@@ -15,6 +15,7 @@
 namespace TraduireSansMigraine;
 
 use TraduireSansMigraine\Front\EditorPage;
+use TraduireSansMigraine\Front\NotificationsPage;
 use TraduireSansMigraine\Front\PluginsPage;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
@@ -76,6 +77,7 @@ class TraduireSansMigraine
         Menu::init();
         EditorPage::init();
         PluginsPage::init();
+        NotificationsPage::init();
         RestAPI::init();
         Hooks::init();
     }

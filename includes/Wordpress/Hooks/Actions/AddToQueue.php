@@ -10,32 +10,40 @@ if (!defined("ABSPATH")) {
     exit;
 }
 
-class AddToQueue {
+class AddToQueue
+{
     public function __construct()
     {
     }
-    public function loadHooksClient() {
-        // nothing to load
+
+    public function init()
+    {
+        $this->loadHooks();
     }
 
-    public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_add_to_queue", [$this, "addToQueue"]);
-    }
-
-    public function loadHooks() {
+    public function loadHooks()
+    {
         if (is_admin()) {
             $this->loadHooksAdmin();
         } else {
             $this->loadHooksClient();
         }
     }
-    public function init() {
-        $this->loadHooks();
+
+    public function loadHooksAdmin()
+    {
+        add_action("wp_ajax_traduire-sans-migraine_add_to_queue", [$this, "addToQueue"]);
     }
 
-    public function addToQueue() {
+    public function loadHooksClient()
+    {
+        // nothing to load
+    }
+
+    public function addToQueue()
+    {
         global $tsm;
-        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
+        if (!isset($_POST["wpNonce"]) || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
@@ -58,9 +66,11 @@ class AddToQueue {
         }
         $existingAction = Action::loadByPostId($postId, $languageTo);
         if ($existingAction && $existingAction->willBeProcessing()) {
-            wp_send_json_error([
-                "message" => "action_already_queued"
-            ], 400);
+            $existingAction->setOrigin(isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"]);
+            $existingAction->save();
+            wp_send_json_success([
+                "ID" => $existingAction->getID()
+            ]);
             wp_die();
         }
         $action = new Action([
@@ -75,5 +85,6 @@ class AddToQueue {
         wp_die();
     }
 }
+
 $AddToQueue = new AddToQueue();
 $AddToQueue->init();
