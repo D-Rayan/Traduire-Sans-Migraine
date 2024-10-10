@@ -127,8 +127,7 @@ class GetPosts
                             posts.post_type IN ('page', 'post') AND 
                             posts.post_status IN ('" . implode("','", $postStatus) . "') AND 
                             posts.post_author IN (" . implode(",", $authors) . ") AND 
-                            trFrom.term_taxonomy_id = $fromTermId AND 
-                            (posts.post_title NOT LIKE '%Translation of post%' OR posts.post_content != 'This content is temporary... It will be either deleted or updated soon.' OR posts.post_status != 'draft')
+                            trFrom.term_taxonomy_id = $fromTermId 
                         ORDER BY posts.$sortField $sortOrder
                         "
         );

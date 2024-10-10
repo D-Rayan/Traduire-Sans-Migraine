@@ -53,14 +53,14 @@ class UpdateSettings
                 continue;
             }
             if (isset($settings[$key])) {
-                $settings[$key] = $value;
+                $settings[$key] = $value && $settings[$key]["available"];
             }
         }
         foreach ($settings as $key => $value) {
             if (!isset($value["enabled"])) {
                 continue;
             }
-            $settings[$key] = $value["enabled"];
+            $settings[$key] = $value["enabled"] && $value["available"];
         }
         $tsm->getSettings()->saveSettings($settings);
         wp_send_json_success(["settings" => $settings]);

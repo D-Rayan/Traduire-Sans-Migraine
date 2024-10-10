@@ -87,8 +87,13 @@ class TraduireSansMigraine
         global $wpdb;
 
         update_option('tsm-has-been-activated', true, false);
+        if (get_option('tsm-has-been-cleaned', false)) {
+            return;
+        }
+        update_option('tsm-has-been-cleaned', true, false);
         $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
         $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}posts WHERE post_title LIKE '%Translation of post%' AND post_content = 'This content is temporary... It will be either deleted or updated soon.' AND post_status = 'draft'");
     }
 
     private function isPluginGotEnabled()

@@ -33,39 +33,41 @@ class Requirements
                 });
                 return true;
             }
-            add_action('admin_notices', function () {
-                ob_start();
-                ?>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <?php echo TextDomain::__("Traduire Sans Migraine needs polylang to works. Don't worry you can install it simply by clicking on the button below."); ?>
-                    <button class="button button-secondary" style="display: flex;"
-                            id="install-polylang"><?php echo TextDomain::__("Install Polylang"); ?></button>
-                </div>
-                <script>
-                    (() => {
-                        const buttonInstall = document.querySelector("#install-polylang");
-                        if (!buttonInstall) {
-                            return;
-                        }
-                        buttonInstall.addEventListener("click", function () {
-                            const data = {
-                                action: "install_polylang",
-                                wpnonce: "<?php echo wp_create_nonce('install_polylang'); ?>"
-                            };
-                            buttonInstall.disabled = true;
-                            const Spinner = document.createElement("span");
-                            Spinner.classList.add("spinner");
-                            Spinner.classList.add("is-active");
-                            buttonInstall.append(Spinner);
-                            jQuery.post(ajaxurl, data, function (response) {
-                                window.location = `${window.location}&tsm=polylang_installed`;
+            if (!wp_doing_ajax()) {
+                add_action('admin_notices', function () {
+                    ob_start();
+                    ?>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <?php echo TextDomain::__("Traduire Sans Migraine needs polylang to works. Don't worry you can install it simply by clicking on the button below."); ?>
+                        <button class="button button-secondary" style="display: flex;"
+                                id="install-polylang"><?php echo TextDomain::__("Install Polylang"); ?></button>
+                    </div>
+                    <script>
+                        (() => {
+                            const buttonInstall = document.querySelector("#install-polylang");
+                            if (!buttonInstall) {
+                                return;
+                            }
+                            buttonInstall.addEventListener("click", function () {
+                                const data = {
+                                    action: "install_polylang",
+                                    wpnonce: "<?php echo wp_create_nonce('install_polylang'); ?>"
+                                };
+                                buttonInstall.disabled = true;
+                                const Spinner = document.createElement("span");
+                                Spinner.classList.add("spinner");
+                                Spinner.classList.add("is-active");
+                                buttonInstall.append(Spinner);
+                                jQuery.post(ajaxurl, data, function (response) {
+                                    window.location = `${window.location}&tsm=polylang_installed`;
+                                });
                             });
-                        });
-                    })();
-                </script>
-                <?php
-                render_seoSansMigraine_alert(TextDomain::__("Traduire Sans Migraine"), ob_get_clean(), "error");
-            });
+                        })();
+                    </script>
+                    <?php
+                    render_seoSansMigraine_alert(TextDomain::__("Traduire Sans Migraine"), ob_get_clean(), "error");
+                });
+            }
             add_action("wp_ajax_install_polylang", [$this, "installPolylang"]);
             return false;
         }
@@ -102,16 +104,8 @@ class Requirements
 
     public function installPolylang()
     {
-        if (!check_ajax_referer('install_polylang', 'wpnonce')) {
-            wp_send_json_error("Invalid nonce");
-        }
-        if (function_exists("current_user_can") && !current_user_can('install_plugins')) {
-            wp_send_json_error("Invalid permissions");
-        }
-        if (!function_exists('plugins_api')) {
-            require_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
-            require_once(ABSPATH . 'wp-admin/includes/class-wp-upgrader.php');
-        }
+        require_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
+        require_once(ABSPATH . 'wp-admin/includes/class-wp-upgrader.php');
         $api = plugins_api('plugin_information', array('slug' => 'polylang'));
         $upgrader = new Plugin_Upgrader();
         $install = $upgrader->install($api->download_link);
@@ -120,6 +114,7 @@ class Requirements
         }
         $this->activatePolylangIfAvailable();
         wp_send_json_success();
+        wp_die();
     }
 
     public function noticePhp()

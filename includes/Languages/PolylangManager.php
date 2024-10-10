@@ -43,7 +43,7 @@ class PolylangManager
             $postIdTranslated = $this->getTranslationPost($postId, $language["code"]);
             $results[$language["code"]] = [
                 "name" => $language["name"],
-                "default" => $language["default"],
+                "default" => (bool)$language["default"],
                 "flag" => $language["flag"],
                 "code" => $language["code"],
                 "postId" => $postIdTranslated,
@@ -64,7 +64,7 @@ class PolylangManager
         foreach ($languages as $language) {
             $results[$language->slug] = [
                 "id" => $language->term_id,
-                "default" => $language->is_default,
+                "default" => (bool)$language->is_default,
                 "name" => $language->name,
                 "flag" => $language->flag,
                 "code" => $language->slug,

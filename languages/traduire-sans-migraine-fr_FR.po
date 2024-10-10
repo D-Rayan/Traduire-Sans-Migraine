@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 2.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-10-09T13:50:180\n"
+"POT-Creation-Date: 2024-10-10T14:17:210\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: EN\n"
@@ -17,6 +17,14 @@ msgstr ""
 # EditorPage.php
 msgid "Translate 💊"
 msgstr "Traduire 💊"
+
+# OnDeletionPosts.php
+msgid "including %s translation"
+msgstr "dont %s traduction"
+
+# OnDeletionPosts.php
+msgid "including %s translations"
+msgstr "dont %s traductions"
 
 # Menu.php
 msgid "Our Products"
