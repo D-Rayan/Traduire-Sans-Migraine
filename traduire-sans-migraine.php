@@ -126,6 +126,8 @@ class TraduireSansMigraine
             return;
         }
         $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%seo_sans_migraine%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%tsm%'");
+        DAOActions::deleteTable();
     }
 
     public function getSettings()

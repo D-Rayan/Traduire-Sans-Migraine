@@ -84,6 +84,13 @@ class DAOActions
         dbDelta($sql);
     }
 
+    public static function deleteTable()
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $wpdb->query("DROP TABLE IF EXISTS $tableName");
+    }
+
     /**
      * @param $postId int
      * @param $slugTo string
