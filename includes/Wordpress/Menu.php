@@ -31,18 +31,10 @@ class Menu
         add_submenu_page(
             "traduire-sans-migraine",
             "⚙️ Traduire Sans Migraine",
-            TextDomain::__("⚙️ Settings"),
-            "manage_options",
-            "traduire-sans-migraine",
-            [$this, "renderSettingsPage"]
-        );
-        add_submenu_page(
-            "traduire-sans-migraine",
-            "⚙️ Traduire Sans Migraine",
             TextDomain::__("💊 Bulk Translation"),
             "manage_options",
             "traduire-sans-migraine#bulk",
-            [$this, "renderBulkPage"]
+            [$this, "renderSettingsPage"]
         );
         add_submenu_page(
             "traduire-sans-migraine",
@@ -70,7 +62,7 @@ class Menu
             "Traduire sans migraine",
             "manage_options",
             "traduire-sans-migraine",
-            [$this, "renderProductsPage"],
+            [$this, "renderSettingsPage"],
             "dashicons-otter"
         );
         define("SANS_MIGRAINE_MENU", "sans-migraine");
@@ -84,7 +76,7 @@ class Menu
                 content: "💊";
                 padding: 5px 0 !important;
             }
-            #toplevel_page_sans-migraine li:last-child {
+            #toplevel_page_traduire-sans-migraine li:last-child {
                 font-weight: 600;
                 padding-top: 5px;
                 padding-bottom: 5px;
@@ -95,18 +87,8 @@ class Menu
         });
     }
 
-    public function renderProductsPage()
-    {
-
-    }
-
     public function renderSettingsPage()
     {
         SettingsPage::render();
-    }
-
-    public function renderBulkPage()
-    {
-
     }
 }
