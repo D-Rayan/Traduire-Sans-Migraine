@@ -53,13 +53,16 @@ class NotificationsPage
         wp_localize_script('notifications-page-app', 'traduireSansMigraineVariables', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('traduire-sans-migraine'),
+            'token' => $tsm->getSettings()->getToken(),
             'translations' => $tsm->getPolylangManager()->getAllTranslationsPost($_GET["post"]),
             'firstVisitAfterTSMTranslatedIt' => get_post_meta($_GET["post"], '_tsm_first_visit_after_translation', true),
             'hasTSMTranslatedIt' => get_post_meta($_GET["post"], '_has_been_translated_by_tsm', true),
             'translatedFromSlug' => get_post_meta($_GET["post"], '_translated_by_tsm_from', true),
             'currentLocale' => get_locale(),
             'languages' => $tsm->getPolylangManager()->getLanguages(),
-            'postId' => $_GET["post"]
+            'postId' => $_GET["post"],
+            "polylangUrl" => defined("POLYLANG_FILE") ? plugin_dir_url(POLYLANG_FILE) : "",
+            'urlClient' => TSM__CLIENT_LOGIN_DOMAIN,
         ]);
         delete_post_meta($_GET["post"], '_tsm_first_visit_after_translation');
     }

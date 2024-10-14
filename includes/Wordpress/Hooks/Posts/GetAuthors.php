@@ -12,14 +12,9 @@ class GetAuthors
     {
     }
 
-    public function loadHooksClient()
+    public function init()
     {
-        // nothing to load
-    }
-
-    public function loadHooksAdmin()
-    {
-        add_action("wp_ajax_traduire-sans-migraine_get_authors", [$this, "getAuthors"]);
+        $this->loadHooks();
     }
 
     public function loadHooks()
@@ -31,9 +26,14 @@ class GetAuthors
         }
     }
 
-    public function init()
+    public function loadHooksAdmin()
     {
-        $this->loadHooks();
+        add_action("wp_ajax_traduire-sans-migraine_get_authors", [$this, "getAuthors"]);
+    }
+
+    public function loadHooksClient()
+    {
+        // nothing to load
     }
 
     public function getAuthors()
@@ -49,7 +49,8 @@ class GetAuthors
         wp_die();
     }
 
-    private function getAuthorsFromDB() {
+    private function getAuthorsFromDB()
+    {
         global $wpdb;
         $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_status IN ('publish', 'draft')");
         $authors = [];
@@ -57,13 +58,13 @@ class GetAuthors
             $authorId = $post->post_author;
             $author = get_userdata($authorId);
             if ($author === false) {
-                $authors[$authorId] = [
+                $authors[] = [
                     "ID" => $authorId,
                     "name" => "Unknown"
                 ];
                 continue;
             }
-            $authors[$authorId] = [
+            $authors[] = [
                 "ID" => $authorId,
                 "name" => $author->display_name
             ];
