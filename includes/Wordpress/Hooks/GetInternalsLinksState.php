@@ -1,15 +1,15 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
+namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use TraduireSansMigraine\Wordpress\Queue;
 
+use TraduireSansMigraine\Wordpress\DAO\DAOInternalsLinks;
 
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class GetQueue
+class GetInternalsLinksState
 {
     public function __construct()
     {
@@ -31,7 +31,7 @@ class GetQueue
 
     public function loadHooksAdmin()
     {
-        add_action("wp_ajax_traduire-sans-migraine_get_queue", [$this, "getQueue"]);
+        add_action("wp_ajax_traduire-sans-migraine_get_internals_links_state", [$this, "getInternalsLinksState"]);
     }
 
     public function loadHooksClient()
@@ -39,20 +39,23 @@ class GetQueue
         // nothing to load
     }
 
-    public function getQueue()
+    public function getInternalsLinksState()
     {
+        global $tsm;
         if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
-        do_action("fetchTranslationsBackground");
-        do_action("startNextProcess");
+        $state = CronInitializeInternalLinks::getOption();
         wp_send_json_success([
-            "queue" => Queue::getInstance()->getActionsEnriched(),
+            "cron" => $state,
+            "countFixable" => DAOInternalsLinks::countFixable(),
+            "countAll" => DAOInternalsLinks::countAll(),
+            "nextRun" => CronInitializeInternalLinks::getNextTimeRun()
         ]);
         wp_die();
     }
 }
 
-$GetQueue = new GetQueue();
-$GetQueue->init();
+$GetInternalsLinksState = new GetInternalsLinksState();
+$GetInternalsLinksState->init();

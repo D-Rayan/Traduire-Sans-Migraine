@@ -2,38 +2,44 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
-use TraduireSansMigraine\Wordpress\TextDomain;
-
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class GetPost {
+class GetPost
+{
     public function __construct()
     {
     }
-    public function loadHooksClient() {
-        // nothing to load
+
+    public function init()
+    {
+        $this->loadHooks();
     }
 
-    public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_get_post", [$this, "getPost"]);
-    }
-
-    public function loadHooks() {
+    public function loadHooks()
+    {
         if (is_admin()) {
             $this->loadHooksAdmin();
         } else {
             $this->loadHooksClient();
         }
     }
-    public function init() {
-        $this->loadHooks();
+
+    public function loadHooksAdmin()
+    {
+        add_action("wp_ajax_traduire-sans-migraine_get_post", [$this, "getPost"]);
     }
 
-    public function getPost() {
+    public function loadHooksClient()
+    {
+        // nothing to load
+    }
+
+    public function getPost()
+    {
         global $tsm;
-        if (!isset($_GET["wpNonce"])  || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
+        if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
@@ -47,7 +53,7 @@ class GetPost {
             wp_die();
         }
         $post["translations"] = [];
-        $post["currentSlug"] = $tsm->getPolylangManager()->getLanguageForPost($post["ID"]);
+        $post["currentSlug"] = $tsm->getPolylangManager()->getLanguageSlugForPost($post["ID"]);
         foreach ($tsm->getPolylangManager()->getAllTranslationsPost($post["ID"]) as $slug => $data) {
             $translationPost = $this->getTranslationPostData($post, $data, get_the_terms($post["ID"], "category"));
             $post["translations"][$slug] = $translationPost;
@@ -58,7 +64,8 @@ class GetPost {
         wp_die();
     }
 
-    private function getTranslationPostData($post, $translationPost, $termsCategories) {
+    private function getTranslationPostData($post, $translationPost, $termsCategories)
+    {
         global $tsm;
         $postExists = $translationPost["postId"] && get_post_status($translationPost["postId"]) !== "trash";
         $issuesTranslatedUrls = $tsm->getLinkManager()->getIssuedInternalLinks($post["post_content"], $post["currentSlug"], $translationPost["code"]);
@@ -83,5 +90,6 @@ class GetPost {
         ];
     }
 }
+
 $GetPost = new GetPost();
 $GetPost->init();

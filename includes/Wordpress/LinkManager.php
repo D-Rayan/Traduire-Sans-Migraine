@@ -2,88 +2,37 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
-class LinkManager {
+class LinkManager
+{
 
-    public function __construct() {
-    }
-    public function splitAllQueryAndAnchor($url) {
-        $urlParts = explode("#", $url, 2);
-        $url = $urlParts[0];
-        $anchor = $urlParts[1] ?? "";
-
-        $queryParts = explode("?", $url, 2);
-        $url = $queryParts[0];
-        $query = $queryParts[1] ?? "";
-
-        return [
-            "url" => $url,
-            "query" => $query,
-            "anchor" => $anchor
-        ];
+    public function __construct()
+    {
     }
 
-    public function combineQueryAndAnchor($url, $query, $anchor) {
-        if (strlen($query) > 0) {
-            $url .= "?" . $query;
-        }
-        if (strlen($anchor) > 0) {
-            $url .= "#" . $anchor;
-        }
+    public function translateInternalLinks($postContent, $translateFrom, $translateTo)
+    {
+        global $tsm;
 
-        if (empty($url)) {
-            return "#";
-        }
-
-        return $url;
-    }
-
-    public function formatUrlToAbsolute($url, $withSlash = true) {
-        $result = $this->splitAllQueryAndAnchor($url);
-        $url = $result["url"];
-        if (false === strrpos($url, 'http://') && false === strrpos($url, 'https://')) {
-            $resultUrl = get_home_url();
-            if ($url[0] === "/") {
-                $resultUrl .= $url;
-            } else {
-                $resultUrl .= "/" . $url;
+        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
+        $newContent = $postContent;
+        foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
+            $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($postIdRelated, $translateTo);
+            if ($internalPostIdTranslated) {
+                $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
+                if ($titleInternalPostIdTranslated && false === strpos($titleInternalPostIdTranslated, "p=")) {
+                    $newContent = str_replace($urlToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $newContent);
+                }
             }
-        } else {
-            $resultUrl = $url;
         }
 
-        $resultUrl = $this->addOrRemoveSlash($resultUrl, $withSlash);
-
-        return $this->combineQueryAndAnchor($this->cleanMultiplesSlash($resultUrl), $result["query"], $result["anchor"]);
+        return $newContent;
     }
 
-    public function cleanMultiplesSlash($urlWithoutExtra) {
-        $urlWithoutExtra = str_replace("//", "/", $urlWithoutExtra);
-        $urlWithoutExtra = str_replace("https:/", "https://", $urlWithoutExtra);
-        $urlWithoutExtra = str_replace("http:/", "http://", $urlWithoutExtra);
-        return $urlWithoutExtra;
-    }
-
-    public function addOrRemoveSlash($url, $withSlash = true) {
-        $result = $this->splitAllQueryAndAnchor($url);
-        $resultUrl = $result["url"];
-        if (empty($resultUrl)) {
-            return $url;
-        }
-        if ($resultUrl[strlen($resultUrl) - 1] !== "/" && $withSlash) {
-            $lastDotPosition = strrpos($resultUrl, ".");
-            $lastSlashPosition = strrpos($resultUrl, "/");
-            if ($lastDotPosition < $lastSlashPosition || $lastDotPosition === false) {
-                $resultUrl .= "/";
-            }
-        } else if (!$withSlash && $resultUrl[strlen($resultUrl) - 1] == "/") {
-            $resultUrl = substr($resultUrl, 0, -1);
-        }
-        return $this->combineQueryAndAnchor($resultUrl, $result["query"], $result["anchor"]);
-    }
-    public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo, $getErrors = false) {
+    public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo, $getErrors = false)
+    {
         $homeUrl = str_replace("/", "\/", home_url());
-        $regexAbsoluteUrl = '/'.$homeUrl.'\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
-        $regexRelativeUrl = '/"\/('.$translateFrom.'\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
+        $regexAbsoluteUrl = '/' . $homeUrl . '\/(' . $translateFrom . '\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
+        $regexRelativeUrl = '/"\/(' . $translateFrom . '\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
         if ($translateTo !== $translateFrom) {
             $regexAbsoluteUrlExclude = '/' . $homeUrl . '\/' . $translateTo . '\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
             $regexRelativeUrlExclude = '/"\/' . $translateTo . '\/([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
@@ -97,11 +46,8 @@ class LinkManager {
         );
     }
 
-    private function isRestrictedURL($absoluteURI) {
-        return false !== strpos($absoluteURI, "/wp-content/") || false !== strpos($absoluteURI, "/wp-includes/");
-    }
-
-    private function regexOnContent($regex, $postContent, $getErrors = false, $regexExclude = null) {
+    private function regexOnContent($regex, $postContent, $getErrors = false, $regexExclude = null)
+    {
         preg_match_all($regex, $postContent, $matches);
         $extractedUrls = $matches[0];
         $internalsPostsId = [];
@@ -130,25 +76,93 @@ class LinkManager {
         return $internalsPostsId;
     }
 
-    public function translateInternalLinks($postContent, $translateFrom, $translateTo) {
-        global $tsm;
-
-        $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
-        $newContent = $postContent;
-        foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
-            $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($postIdRelated, $translateTo);
-            if ($internalPostIdTranslated) {
-                $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
-                if ($titleInternalPostIdTranslated) {
-                    $newContent = str_replace($urlToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $newContent);
-                }
+    public function formatUrlToAbsolute($url, $withSlash = true)
+    {
+        $result = $this->splitAllQueryAndAnchor($url);
+        $url = $result["url"];
+        if (false === strrpos($url, 'http://') && false === strrpos($url, 'https://')) {
+            $resultUrl = get_home_url();
+            if ($url[0] === "/") {
+                $resultUrl .= $url;
+            } else {
+                $resultUrl .= "/" . $url;
             }
+        } else {
+            $resultUrl = $url;
         }
 
-        return $newContent;
+        $resultUrl = $this->addOrRemoveSlash($resultUrl, $withSlash);
+
+        return $this->combineQueryAndAnchor($this->cleanMultiplesSlash($resultUrl), $result["query"], $result["anchor"]);
     }
 
-    public function getIssuedInternalLinks($postContent, $translateFrom, $translateTo) {
+    public function splitAllQueryAndAnchor($url)
+    {
+        $urlParts = explode("#", $url, 2);
+        $url = $urlParts[0];
+        $anchor = $urlParts[1] ?? "";
+
+        $queryParts = explode("?", $url, 2);
+        $url = $queryParts[0];
+        $query = $queryParts[1] ?? "";
+
+        return [
+            "url" => $url,
+            "query" => $query,
+            "anchor" => $anchor
+        ];
+    }
+
+    public function addOrRemoveSlash($url, $withSlash = true)
+    {
+        $result = $this->splitAllQueryAndAnchor($url);
+        $resultUrl = $result["url"];
+        if (empty($resultUrl)) {
+            return $url;
+        }
+        if ($resultUrl[strlen($resultUrl) - 1] !== "/" && $withSlash) {
+            $lastDotPosition = strrpos($resultUrl, ".");
+            $lastSlashPosition = strrpos($resultUrl, "/");
+            if ($lastDotPosition < $lastSlashPosition || $lastDotPosition === false) {
+                $resultUrl .= "/";
+            }
+        } else if (!$withSlash && $resultUrl[strlen($resultUrl) - 1] == "/") {
+            $resultUrl = substr($resultUrl, 0, -1);
+        }
+        return $this->combineQueryAndAnchor($resultUrl, $result["query"], $result["anchor"]);
+    }
+
+    public function combineQueryAndAnchor($url, $query, $anchor)
+    {
+        if (strlen($query) > 0) {
+            $url .= "?" . $query;
+        }
+        if (strlen($anchor) > 0) {
+            $url .= "#" . $anchor;
+        }
+
+        if (empty($url)) {
+            return "#";
+        }
+
+        return $url;
+    }
+
+    public function cleanMultiplesSlash($urlWithoutExtra)
+    {
+        $urlWithoutExtra = str_replace("//", "/", $urlWithoutExtra);
+        $urlWithoutExtra = str_replace("https:/", "https://", $urlWithoutExtra);
+        $urlWithoutExtra = str_replace("http:/", "http://", $urlWithoutExtra);
+        return $urlWithoutExtra;
+    }
+
+    private function isRestrictedURL($absoluteURI)
+    {
+        return false !== strpos($absoluteURI, "/wp-content/") || false !== strpos($absoluteURI, "/wp-includes/");
+    }
+
+    public function getIssuedInternalLinks($postContent, $translateFrom, $translateTo)
+    {
         global $tsm;
         if ($translateFrom === $translateTo) {
             return [

@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
-use TraduireSansMigraine\Wordpress\Action;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Object\Action;
 
 
 if (!defined("ABSPATH")) {
@@ -57,7 +57,7 @@ class AddToQueue
         }
         $languageTo = $_POST["languageTo"];
         $postId = intval($_POST["postId"]);
-        $languageFrom = $tsm->getPolylangManager()->getLanguageForPost($postId);
+        $languageFrom = $tsm->getPolylangManager()->getLanguageSlugForPost($postId);
         if ($languageFrom === $languageTo) {
             wp_send_json_error([
                 "message" => seoSansMigraine_returnErrorForImpossibleReasons()

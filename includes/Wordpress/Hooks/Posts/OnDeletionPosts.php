@@ -39,7 +39,7 @@ class OnDeletionPosts
             return;
         }
         $translations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
-        $currentSlug = $tsm->getPolylangManager()->getLanguageForPost($postId);
+        $currentSlug = $tsm->getPolylangManager()->getLanguageSlugForPost($postId);
         $isDefault = false;
         foreach ($translations as $translation) {
             if (($translation["postId"] == $postId || $translation["code"] === $currentSlug) && $translation["default"]) {

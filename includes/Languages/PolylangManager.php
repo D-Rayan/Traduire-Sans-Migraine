@@ -25,7 +25,7 @@ class PolylangManager
         }
     }
 
-    public function getLanguageForPost(string $postId): string
+    public function getLanguageSlugForPost(string $postId): string
     {
         if (!function_exists("pll_get_post_language")) {
             return "";

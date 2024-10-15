@@ -19,6 +19,7 @@ use TraduireSansMigraine\Front\NotificationsPage;
 use TraduireSansMigraine\Front\PluginsPage;
 use TraduireSansMigraine\SeoSansMigraine\Client;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\DAO\DAOInternalsLinks;
 use TraduireSansMigraine\Wordpress\Hooks\Hooks;
 use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\OfflineProcess;
@@ -69,6 +70,7 @@ class TraduireSansMigraine
         if ($this->isPluginGotEnabled()) {
             add_action("admin_init", [$this, "displayMessageEnabled"]);
             DAOActions::updateDatabaseIfNeeded();
+            DAOInternalsLinks::updateDatabaseIfNeeded();
         }
         Updater::init();
         $this->handleJSON();
@@ -128,6 +130,7 @@ class TraduireSansMigraine
         $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%seo_sans_migraine%'");
         $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%tsm%'");
         DAOActions::deleteTable();
+        DAOInternalsLinks::deleteTable();
     }
 
     public function getSettings()

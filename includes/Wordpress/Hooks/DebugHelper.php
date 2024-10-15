@@ -3,38 +3,45 @@
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
 
-
 if (!defined("ABSPATH")) {
     exit;
 }
 
-class DebugHelper {
+class DebugHelper
+{
 
     public function __construct()
     {
     }
-    public function loadHooksClient() {
-        // nothing to load
+
+    public function init()
+    {
+        $this->loadHooks();
     }
 
-    public function loadHooksAdmin() {
-        add_action("wp_ajax_traduire-sans-migraine_send_debug", [$this, "debugTranslation"]);
-    }
-
-    public function loadHooks() {
+    public function loadHooks()
+    {
         if (is_admin()) {
             $this->loadHooksAdmin();
         } else {
             $this->loadHooksClient();
         }
     }
-    public function init() {
-        $this->loadHooks();
+
+    public function loadHooksAdmin()
+    {
+        add_action("wp_ajax_traduire-sans-migraine_send_debug", [$this, "debugTranslation"]);
     }
 
-    public function debugTranslation() {
+    public function loadHooksClient()
+    {
+        // nothing to load
+    }
+
+    public function debugTranslation()
+    {
         global $tsm;
-        if (!isset($_POST["wpNonce"])  || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
+        if (!isset($_POST["wpNonce"]) || !wp_verify_nonce($_POST["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
@@ -52,7 +59,7 @@ class DebugHelper {
             wp_send_json_error(seoSansMigraine_returnLoginError(), 400);
             wp_die();
         }
-        $codeFrom = $tsm->getPolylangManager()->getLanguageForPost($originalPost->ID);
+        $codeFrom = $tsm->getPolylangManager()->getLanguageSlugForPost($originalPost->ID);
         $pluginsActives = get_option("active_plugins");
         $response = $tsm->getClient()->sendDebugData([
             "post" => $originalPost,

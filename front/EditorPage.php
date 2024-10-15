@@ -47,6 +47,7 @@ class EditorPage
                 width: 100vw;
                 height: 100vh;
                 background-color: rgba(0, 0, 0, 0.45);
+                z-index: 90000;
             }
 
             #display-traduire-sans-migraine-button {

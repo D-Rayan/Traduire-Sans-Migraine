@@ -37,7 +37,7 @@ class StartTranslation
         if (!$result) {
             return seoSansMigraine_returnLoginError();
         }
-        $codeFrom = $tsm->getPolylangManager()->getLanguageForPost($post->ID);
+        $codeFrom = $tsm->getPolylangManager()->getLanguageSlugForPost($post->ID);
         $this->prepareDataToTranslate($post, $codeTo);
 
         $result = $tsm->getClient()->startTranslation($this->dataToTranslate, $codeFrom, $codeTo, [

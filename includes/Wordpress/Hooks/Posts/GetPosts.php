@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
-use TraduireSansMigraine\Wordpress\Action;
+use TraduireSansMigraine\Wordpress\Object\Action;
 
 if (!defined("ABSPATH")) {
     exit;

@@ -6,6 +6,7 @@ namespace TraduireSansMigraine\Wordpress;
 use Exception;
 use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Object\Action;
 use WP_Error;
 
 if (!defined("ABSPATH")) {
@@ -67,7 +68,7 @@ class TranslateHelper
     private function startTranslate()
     {
         try {
-            $this->codeFrom = $this->polylangManager->getLanguageForPost($this->originalPost->ID);
+            $this->codeFrom = $this->polylangManager->getLanguageSlugForPost($this->originalPost->ID);
             if (isset($this->dataToTranslate["content"])) {
                 $this->dataToTranslate["content"] = $this->linkManager->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
                 $this->handleAssetsTranslations();
@@ -226,6 +227,7 @@ class TranslateHelper
             $postData["post_excerpt"] = $this->dataToTranslate["excerpt"];
         }
         $translations[$this->action->getSlugTo()] = wp_insert_post($postData, true);
+        $this->translatedPostId = $translations[$this->action->getSlugTo()];
         $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
     }
 

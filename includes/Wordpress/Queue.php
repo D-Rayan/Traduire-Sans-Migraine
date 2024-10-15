@@ -3,23 +3,33 @@
 namespace TraduireSansMigraine\Wordpress;
 
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Object\Action;
 
-class Queue {
+class Queue
+{
     private $nextAction;
-    public function __construct() {}
 
-    private function getNextAction() {
-        if (!$this->nextAction) {
-            $data = DAOActions::getNextOrCurrentAction();
-            if (!$data) {
-                return null;
-            }
-            $this->nextAction = new Action($data);
-        }
-        return $this->nextAction;
+    public function __construct()
+    {
     }
 
-    public function startNextProcess() {
+    public static function init()
+    {
+        $instance = self::getInstance();
+        add_action(wp_doing_ajax() ? "startNextProcess" : "admin_init", [$instance, "startNextProcess"]);
+    }
+
+    public static function getInstance(): Queue
+    {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
+    }
+
+    public function startNextProcess()
+    {
         $nextAction = $this->getNextAction();
         if ($this->getState() === DAOActions::$STATE["PAUSE"]) {
             $this->checkIfPauseResolved();
@@ -38,7 +48,60 @@ class Queue {
         $nextAction->execute();
     }
 
-    public function getActionsEnriched() {
+    private function getNextAction()
+    {
+        if (!$this->nextAction) {
+            $data = DAOActions::getNextOrCurrentAction();
+            if (!$data) {
+                return null;
+            }
+            $this->nextAction = new Action($data);
+        }
+        return $this->nextAction;
+    }
+
+    private function getState()
+    {
+        $nextAction = $this->getNextAction();
+        if (null === $nextAction) {
+            return DAOActions::$STATE["PENDING"];
+        }
+        return $nextAction->getState();
+    }
+
+    public function checkIfPauseResolved()
+    {
+        global $tsm;
+        $nextAction = $this->getNextAction();
+        if ($nextAction === null) {
+            return;
+        }
+        if ($nextAction->getState() !== DAOActions::$STATE["PAUSE"]) {
+            return;
+        }
+        if ($nextAction->isLoginRequired() && $tsm->getClient()->checkCredential()) {
+            $nextAction->setResponse([])->setAsPending()->save();
+        }
+        if ($nextAction->isLanguagesIssue() && $tsm->getClient()->fetchAccount()) {
+            $account = $tsm->getClient()->getAccount();
+            $maxSlugs = $account["slugs"]["max"];
+            $currentSlugs = $account["slugs"]["current"];
+            $allowedSlugs = $account["slugs"]["allowed"];
+            if ($maxSlugs > $currentSlugs || in_array($nextAction->getSlugTo(), $allowedSlugs)) {
+                $nextAction->setResponse([])->setAsPending()->save();
+            }
+        }
+        if ($nextAction->isQuotaIssue() && $tsm->getClient()->fetchAccount()) {
+            $account = $tsm->getClient()->getAccount();
+            $quotaLeft = $account["quota"]["max"] == -1 || $account["quota"]["bonus"] == -1 ? PHP_INT_MAX : $account["quota"]["max"] + $account["quota"]["bonus"] - $account["quota"]["current"];
+            if ($quotaLeft >= $nextAction->getEstimatedQuota()) {
+                $nextAction->setResponse([])->setAsPending()->save();
+            }
+        }
+    }
+
+    public function getActionsEnriched()
+    {
         $queue = DAOActions::getActionsForQueue();
         foreach ($queue as $key => $item) {
             $translationMap = !empty($item["translationMap"]) ? unserialize($item["translationMap"]) : [];
@@ -71,62 +134,14 @@ class Queue {
         return $queue;
     }
 
-    public function isQueueDone() {
+    public function isQueueDone()
+    {
         $nextAction = $this->getNextAction();
         return $nextAction === null;
     }
-    public function setAsArchived() {
+
+    public function setAsArchived()
+    {
         DAOActions::setAsArchivedAllDoneActions();
-    }
-
-    public function checkIfPauseResolved() {
-        global $tsm;
-        $nextAction = $this->getNextAction();
-        if ($nextAction === null) {
-            return;
-        }
-        if ($nextAction->getState() !== DAOActions::$STATE["PAUSE"]) {
-            return;
-        }
-        if ($nextAction->isLoginRequired() && $tsm->getClient()->checkCredential()) {
-            $nextAction->setResponse([])->setAsPending()->save();
-        }
-        if ($nextAction->isLanguagesIssue() && $tsm->getClient()->fetchAccount()) {
-            $account = $tsm->getClient()->getAccount();
-            $maxSlugs = $account["slugs"]["max"];
-            $currentSlugs = $account["slugs"]["current"];
-            $allowedSlugs = $account["slugs"]["allowed"];
-            if ($maxSlugs > $currentSlugs || in_array($nextAction->getSlugTo(), $allowedSlugs)) {
-                $nextAction->setResponse([])->setAsPending()->save();
-            }
-        }
-        if ($nextAction->isQuotaIssue() && $tsm->getClient()->fetchAccount()) {
-            $account = $tsm->getClient()->getAccount();
-            $quotaLeft = $account["quota"]["max"] == -1 || $account["quota"]["bonus"] == -1 ? PHP_INT_MAX : $account["quota"]["max"] + $account["quota"]["bonus"] - $account["quota"]["current"];
-            if ($quotaLeft >= $nextAction->getEstimatedQuota()) {
-                $nextAction->setResponse([])->setAsPending()->save();
-            }
-        }
-    }
-
-    public static function getInstance(): Queue {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
-    }
-
-    private function getState() {
-        $nextAction = $this->getNextAction();
-        if (null === $nextAction) {
-            return DAOActions::$STATE["PENDING"];
-        }
-        return $nextAction->getState();
-    }
-
-    public static function init() {
-        $instance = self::getInstance();
-        add_action(wp_doing_ajax() ? "startNextProcess" : "admin_init", [$instance, "startNextProcess"]);
     }
 }
