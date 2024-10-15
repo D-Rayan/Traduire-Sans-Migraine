@@ -53,7 +53,7 @@ class GetPosts
         $sortField = isset($_GET["sortField"]) && $_GET["sortField"] === "post_title" ? "post_title" : "ID";
         $sortOrder = isset($_GET["sortOrder"]) && $_GET["sortOrder"] === "ascend" ? "ASC" : "DESC";
         $postAuthors = $this->getAuthorsIDFromDB();
-        $postStatus = ["publish", "draft", "future"];
+        $postStatus = ["publish", "draft", "future", "private"];
         $languages = $tsm->getPolylangManager()->getLanguagesActives();
         if (!isset($languages[$slugFrom])) {
             wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
@@ -115,8 +115,7 @@ class GetPosts
     private function searchPosts($fromTermId, $authors = [], $postStatus = [], $sortField = "ID", $sortOrder = "DESC")
     {
         global $wpdb;
-        $queryFetchPosts = $wpdb->prepare(
-            "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
+        $queryFetchPosts = "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
                                 trTaxonomyTo.taxonomy = 'post_translations' AND 
                                 trTaxonomyTo.term_taxonomy_id IN (
                                     SELECT trTo.term_taxonomy_id FROM wp_term_relationships trTo WHERE trTo.object_id = posts.ID
@@ -129,8 +128,8 @@ class GetPosts
                             posts.post_author IN (" . implode(",", $authors) . ") AND 
                             trFrom.term_taxonomy_id = $fromTermId 
                         ORDER BY posts.$sortField $sortOrder
-                        "
-        );
+                        ";
+
 
         return $wpdb->get_results($queryFetchPosts);
     }
