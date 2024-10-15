@@ -31,6 +31,14 @@ class Menu
         add_submenu_page(
             "traduire-sans-migraine",
             "⚙️ Traduire Sans Migraine",
+            TextDomain::__("⚙️ Settings"),
+            "manage_options",
+            "traduire-sans-migraine",
+            [$this, "renderSettingsPage"]
+        );
+        add_submenu_page(
+            "traduire-sans-migraine",
+            "⚙️ Traduire Sans Migraine",
             TextDomain::__("💊 Bulk Translation"),
             "manage_options",
             "traduire-sans-migraine#bulk",
