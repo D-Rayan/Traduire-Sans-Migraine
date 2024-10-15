@@ -92,10 +92,19 @@ class GetPosts
             }
         }
         $fromTermId = $languages[$slugFrom]["id"];
-        $posts = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder);
-        $posts = $this->filterPosts($posts, $languagesTranslated);
+        $postSearched = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder);
+        $postsFiltered = $this->filterPosts($postSearched, $languagesTranslated);
         wp_send_json_success([
-            "posts" => $posts
+            "posts" => $postsFiltered,
+            "debug" => [
+                "fromTermId" => $fromTermId,
+                "postAuthors" => $postAuthors,
+                "postStatus" => $postStatus,
+                "languagesTranslated" => $languagesTranslated,
+                "sortField" => $sortField,
+                "sortOrder" => $sortOrder,
+                "postSearched" => $postSearched,
+            ]
         ]);
         wp_die();
     }
