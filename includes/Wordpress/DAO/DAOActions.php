@@ -182,7 +182,11 @@ class DAOActions
         if ($deletePending) {
             return $deletePending;
         }
-        return $wpdb->delete($tableName, ['ID' => $itemId, 'state' => self::$STATE["PAUSE"]]);
+        $deletePause = $wpdb->delete($tableName, ['ID' => $itemId, 'state' => self::$STATE["PAUSE"]]);
+        if ($deletePause) {
+            return $deletePause;
+        }
+        return $wpdb->delete($tableName, ['ID' => $itemId, 'state' => self::$STATE["PROCESSING"]]);
     }
 
     public static function getNextOrCurrentAction()

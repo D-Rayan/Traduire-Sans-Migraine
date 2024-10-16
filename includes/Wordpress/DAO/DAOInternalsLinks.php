@@ -91,7 +91,14 @@ class DAOInternalsLinks
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName WHERE hasBeenFixed = 0");
+        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName");
+    }
+
+    public static function countFixed()
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName WHERE hasBeenFixed = 1");
     }
 
     public static function setToBeFixed($wrongPostId, $slug)

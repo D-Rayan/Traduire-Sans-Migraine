@@ -41,7 +41,6 @@ class GetInternalsLinksState
 
     public function getInternalsLinksState()
     {
-        global $tsm;
         if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
@@ -51,6 +50,7 @@ class GetInternalsLinksState
             "cron" => $state,
             "countFixable" => DAOInternalsLinks::countFixable(),
             "countAll" => DAOInternalsLinks::countAll(),
+            "countFixed" => DAOInternalsLinks::countFixed(),
             "nextRun" => CronInitializeInternalLinks::getNextTimeRun()
         ]);
         wp_die();
