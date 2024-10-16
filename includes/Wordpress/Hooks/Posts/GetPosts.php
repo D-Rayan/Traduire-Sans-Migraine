@@ -50,6 +50,9 @@ class GetPosts
             wp_die();
         }
         $slugFrom = $_POST["from"];
+        $pageSize = isset($_GET["pageSize"]) && is_numeric($_GET["pageSize"]) ? intval($_GET["pageSize"]) : 10;
+        $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? intval($_GET["page"]) : 1;
+        $offset = ($page - 1) * $pageSize;
         $sortField = isset($_GET["sortField"]) && $_GET["sortField"] === "post_title" ? "post_title" : "ID";
         $sortOrder = isset($_GET["sortOrder"]) && $_GET["sortOrder"] === "ascend" ? "ASC" : "DESC";
         $postAuthors = $this->getAuthorsIDFromDB();
@@ -92,19 +95,15 @@ class GetPosts
             }
         }
         $fromTermId = $languages[$slugFrom]["id"];
-        $postSearched = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder);
-        $postsFiltered = $this->filterPosts($postSearched, $languagesTranslated);
+        $posts = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder, $offset, $pageSize);
+        $posts = $this->filterPosts($posts, $languagesTranslated);
         wp_send_json_success([
-            "posts" => $postsFiltered,
-            "debug" => [
-                "fromTermId" => $fromTermId,
-                "postAuthors" => $postAuthors,
-                "postStatus" => $postStatus,
-                "languagesTranslated" => $languagesTranslated,
-                "sortField" => $sortField,
-                "sortOrder" => $sortOrder,
-                "postSearched" => $postSearched,
-            ]
+            "posts" => $posts,
+            "pagination" => [
+                "total" => $this->countPosts($fromTermId, $postAuthors, $postStatus),
+                "pageSize" => $pageSize,
+                "current" => $page,
+            ],
         ]);
         wp_die();
     }
@@ -121,7 +120,7 @@ class GetPosts
         return $authors;
     }
 
-    private function searchPosts($fromTermId, $authors = [], $postStatus = [], $sortField = "ID", $sortOrder = "DESC")
+    private function searchPosts($fromTermId, $authors = [], $postStatus = [], $sortField = "ID", $sortOrder = "DESC", $offset = 0, $limit = 50)
     {
         global $wpdb;
         $queryFetchPosts = "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
@@ -135,8 +134,10 @@ class GetPosts
                             posts.post_type IN ('page', 'post') AND 
                             posts.post_status IN ('" . implode("','", $postStatus) . "') AND 
                             posts.post_author IN (" . implode(",", $authors) . ") AND 
-                            trFrom.term_taxonomy_id = $fromTermId 
+                            trFrom.term_taxonomy_id = $fromTermId AND
+                            posts.post_title != ''
                         ORDER BY posts.$sortField $sortOrder
+                        LIMIT $offset, $limit
                         ";
 
 
@@ -147,12 +148,9 @@ class GetPosts
     {
         $filteredPosts = [];
         foreach ($posts as $post) {
-            if (empty($post->post_title)) {
-                continue;
-            }
             $translationMap = !empty($post->translationMap) ? unserialize($post->translationMap) : [];
-            $shouldSkip = false;
             $post->translationMap = [];
+            $post->filters = [];
             foreach ($languagesTranslated as $slug => $status) {
                 $shouldBeDone = in_array("done", $status);
                 $shouldBeNotTranslated = in_array("not_translated", $status);
@@ -163,6 +161,7 @@ class GetPosts
                 $isTranslated = !empty($translation);
                 $aRelatedActionExist = Action::loadByPostId($post->ID, $slug);
                 $translationIsUpdated = $translation && $translation->post_modified > $post->post_modified;
+
 
                 $shouldKeepIt = $shouldBeDone && $isTranslated && $translationIsUpdated;
                 $shouldKeepIt = $shouldKeepIt || ($shouldBeNotTranslated && !$isTranslated && (!$aRelatedActionExist || !$aRelatedActionExist->willBeProcessing()));
@@ -176,17 +175,28 @@ class GetPosts
                     ] : null,
                     "translationIsUpdated" => $translationIsUpdated,
                 ];
-                if (!$shouldKeepIt) {
-                    $shouldSkip = true;
-                    break;
-                }
-            }
-            if ($shouldSkip) {
-                continue;
+                $post->filters["display"] = $shouldKeepIt;
             }
             $filteredPosts[] = $post;
         }
         return $filteredPosts;
+    }
+
+    private function countPosts($fromTermId, $authors = [], $postStatus = [])
+    {
+        global $wpdb;
+        $queryFetchPosts = "SELECT COUNT(*) FROM $wpdb->posts posts
+                        LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
+                        WHERE 
+                            posts.post_type IN ('page', 'post') AND 
+                            posts.post_status IN ('" . implode("','", $postStatus) . "') AND 
+                            posts.post_author IN (" . implode(",", $authors) . ") AND 
+                            trFrom.term_taxonomy_id = $fromTermId AND
+                            posts.post_title != ''
+                        ";
+
+
+        return $wpdb->get_var($queryFetchPosts);
     }
 }
 
