@@ -48,6 +48,22 @@ class InternalsLinks
             self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notPublished"], false);
             self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["translatable"], true);
         }
+        $postMeta = get_post_meta($post->ID);
+        foreach ($postMeta as $key => $value) {
+            $valueKey = $value[0];
+            if (!is_string($valueKey)) {
+                continue;
+            }
+            foreach ($languagesActives as $slug => $languageActive) {
+                if ($slug === $postLanguageSlug) {
+                    continue;
+                }
+                $result = $tsm->getLinkManager()->getIssuedInternalLinks($valueKey, $postLanguageSlug, $slug);
+                self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notTranslated"], false);
+                self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notPublished"], false);
+                self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["translatable"], true);
+            }
+        }
     }
 
     private static function saveInternalsLinks($postId, $slugPost, $links, $canBeFixed)
@@ -111,17 +127,6 @@ class InternalsLinks
         return $this;
     }
 
-    public function getSlugPost()
-    {
-        return $this->slugPost;
-    }
-
-    public function setSlugPost($slugPost)
-    {
-        $this->slugPost = $slugPost;
-        return $this;
-    }
-
     public function getPostId()
     {
         return $this->postId;
@@ -132,6 +137,57 @@ class InternalsLinks
         $this->postId = $postId;
         return $this;
     }
+
+    public function getCanBeFixed()
+    {
+        return $this->canBeFixed;
+    }
+
+    public function setCanBeFixed($canBeFixed)
+    {
+        $this->canBeFixed = $canBeFixed;
+        return $this;
+    }
+
+    public function getHasBeenFixed()
+    {
+        return $this->hasBeenFixed;
+    }
+
+    public function setHasBeenFixed($hasBeenFixed)
+    {
+        $this->hasBeenFixed = $hasBeenFixed;
+        return $this;
+    }
+
+    public function fix()
+    {
+        global $tsm;
+        $postContent = get_post_field('post_content', $this->postId);
+        if ($postContent === null) {
+            return $this;
+        }
+
+        $postContent = $tsm->getLinkManager()->replaceLink($postContent, $this->getNotTranslatedUrl(), $this->getNotTranslatedPostId(), $this->getSlugPost());
+        wp_update_post([
+            "ID" => $this->postId,
+            "post_content" => $postContent,
+        ]);
+
+        $postMetas = get_post_meta($this->postId);
+        foreach ($postMetas as $key => $value) {
+            $valueKey = $value[0];
+            if (!strstr($valueKey, $this->getNotTranslatedUrl())) {
+                continue;
+            }
+            $valueKey = $tsm->getLinkManager()->replaceLink($valueKey, $this->getNotTranslatedUrl(), $this->getNotTranslatedPostId(), $this->getSlugPost());
+            update_post_meta($this->postId, $key, $valueKey);
+        }
+
+        $this->setHasBeenFixed(true);
+        return $this;
+    }
+
 
     public function getNotTranslatedUrl()
     {
@@ -155,25 +211,14 @@ class InternalsLinks
         return $this;
     }
 
-    public function getCanBeFixed()
+    public function getSlugPost()
     {
-        return $this->canBeFixed;
+        return $this->slugPost;
     }
 
-    public function setCanBeFixed($canBeFixed)
+    public function setSlugPost($slugPost)
     {
-        $this->canBeFixed = $canBeFixed;
-        return $this;
-    }
-
-    public function getHasBeenFixed()
-    {
-        return $this->hasBeenFixed;
-    }
-
-    public function setHasBeenFixed($hasBeenFixed)
-    {
-        $this->hasBeenFixed = $hasBeenFixed;
+        $this->slugPost = $slugPost;
         return $this;
     }
 
