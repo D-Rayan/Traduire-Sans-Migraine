@@ -69,9 +69,10 @@ class TraduireSansMigraine
         }
         if ($this->isPluginGotEnabled()) {
             add_action("admin_init", [$this, "displayMessageEnabled"]);
-            DAOActions::updateDatabaseIfNeeded();
-            DAOInternalsLinks::updateDatabaseIfNeeded();
         }
+        DAOActions::updateDatabaseIfNeeded();
+        DAOInternalsLinks::updateDatabaseIfNeeded();
+        $this->cleanOldTSM();
         Updater::init();
         $this->handleJSON();
         OfflineProcess::init();
@@ -86,21 +87,24 @@ class TraduireSansMigraine
 
     public function setPluginAsEnabled()
     {
-        global $wpdb;
-
         update_option('tsm-has-been-activated', true, false);
-        if (get_option('tsm-has-been-cleaned', false)) {
-            return;
-        }
-        update_option('tsm-has-been-cleaned', true, false);
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
-        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
-        $wpdb->query("DELETE FROM {$wpdb->prefix}posts WHERE post_title LIKE '%Translation of post%' AND post_content = 'This content is temporary... It will be either deleted or updated soon.' AND post_status = 'draft'");
     }
 
     private function isPluginGotEnabled()
     {
         return get_option('tsm-has-been-activated', false);
+    }
+
+    private function cleanOldTSM()
+    {
+        global $wpdb;
+        if (get_option('tsm-has-been-cleaned', false)) {
+            return;
+        }
+        update_option('tsm-has-been-cleaned', true, true);
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_state%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%_seo_sans_migraine_post%'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}posts WHERE post_title LIKE '%Translation of post%' AND post_content = 'This content is temporary... It will be either deleted or updated soon.' AND post_status = 'draft'");
     }
 
     private function handleJSON()

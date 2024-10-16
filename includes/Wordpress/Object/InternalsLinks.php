@@ -12,7 +12,7 @@ class InternalsLinks
     private $notTranslatedUrl;
     private $notTranslatedPostId;
     private $canBeFixed;
-    private $lock;
+    private $hasBeenFixed;
 
     public function __construct($args)
     {
@@ -22,7 +22,7 @@ class InternalsLinks
         $this->notTranslatedUrl = $args["notTranslatedUrl"];
         $this->notTranslatedPostId = $args["notTranslatedPostId"];
         $this->canBeFixed = $args["canBeFixed"];
-        $this->lock = $args["lock"];
+        $this->hasBeenFixed = $args["hasBeenFixed"];
     }
 
     public static function getById($id)
@@ -57,7 +57,7 @@ class InternalsLinks
             $internalsLinks
                 ->setSlugPost($slugPost)
                 ->setNotTranslatedUrl($notTranslatedUrl)
-                ->setLock(null)
+                ->setHasBeenFixed(null)
                 ->setCanBeFixed($canBeFixed)
                 ->save();
         }
@@ -74,7 +74,7 @@ class InternalsLinks
                 "notTranslatedUrl" => null,
                 "notTranslatedPostId" => $notTranslatedPostId,
                 "canBeFixed" => false,
-                "lock" => null,
+                "hasBeenFixed" => null,
             ]);
         }
         return new InternalsLinks($data);
@@ -89,11 +89,11 @@ class InternalsLinks
                 "notTranslatedUrl" => $this->notTranslatedUrl,
                 "notTranslatedPostId" => $this->notTranslatedPostId,
                 "canBeFixed" => $this->canBeFixed,
-                "lock" => $this->lock,
+                "hasBeenFixed" => $this->hasBeenFixed,
             ]);
         } else {
             DAOInternalsLinks::update($this->ID, [
-                "lock" => $this->lock,
+                "hasBeenFixed" => $this->hasBeenFixed,
                 "canBeFixed" => $this->canBeFixed,
             ]);
         }
@@ -166,14 +166,14 @@ class InternalsLinks
         return $this;
     }
 
-    public function getLock()
+    public function getHasBeenFixed()
     {
-        return $this->lock;
+        return $this->hasBeenFixed;
     }
 
-    public function setLock($lock)
+    public function setHasBeenFixed($hasBeenFixed)
     {
-        $this->lock = $lock;
+        $this->hasBeenFixed = $hasBeenFixed;
         return $this;
     }
 

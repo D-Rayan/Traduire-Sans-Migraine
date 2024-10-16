@@ -57,7 +57,7 @@ class DAOInternalsLinks
             `notTranslatedUrl` VARCHAR(255) NOT NULL,
             `notTranslatedPostId` BIGINT NOT NULL,
             `canBeFixed` TINYINT NOT NULL,
-            `lock` VARCHAR(255) NULL,
+            `hasBeenFixed` TINYINT NOT NULL,
             PRIMARY KEY (`ID`),
             UNIQUE KEY `postId_notTranslatedPostId` (`postId`, `notTranslatedPostId`)
         ) $charsetCollate;";
@@ -84,14 +84,14 @@ class DAOInternalsLinks
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName WHERE canBeFixed = 1");
+        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName WHERE canBeFixed = 1 AND hasBeenFixed = 0");
     }
 
     public static function countAll()
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName");
+        return $wpdb->get_var("SELECT COUNT(*) FROM $tableName WHERE hasBeenFixed = 0");
     }
 
     public static function setToBeFixed($wrongPostId, $slug)
@@ -106,13 +106,6 @@ class DAOInternalsLinks
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, $args, ['ID' => $id]);
-    }
-
-    public static function getUrlsFixable()
-    {
-        global $wpdb;
-        $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE canBeFixed = 1", ARRAY_A);
     }
 
     public static function deleteById($id)
@@ -135,6 +128,20 @@ class DAOInternalsLinks
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         return $wpdb->get_row("SELECT * FROM $tableName WHERE postId = $postId AND notTranslatedPostId = $notTranslatedPostId", ARRAY_A);
+    }
+
+    public static function getPostsCron($lastPostId = 0)
+    {
+        global $wpdb;
+
+        return $wpdb->get_results("SELECT posts.ID, posts.post_content FROM $wpdb->posts posts
+                    WHERE 
+                        posts.post_type IN ('page', 'post') AND
+                        posts.post_status IN ('draft', 'publish', 'future', 'private', 'pending') AND 
+                        posts.ID > $lastPostId
+                    ORDER BY posts.ID ASC 
+                    LIMIT 10
+                    ");
     }
 }
 

@@ -2,6 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
+use TraduireSansMigraine\Wordpress\DAO\DAOInternalsLinks;
 use TraduireSansMigraine\Wordpress\Object\InternalsLinks;
 
 if (!defined("ABSPATH")) {
@@ -70,15 +71,7 @@ class CronInitializeInternalLinks
     {
         $stateCron = self::getOption();
         $lastPostId = $stateCron["lastPostId"];
-        $posts = get_posts([
-            "post_type" => ["post", "page"],
-            "posts_per_page" => 10, // to not overload the server
-            "offset" => $lastPostId,
-            "orderby" => "ID",
-            "order" => "ASC",
-            "lang" => "",
-            "fields" => ["ID", "post_content"],
-        ]);
+        $posts = DAOInternalsLinks::getPostsCron($lastPostId);
         foreach ($posts as $post) {
             InternalsLinks::verifyPost($post);
             $lastPostId = $post->ID;

@@ -127,7 +127,7 @@ class GetPosts
         $queryFetchPosts = "SELECT posts.ID, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
                                 trTaxonomyTo.taxonomy = 'post_translations' AND 
                                 trTaxonomyTo.term_taxonomy_id IN (
-                                    SELECT trTo.term_taxonomy_id FROM wp_term_relationships trTo WHERE trTo.object_id = posts.ID
+                                    SELECT trTo.term_taxonomy_id FROM $wpdb->term_relationships trTo WHERE trTo.object_id = posts.ID
                                 )
                             ) AS translationMap FROM $wpdb->posts posts
                         LEFT JOIN $wpdb->term_relationships trFrom ON ID = trFrom.object_id 
