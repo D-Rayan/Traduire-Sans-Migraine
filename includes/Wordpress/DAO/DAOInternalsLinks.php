@@ -101,11 +101,11 @@ class DAOInternalsLinks
         return $wpdb->get_var("SELECT COUNT(*) FROM $tableName WHERE hasBeenFixed = 1");
     }
 
-    public static function setToBeFixed($wrongPostId, $slug)
+    public static function setToBeFixed($notTranslatedPostId, $slugPost)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        $wpdb->update($tableName, ['canBeFixed' => 1], ['postId' => $wrongPostId, 'slugPost' => $slug]);
+        $wpdb->update($tableName, ['canBeFixed' => 1], ['notTranslatedPostId' => $notTranslatedPostId, 'slugPost' => $slugPost]);
     }
 
     public static function update($id, $args)
@@ -149,6 +149,13 @@ class DAOInternalsLinks
                     ORDER BY posts.ID ASC 
                     LIMIT 10
                     ");
+    }
+
+    public static function getFixable()
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        return $wpdb->get_results("SELECT * FROM $tableName WHERE canBeFixed = 1 AND hasBeenFixed = 0", ARRAY_A);
     }
 }
 

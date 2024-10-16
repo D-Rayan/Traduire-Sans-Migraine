@@ -16,13 +16,7 @@ class LinkManager
         $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
         $newContent = $postContent;
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
-            $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($postIdRelated, $translateTo);
-            if ($internalPostIdTranslated) {
-                $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
-                if ($titleInternalPostIdTranslated && false === strpos($titleInternalPostIdTranslated, "p=")) {
-                    $newContent = str_replace($urlToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $newContent);
-                }
-            }
+            $newContent = $this->replaceLink($newContent, $urlToReplace, $postIdRelated, $translateTo);
         }
 
         return $newContent;
@@ -159,6 +153,43 @@ class LinkManager
     private function isRestrictedURL($absoluteURI)
     {
         return false !== strpos($absoluteURI, "/wp-content/") || false !== strpos($absoluteURI, "/wp-includes/");
+    }
+
+    public function replaceLink($value, $linkToReplace, $linkPostId, $slugTo)
+    {
+        global $tsm;
+
+        if (is_array($value)) {
+            foreach ($value as $key => $val) {
+                $value[$key] = $this->replaceLink($val, $linkToReplace, $linkPostId, $slugTo);
+            }
+        } else if (is_string($value)) {
+            if ($this->is_json($value)) {
+                return $this->replaceLink(wp_slash($value), $linkToReplace, $linkPostId, $slugTo);
+            } else if ($this->is_serialized($value)) {
+                return $this->replaceLink(unserialize($value), $linkToReplace, $linkPostId, $slugTo);
+            }
+            
+            $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($linkPostId, $slugTo);
+            if ($internalPostIdTranslated) {
+                $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
+                if ($titleInternalPostIdTranslated && false === strpos($titleInternalPostIdTranslated, "p=")) {
+                    $value = str_replace($linkToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $value);
+                }
+            }
+        }
+        return $value;
+    }
+
+    private function is_json($string)
+    {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+
+    private function is_serialized($string)
+    {
+        return ($string == serialize(false) || @unserialize($string) !== false);
     }
 
     public function getIssuedInternalLinks($postContent, $translateFrom, $translateTo)
