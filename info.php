@@ -15,7 +15,7 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 15 Octobre 2024</h4><ul>
+        "changelog" => "<h4>Mise à jour du 16 Octobre 2024</h4><ul>
         <li>Nouvelle interface</li>
         <li>Amélioration des options wordpress pour ne plus ralentir votre back office</li>
         <li>Gestion avancée des langues intégrés à l'outil</li>
