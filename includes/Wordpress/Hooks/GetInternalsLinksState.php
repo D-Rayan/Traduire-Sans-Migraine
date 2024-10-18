@@ -51,7 +51,9 @@ class GetInternalsLinksState
             "countFixable" => DAOInternalsLinks::countFixable(),
             "countAll" => DAOInternalsLinks::countAll(),
             "countFixed" => DAOInternalsLinks::countFixed(),
-            "nextRun" => CronInitializeInternalLinks::getNextTimeRun()
+            "nextRun" => CronInitializeInternalLinks::getNextTimeRun(),
+            "postsCount" => DAOInternalsLinks::getPostsCronTotal(),
+            "postsToAnalyzed" => DAOInternalsLinks::getPostsCronTotal($state["lastPostId"]),
         ]);
         wp_die();
     }

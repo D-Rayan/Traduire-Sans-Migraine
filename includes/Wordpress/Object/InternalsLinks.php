@@ -39,41 +39,42 @@ class InternalsLinks
         global $tsm;
         $postLanguageSlug = $tsm->getPolylangManager()->getLanguageSlugForPost($post->ID);
         $languagesActives = $tsm->getPolylangManager()->getLanguagesActives();
+        $postMeta = get_post_meta($post->ID);
         foreach ($languagesActives as $slug => $languageActive) {
             if ($slug === $postLanguageSlug) {
                 continue;
             }
-            $result = $tsm->getLinkManager()->getIssuedInternalLinks($post->post_content, $postLanguageSlug, $slug);
-            self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notTranslated"], false);
-            self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notPublished"], false);
-            self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["translatable"], true);
-        }
-        $postMeta = get_post_meta($post->ID);
-        foreach ($postMeta as $key => $value) {
-            $valueKey = $value[0];
-            if (!is_string($valueKey)) {
-                continue;
-            }
-            foreach ($languagesActives as $slug => $languageActive) {
-                if ($slug === $postLanguageSlug) {
+            $result = $tsm->getLinkManager()->getIssuedInternalLinks($post->post_content, $slug, $postLanguageSlug);
+            self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notTranslated"], false);
+            self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notPublished"], false);
+            self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["translatable"], true);
+
+            foreach ($postMeta as $key => $value) {
+                $valueKey = $value[0];
+                if (!is_string($valueKey)) {
                     continue;
                 }
-                $result = $tsm->getLinkManager()->getIssuedInternalLinks($valueKey, $postLanguageSlug, $slug);
-                self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notTranslated"], false);
-                self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["notPublished"], false);
-                self::saveInternalsLinks($post->ID, $postLanguageSlug, $result["translatable"], true);
+                $result = $tsm->getLinkManager()->getIssuedInternalLinks($valueKey, $slug, $postLanguageSlug);
+                self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notTranslated"], false);
+                self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notPublished"], false);
+                self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["translatable"], true);
             }
         }
     }
 
-    private static function saveInternalsLinks($postId, $slugPost, $links, $canBeFixed)
+    private static function saveInternalsLinks($postId, $slugPost, $slugLinks, $links, $canBeFixed)
     {
+        global $tsm;
         foreach ($links as $notTranslatedUrl => $notTranslatedPostId) {
+            $slugLink = $tsm->getPolylangManager()->getLanguageSlugForPost($notTranslatedPostId);
+            if ($slugLink !== $slugLinks) {
+                continue;
+            }
             $internalsLinks = self::loadOrCreateByPostAndUrl($postId, $notTranslatedPostId);
             $internalsLinks
                 ->setSlugPost($slugPost)
                 ->setNotTranslatedUrl($notTranslatedUrl)
-                ->setHasBeenFixed(null)
+                ->setHasBeenFixed(false)
                 ->setCanBeFixed($canBeFixed)
                 ->save();
         }

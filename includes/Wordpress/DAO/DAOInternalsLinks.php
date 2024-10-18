@@ -151,6 +151,18 @@ class DAOInternalsLinks
                     ");
     }
 
+    public static function getPostsCronTotal($lastPostId = 0)
+    {
+        global $wpdb;
+
+        return $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->posts posts
+                    WHERE 
+                        posts.post_type IN ('page', 'post') AND
+                        posts.post_status IN ('draft', 'publish', 'future', 'private', 'pending') AND
+                        posts.ID > $lastPostId
+                    ");
+    }
+
     public static function getFixable()
     {
         global $wpdb;

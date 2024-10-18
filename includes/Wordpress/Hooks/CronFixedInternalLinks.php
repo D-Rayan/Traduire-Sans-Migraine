@@ -26,15 +26,15 @@ class CronFixedInternalLinks
     public function enableCron()
     {
         add_filter('cron_schedules', function ($schedules) {
-            $schedules['every_minute'] = array(
+            $schedules['every_minute_fixed'] = array(
                 'interval' => 60,
                 'display' => __('Every minute')
             );
 
             return $schedules;
         });
-        if (!wp_next_scheduled(self::$CRON_NAME)) {
-            wp_schedule_event(time(), 'every_minute', self::$CRON_NAME);
+        if (wp_next_scheduled(self::$CRON_NAME) === false) {
+            wp_schedule_event(time(), 'every_minute_fixed', self::$CRON_NAME);
         }
     }
 
@@ -59,11 +59,10 @@ class CronFixedInternalLinks
         }
     }
 }
-/*
+
 $CronFixedInternalLinks = new CronFixedInternalLinks();
 $CronFixedInternalLinks->enableCron();
 register_deactivation_hook(__FILE__, function () use ($CronFixedInternalLinks) {
     $CronFixedInternalLinks->disableCron();
 });
 $CronFixedInternalLinks->init();
-*/

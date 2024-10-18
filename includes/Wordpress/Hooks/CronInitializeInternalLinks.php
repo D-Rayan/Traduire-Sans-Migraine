@@ -31,17 +31,31 @@ class CronInitializeInternalLinks
 
     public function enableCron()
     {
-        add_filter('cron_schedules', function ($schedules) {
-            $schedules['every_minute'] = array(
-                'interval' => 60,
-                'display' => __('Every minute')
-            );
+        $options = self::getOption();
+        $hasAlreadyBeenInitialized = isset($options["hasBeenInitialized"]) && $options["hasBeenInitialized"];
+        add_filter('cron_schedules', function ($schedules) use ($hasAlreadyBeenInitialized) {
+            if ($hasAlreadyBeenInitialized) {
+                $schedules['every_minute_initialize'] = array(
+                    'interval' => 60,
+                    'display' => __('Every minute')
+                );
+            } else {
+                $schedules['every_10_seconds_initialize'] = array(
+                    'interval' => 10,
+                    'display' => __('Every 10 seconds')
+                );
+            }
 
             return $schedules;
         });
-        if (!wp_next_scheduled(self::$CRON_NAME)) {
-            wp_schedule_event(time(), 'every_minute', self::$CRON_NAME);
+        if (wp_next_scheduled(self::$CRON_NAME) === false) {
+            wp_schedule_event(time(), $hasAlreadyBeenInitialized ? 'every_minute_initialize' : 'every_10_seconds_initialize', self::$CRON_NAME);
         }
+    }
+
+    public static function getOption()
+    {
+        return get_option(self::$OPTION_NAME_LAST_POST_ID, ["hasBeenInitialized" => false, "delay" => 0, "lastPostId" => 0, "lastExecuteTime" => 0, "lastCount" => 0]);
     }
 
     public function disableCron()
@@ -62,13 +76,9 @@ class CronInitializeInternalLinks
         return (intval($stateCron["lastPostId"]) >= intval($postId));
     }
 
-    public static function getOption()
-    {
-        return get_option(self::$OPTION_NAME_LAST_POST_ID, ["lastPostId" => 0, "lastExecuteTime" => 0, "lastCount" => 0]);
-    }
-
     public function initializeTable()
     {
+        $start = microtime(true);
         $stateCron = self::getOption();
         $lastPostId = $stateCron["lastPostId"];
         $posts = DAOInternalsLinks::getPostsCron($lastPostId);
@@ -76,15 +86,24 @@ class CronInitializeInternalLinks
             InternalsLinks::verifyPost($post);
             $lastPostId = $post->ID;
         }
-        update_option(self::$OPTION_NAME_LAST_POST_ID, ["lastPostId" => $lastPostId, "lastExecuteTime" => time(), "lastCount" => count($posts)], false);
+        $lastCount = count($posts);
+        $hasBeenInitialized = (isset($stateCron["hasBeenInitialized"]) && $stateCron["hasBeenInitialized"]) || $lastCount < 10;
+        $delay = microtime(true) - $start;
+        update_option(self::$OPTION_NAME_LAST_POST_ID, [
+            "delay" => $delay,
+            "lastPostId" => $lastPostId,
+            "lastExecuteTime" => time(),
+            "lastCount" => $lastCount,
+            "hasBeenInitialized" => $hasBeenInitialized
+        ], false);
     }
 }
-/*
+
 $CronInitializeInternalLinks = new CronInitializeInternalLinks();
 $CronInitializeInternalLinks->enableCron();
 register_deactivation_hook(__FILE__, function () use ($CronInitializeInternalLinks) {
     $CronInitializeInternalLinks->disableCron();
 });
 $CronInitializeInternalLinks->init();
-*/
+
 
