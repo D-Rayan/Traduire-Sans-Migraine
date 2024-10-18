@@ -74,7 +74,7 @@ class InternalsLinks
                 "notTranslatedUrl" => null,
                 "notTranslatedPostId" => $notTranslatedPostId,
                 "canBeFixed" => false,
-                "hasBeenFixed" => null,
+                "hasBeenFixed" => false,
             ]);
         }
         return new InternalsLinks($data);
