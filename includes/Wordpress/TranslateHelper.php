@@ -116,8 +116,9 @@ class TranslateHelper
                 continue;
             }
             $originalUrlAsset = explode("src-", $key)[1];
-            $newName = $value;
-            $mediaId = attachment_url_to_postid($originalUrlAsset);
+            $newName = preg_replace('/ \d+x\d+/', '', $value);
+            $urlAsset = preg_replace('/-\d+x\d+/', '', $originalUrlAsset);
+            $mediaId = attachment_url_to_postid($urlAsset);
             if (!$mediaId) {
                 continue;
             }
@@ -125,10 +126,13 @@ class TranslateHelper
             if ($newMediaId instanceof WP_Error || !$newMediaId) {
                 continue;
             }
-            $content = str_replace($originalUrlAsset, wp_get_attachment_url($newMediaId), $content);
-            // handling gutemberg blocks
-            $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content); // adding specific character to avoid wrong update
-            $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content); // adding specific character to avoid wrong update
+            $newUrl = $this->getSameSizedMedia($originalUrlAsset, $mediaId, $newMediaId);
+            if (!$newUrl) {
+                continue;
+            }
+            $content = str_replace($originalUrlAsset, $newUrl, $content);
+            $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content);
+            $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content);
         }
         $this->dataToTranslate["content"] = $content;
     }
@@ -138,6 +142,10 @@ class TranslateHelper
         if (!function_exists('wp_crop_image')) {
             include(ABSPATH . 'wp-admin/includes/image.php');
         }
+        if (!function_exists('wp_get_current_user')) {
+            include(ABSPATH . 'wp-includes/pluggable.php');
+        }
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
         $media = get_post($mediaId);
         if (!$media) {
             return false;
@@ -157,21 +165,47 @@ class TranslateHelper
         }
         $newGuid = str_replace($fileName, $newFileName, $media->guid);
         $newMedia = [
-            "post_title" => $name,
-            "post_content" => $media->post_content,
+            "post_title" => basename($newFileName),
+            "post_content" => '',
             "post_status" => "inherit",
             "post_mime_type" => $media->post_mime_type,
             "guid" => $newGuid,
             "post_type" => "attachment",
-            "post_author" => $media->post_author,
         ];
-        $newMediaId = wp_insert_post($newMedia);
+        $newMediaId = wp_insert_attachment(
+            $newMedia,
+            $newPath
+        );
         if ($newMediaId instanceof WP_Error) {
             return $newMediaId;
         }
-        $attachmentData = wp_generate_attachment_metadata($newMediaId, $media->guid);
+        $attachmentData = wp_generate_attachment_metadata($newMediaId, $newPath);
         wp_update_attachment_metadata($newMediaId, $attachmentData);
         return $newMediaId;
+    }
+
+    private function getSameSizedMedia($originalUrlAsset, $mediaId, $newMediaId)
+    {
+        $img_meta = wp_get_attachment_metadata($mediaId);
+        $img_sizes = $img_meta['sizes'];
+
+        if (!$img_sizes) {
+            return false;
+        }
+
+        $size = null;
+        foreach ($img_sizes as $key => $image) {
+            if (strstr($originalUrlAsset, $image['file'])) {
+                $size = $key;
+                break;
+            }
+        }
+
+        if (!$size) {
+            return false;
+        }
+
+        return wp_get_attachment_image_src($newMediaId, $size)[0];
     }
 
     private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated)
