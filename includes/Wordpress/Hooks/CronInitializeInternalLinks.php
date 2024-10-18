@@ -79,11 +79,12 @@ class CronInitializeInternalLinks
         update_option(self::$OPTION_NAME_LAST_POST_ID, ["lastPostId" => $lastPostId, "lastExecuteTime" => time(), "lastCount" => count($posts)], false);
     }
 }
-
+/*
 $CronInitializeInternalLinks = new CronInitializeInternalLinks();
 $CronInitializeInternalLinks->enableCron();
 register_deactivation_hook(__FILE__, function () use ($CronInitializeInternalLinks) {
     $CronInitializeInternalLinks->disableCron();
 });
 $CronInitializeInternalLinks->init();
+*/
 

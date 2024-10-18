@@ -50,11 +50,11 @@ class CronFixedInternalLinks
         }
     }
 }
-
+/*
 $CronFixedInternalLinks = new CronFixedInternalLinks();
 $CronFixedInternalLinks->enableCron();
 register_deactivation_hook(__FILE__, function () use ($CronFixedInternalLinks) {
     $CronFixedInternalLinks->disableCron();
 });
 $CronFixedInternalLinks->init();
-
+*/
