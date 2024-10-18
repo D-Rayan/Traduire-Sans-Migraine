@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress;
 
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 
 class OfflineProcess
 {
@@ -29,6 +30,11 @@ class OfflineProcess
         $instance = self::getInstance();
         if (get_option($key) === "offline") {
             add_action(wp_doing_ajax() ? "fetchTranslationsBackground" : "admin_init", [$instance, "addBackgroundProcess"]);
+        } else {
+            $action = DAOActions::getNextOrCurrentAction();
+            if (!$action || strtotime($action["updatedAt"]) < time() - 60) {
+                add_action("fetchTranslationsBackground", [$instance, "addBackgroundProcess"]);
+            }
         }
     }
 
