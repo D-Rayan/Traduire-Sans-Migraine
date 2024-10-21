@@ -3,8 +3,6 @@
 namespace TraduireSansMigraine\Languages;
 
 use Exception;
-use PLL_Admin_Model;
-use WP_Error;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -159,80 +157,99 @@ class PolylangManager
 
     public function addLanguage(string $locale): bool
     {
-        if (!class_exists("PLL_Admin_Model")) {
-            return false;
-        }
-        $options = get_option('polylang');
-        $model = new PLL_Admin_Model($options);
-        $model->set_languages_ready();
-        $is_first_language = !function_exists("pll_languages_list");
         $all_languages = include POLYLANG_DIR . '/settings/languages.php';
-        $saved_languages = array();
-
-        require_once ABSPATH . 'wp-admin/includes/translation-install.php';
         if (!isset($all_languages[$locale])) {
             return false;
         }
-        $saved_languages = $all_languages[$locale];
-
-        $saved_languages['slug'] = $saved_languages['code'];
-        $saved_languages['rtl'] = (int)('rtl' === $saved_languages['dir']);
-        $saved_languages['term_group'] = 0; // Default term_group.
-
-        $language_added = $model->add_language($saved_languages);
-
-        if ($language_added instanceof WP_Error && array_key_exists('pll_non_unique_slug', $language_added->errors)) {
-            $saved_languages['slug'] = strtolower(str_replace('_', '-', $saved_languages['locale']));
-            $language_added = $model->add_language($saved_languages);
-        }
-
-        if ($language_added instanceof WP_Error) {
-            return false;
-        }
-
-        if ('en_US' !== $locale && current_user_can('install_languages')) {
-            wp_download_language_pack($locale);
-        }
-        ob_start();
-        try {
-            if ($is_first_language) {
-                $model->set_language_in_mass();
+        $is_first_language = !function_exists("pll_languages_list");
+        if ($is_first_language) {
+            $navMenuLocations = get_theme_mod('nav_menu_locations');
+            if (isset($navMenuLocations['primary'])) {
+                $primaryNavMenu = $navMenuLocations['primary'];
             }
-        } catch (Exception $e) {
         }
-        ob_get_clean();
-        return true;
+        $data = $all_languages[$locale];
+        $response = $this->makeRequestPolylang(admin_url("admin.php?page=mlang&noheader=true"), "POST", [
+            "pll_action" => "add",
+            "locale" => $data["locale"],
+            "slug" => $data["code"],
+            "name" => $data["name"],
+            "flag" => $data["flag"],
+            "rtl" => (int)('rtl' === $data['dir']),
+            "term_group" => 0,
+            "_wpnonce_add-lang" => wp_create_nonce("add-lang"),
+            "_wp_http_referer" => admin_url("admin.php?page=mlang"),
+        ]);
+        $isSuccess = strpos($response, 'setting-error-pll') === false || strpos($response, 'setting-error-pll_languages_created') !== false;
+        if ($isSuccess && $is_first_language) {
+            $this->makeRequestPolylang(admin_url("admin.php?page=mlang&pll_action=content-default-lang&noheader=true&_wpnonce=" . wp_create_nonce("content-default-lang")));
+            if (isset($primaryNavMenu)) {
+                $options = get_option('polylang');
+                if (!isset($options['nav_menus'])) {
+                    $options['nav_menus'] = [];
+                }
+                $themeName = get_option('stylesheet');
+                $themeMod = get_theme_mod('nav_menu_locations');
+                $options['nav_menus'][$themeName] = [];
+                foreach ($themeMod as $location => $navId) {
+                    $options['nav_menus'][$themeName][$location] = [
+                        $data["code"] => $navId
+                    ];
+                }
+                $options["default_lang"] = $data["code"];
+                update_option('polylang', $options);
+            }
+        }
+        return $isSuccess;
+    }
+
+    private function makeRequestPolylang($url, $method = "GET", $data = null)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => $method === "POST",
+            CURLOPT_POSTFIELDS => $method === "POST" ? http_build_query($data) : null,
+        ]);
+        $cookies = [];
+        foreach ($_COOKIE as $key => $value) {
+            $cookies[] = $key . "=" . $value;
+        }
+        curl_setopt($curl, CURLOPT_COOKIE, implode("; ", $cookies));
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        return $response;
     }
 
     public function updateLanguage($slug, $localeDeepL)
     {
-        if (!class_exists("PLL_Admin_Model")) {
-            return false;
-        }
-        $options = get_option('polylang');
-        $model = new PLL_Admin_Model($options);
-        $model->set_languages_ready();
-
         $languagePolylang = $this->getLanguagePolylangByIncompleteLocale($localeDeepL);
         if (!$languagePolylang) {
             return false;
         }
+
         $languages = $this->getLanguagesActives();
         if (!isset($languages[$slug])) {
             return false;
         }
         $langId = $languages[$slug]["id"];
-        $language_added = $model->update_language(array_merge([
+        $response = $this->makeRequestPolylang(admin_url("admin.php?page=mlang&noheader=true"), "POST", [
+            "pll_action" => "update",
             "lang_id" => $langId,
+            "locale" => $languagePolylang["locale"],
             "slug" => $languagePolylang["code"],
+            "name" => $languagePolylang["name"],
+            "flag" => $languagePolylang["flag"],
+            "rtl" => (int)('rtl' === $languagePolylang['dir']),
             "term_group" => $languages[$slug]["term_group"],
-        ], $languagePolylang));
-
-        if ($language_added instanceof WP_Error) {
-            return $language_added->get_error_message();
-        }
-
-        return true;
+            "_wpnonce_add-lang" => wp_create_nonce("add-lang"),
+            "_wp_http_referer" => admin_url("admin.php?page=mlang"),
+        ]);
+        $isSuccess = strpos($response, 'setting-error-pll') === false || strpos($response, 'setting-error-pll_languages_updated') !== false;
+        return $isSuccess;
     }
 
     public function getLanguagePolylangByIncompleteLocale($incompleteLocale)
