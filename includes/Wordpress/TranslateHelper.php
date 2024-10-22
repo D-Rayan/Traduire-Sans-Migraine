@@ -376,6 +376,7 @@ class TranslateHelper
     private function handleElementor()
     {
         if (is_plugin_active("elementor/elementor.php")) {
+            $hasMetaElementor = false;
             foreach ($this->postMetas as $key => $value) {
                 if (strstr($key, "elementor")) {
                     $valueKey = isset($this->dataToTranslate[$key]) ? $this->dataToTranslate[$key] : $value[0];
@@ -386,37 +387,17 @@ class TranslateHelper
                     if ($this->is_serialized($valueKey)) {
                         $valueKey = unserialize($valueKey);
                     }
+                    $hasMetaElementor = true;
                     update_post_meta($this->translatedPostId, $key, $valueKey);
-                    if ($key === "_elementor_data") {
-                        $this->setElementorContent();
-                    }
+                }
+            }
+            if ($hasMetaElementor) {
+                $document = Plugin::$instance->documents->get($this->translatedPostId);
+                if ($document) {
+                    $document->save($document->get_elements_data());
                 }
             }
         }
-    }
-
-    private function setElementorContent()
-    {
-        $document = Plugin::$instance->documents->get($this->translatedPostId);
-        $results = $document->get_export_data();
-        $content = "";
-        if (isset($results["content"]) && is_array($results["content"])) {
-            foreach ($results["content"] as $content) {
-                if (!isset($content["elements"]) || !is_array($content["elements"])) {
-                    continue;
-                }
-                foreach ($content["elements"] as $element) {
-                    if (!isset($element["settings"]["editor"])) {
-                        continue;
-                    }
-                    $content .= $element["settings"]["editor"];
-                }
-            }
-        }
-        wp_update_post([
-            "ID" => $this->translatedPostId,
-            "post_content" => $content
-        ]);
     }
 
     private function handleACF()
