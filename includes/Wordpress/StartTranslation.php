@@ -185,6 +185,9 @@ class StartTranslation
                 if (strstr($key, "elementor_") && !isset($noTranslateElementor[$key])) {
                     if (isset($value[0])) {
                         $this->dataToTranslate[$key] = $value[0];
+                        if ($key === "_elementor_data") {
+                            $this->dataToTranslate["content"] = "";
+                        }
                     }
                 }
             }
