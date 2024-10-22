@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress;
 
 
+use Elementor\Plugin;
 use Exception;
 use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
@@ -386,9 +387,36 @@ class TranslateHelper
                         $valueKey = unserialize($valueKey);
                     }
                     update_post_meta($this->translatedPostId, $key, $valueKey);
+                    if ($key === "_elementor_data") {
+                        $this->setElementorContent();
+                    }
                 }
             }
         }
+    }
+
+    private function setElementorContent()
+    {
+        $document = Plugin::$instance->documents->get($this->translatedPostId);
+        $results = $document->get_export_data();
+        $content = "";
+        if (isset($results["content"]) && is_array($results["content"])) {
+            foreach ($results["content"] as $content) {
+                if (!isset($content["elements"]) || !is_array($content["elements"])) {
+                    continue;
+                }
+                foreach ($content["elements"] as $element) {
+                    if (!isset($element["settings"]["editor"])) {
+                        continue;
+                    }
+                    $content .= $element["settings"]["editor"];
+                }
+            }
+        }
+        wp_update_post([
+            "ID" => $this->translatedPostId,
+            "post_content" => $content
+        ]);
     }
 
     private function handleACF()

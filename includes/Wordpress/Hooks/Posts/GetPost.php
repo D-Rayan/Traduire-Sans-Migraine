@@ -72,10 +72,12 @@ class GetPost
         $notTranslated = $issuesTranslatedUrls["notTranslated"];
         $notPublished = $issuesTranslatedUrls["notPublished"];
         $missingCategories = [];
-        foreach ($termsCategories as $termCategory) {
-            $result = $tsm->getPolylangManager()->getTranslationCategories([$termCategory->term_id], $translationPost["code"]);
-            if (empty($result)) {
-                $missingCategories[] = $termCategory->name;
+        if (is_array($termsCategories)) {
+            foreach ($termsCategories as $termCategory) {
+                $result = $tsm->getPolylangManager()->getTranslationCategories([$termCategory->term_id], $translationPost["code"]);
+                if (empty($result)) {
+                    $missingCategories[] = $termCategory->name;
+                }
             }
         }
         return [
