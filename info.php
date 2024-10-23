@@ -15,8 +15,12 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 18 Octobre 2024</h4><ul>
-        <li>Fix : Correction d'un soucis pouvant bloquer la file d'attente</li>
+        "changelog" => "<h4>Mise à jour du 23 Octobre 2024</h4><ul>
+        <li>New : Nouvelle fonctionnalité pour la traduction des liens internes</li>
+        <li>New : Ajout d'un shortcode pour l'affichage d'un sélecteur de langue</li>
+        <li>Update : Elementor est mieux pris en charge, d'ailleurs le coût est réduit par deux environ !</li>
+        <li>Fix : Correction d'un soucis liés à la création des médias</li>
+        <li>Fix : Divers correctifs</li>
         </ul>",
     ]
 );
