@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Traduire Sans Migraine 2.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
 "Migraine\n"
-"POT-Creation-Date: 2024-10-16T09:14:440\n"
+"POT-Creation-Date: 2024-10-23T12:59:340\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: EN\n"
@@ -67,6 +67,10 @@ msgstr ""
 
 msgid "Install Polylang"
 msgstr "Installer Polylang"
+
+# Domain Path
+msgid "Change language"
+msgstr "Changer la langue"
 
 # Text Domain
 msgid "Traduire Sans Migraine is enabled!"
