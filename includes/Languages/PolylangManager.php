@@ -39,13 +39,9 @@ class PolylangManager
         $results = [];
         foreach ($languages as $language) {
             $postIdTranslated = $this->getTranslationPost($postId, $language["code"]);
-            $results[$language["code"]] = [
-                "name" => $language["name"],
-                "default" => (bool)$language["default"],
-                "flag" => $language["flag"],
-                "code" => $language["code"],
+            $results[$language["code"]] = array_merge($language, [
                 "postId" => $postIdTranslated,
-            ];
+            ]);
         }
 
         return $results;
@@ -67,6 +63,7 @@ class PolylangManager
                 "flag" => $language->flag,
                 "code" => $language->slug,
                 "term_group" => $language->term_group,
+                "no_translation" => $language->no_translation
             ];
         }
 
@@ -82,6 +79,22 @@ class PolylangManager
         $postId = pll_get_post($postId, $codeLanguage);
 
         return $postId && get_post_status($postId) !== "trash" ? $postId : null;
+    }
+
+    public function getHomeUrl($slug)
+    {
+        if (!function_exists("pll_home_url")) {
+            return get_home_url();
+        }
+        return pll_home_url($slug);
+    }
+
+    public function getCurrentLanguageSlug()
+    {
+        if (!function_exists("pll_current_language")) {
+            return get_locale();
+        }
+        return pll_current_language("slug");
     }
 
     public function getAllTranslationsTerm(string $termId): array

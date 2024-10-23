@@ -1,0 +1,25 @@
+.menu-language {
+    display: flex;
+    gap: 1rem
+}
+
+.menu-language.list {
+    flex-direction: column;
+    background: #fff;
+    width: max-content
+}
+
+.menu-language a {
+    display: flex;
+    gap: .2rem;
+    align-items: center;
+    text-decoration: none
+}
+
+.menu-language.list a {
+    display: none
+}
+
+.menu-language.list a:first-child, .menu-language.list:hover a {
+    display: flex
+}

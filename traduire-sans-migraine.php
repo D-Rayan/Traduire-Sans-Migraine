@@ -26,6 +26,7 @@ use TraduireSansMigraine\Wordpress\OfflineProcess;
 use TraduireSansMigraine\Wordpress\Queue;
 use TraduireSansMigraine\Wordpress\Requirements;
 use TraduireSansMigraine\Wordpress\RestApi\RestAPI;
+use TraduireSansMigraine\Wordpress\Shortcodes\Shortcodes;
 use TraduireSansMigraine\Wordpress\TextDomain;
 use TraduireSansMigraine\Wordpress\Updater;
 
@@ -36,7 +37,7 @@ include "env.php";
 define("TSM__ABSOLUTE_PATH", __DIR__);
 define("TSM__RELATIVE_PATH", plugin_dir_url(__FILE__));
 define("TSM__PLUGIN_BASENAME", plugin_basename(__FILE__));
-define("TSM__ASSETS_PATH", TSM__RELATIVE_PATH . "/front/assets/");
+define("TSM__FRONT_PATH", TSM__RELATIVE_PATH . "/front/");
 define("TSM__PLUGIN_NAME", "traduire-sans-migraine");
 require_once TSM__ABSOLUTE_PATH . "/autoload.php";
 
@@ -83,6 +84,7 @@ class TraduireSansMigraine
         NotificationsPage::init();
         RestAPI::init();
         Hooks::init();
+        Shortcodes::init();
     }
 
     public function setPluginAsEnabled()
