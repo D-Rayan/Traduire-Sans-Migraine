@@ -45,7 +45,7 @@ class MenuLanguage
         $currentLanguageSlug = $Polylang->getCurrentLanguageSlug();
         ob_start();
         $this->displayContainerStart();
-        $position = 0;
+        $position = -1;
         usort($languages, function ($a, $b) {
             if ($a["default"]) {
                 return -1;
@@ -57,14 +57,19 @@ class MenuLanguage
         });
         foreach ($languages as $language) {
             $isCurrent = $currentLanguageSlug === $language["code"];
+            $position++;
             if ($this->hideEmpty && $language["no_translation"]) {
                 continue;
             }
             if ($this->hideCurrent && $isCurrent) {
                 continue;
             }
-            $this->displayLanguage($language, $isCurrent, $position++);
+            $this->displayLanguage($language, $isCurrent, $position);
+            if ($position === 0) {
+                $this->displaySubContainerStart();
+            }
         }
+        $this->displaySubContainerEnd();
         $this->displayContainerEnd();
         return ob_get_clean();
     }
@@ -129,6 +134,16 @@ class MenuLanguage
             <?php
         }
         echo "</a>";
+    }
+
+    private function displaySubContainerStart()
+    {
+        echo "<div class='sub-menu-language'>";
+    }
+
+    private function displaySubContainerEnd()
+    {
+        echo "</div>";
     }
 
     private function displayContainerEnd()

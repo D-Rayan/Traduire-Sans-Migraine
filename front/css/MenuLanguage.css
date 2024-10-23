@@ -6,7 +6,8 @@
 .menu-language.list {
     flex-direction: column;
     background: #fff;
-    width: max-content
+    width: max-content;
+    position: relative;
 }
 
 .menu-language a {
@@ -16,10 +17,15 @@
     text-decoration: none
 }
 
-.menu-language.list a {
+.menu-language.list .sub-menu-language {
     display: none
 }
 
-.menu-language.list a:first-child, .menu-language.list:hover a {
-    display: flex
+.menu-language.list:hover .sub-menu-language {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    background: #fff;
+    width: max-content;
+    position: absolute;
 }
