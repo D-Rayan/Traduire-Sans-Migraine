@@ -5,14 +5,14 @@ namespace TraduireSansMigraine\Wordpress;
 class LinkManager
 {
 
+    private $linksTranslatedCount = 0;
+
     public function __construct()
     {
     }
 
     public function translateInternalLinks($postContent, $translateFrom, $translateTo)
     {
-        global $tsm;
-
         $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
         $newContent = $postContent;
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
@@ -169,11 +169,12 @@ class LinkManager
             } else if ($this->is_serialized($value)) {
                 return $this->replaceLink(unserialize($value), $linkToReplace, $linkPostId, $slugTo);
             }
-            
+
             $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($linkPostId, $slugTo);
             if ($internalPostIdTranslated) {
                 $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
                 if ($titleInternalPostIdTranslated && false === strpos($titleInternalPostIdTranslated, "p=")) {
+                    $this->linksTranslatedCount += substr_count($value, $linkToReplace);
                     $value = str_replace($linkToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $value);
                 }
             }
@@ -226,5 +227,10 @@ class LinkManager
             "notPublished" => $notPublishedInternalLinks,
             "translatable" => $translatable
         ];
+    }
+
+    public function getLinksTranslatedCount()
+    {
+        return $this->linksTranslatedCount;
     }
 }

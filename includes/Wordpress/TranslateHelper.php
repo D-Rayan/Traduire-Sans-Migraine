@@ -5,7 +5,6 @@ namespace TraduireSansMigraine\Wordpress;
 
 use Elementor\Plugin;
 use Exception;
-use TraduireSansMigraine\Languages\PolylangManager;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\Object\Action;
 use WP_Error;
@@ -30,10 +29,12 @@ class TranslateHelper
 
     public function __construct($tokenId, $translationData, $codeTo)
     {
+        global $tsm;
+
         $this->dataToTranslate = $translationData;
         $this->codeTo = $codeTo;
-        $this->polylangManager = new PolylangManager();
-        $this->linkManager = new LinkManager();
+        $this->polylangManager = $tsm->getPolylangManager();
+        $this->linkManager = $tsm->getLinkManager();
         $this->action = Action::loadByToken($tokenId);
     }
 
@@ -69,15 +70,19 @@ class TranslateHelper
     private function startTranslate()
     {
         try {
+            $countAssetsCreated = 0;
             $this->codeFrom = $this->polylangManager->getLanguageSlugForPost($this->originalPost->ID);
             if (isset($this->dataToTranslate["content"])) {
                 $this->dataToTranslate["content"] = $this->linkManager->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
-                $this->handleAssetsTranslations();
+                $countAssetsCreated = $this->handleAssetsTranslations();
             }
+            $countCategoriesCreated = 0;
             foreach ($this->originalPost->post_category as $termId) {
                 $result = $this->polylangManager->getTranslationCategories([$termId], $this->codeTo);
                 if (empty($result) && isset($this->dataToTranslate["categories_" . $termId])) {
-                    $this->createCategory($termId, $this->codeTo, $this->dataToTranslate["categories_" . $termId]);
+                    if ($this->createCategory($termId, $this->codeTo, $this->dataToTranslate["categories_" . $termId])) {
+                        $countCategoriesCreated++;
+                    }
                 }
             }
             $this->dataToTranslate["categories"] = $this->polylangManager->getTranslationCategories($this->originalPost->post_category, $this->codeTo);
@@ -90,8 +95,8 @@ class TranslateHelper
                 $this->updatePost();
             }
             $this->handleDefaultMetaPosts();
-            $this->handleYoast();
-            $this->handleRankMath();
+            $yoastTranslated = $this->handleYoast();
+            $rankMathTranslated = $this->handleRankMath();
             $this->handleSEOPress();
             $this->handleElementor();
             $this->handleACF();
@@ -103,6 +108,14 @@ class TranslateHelper
             update_post_meta($this->translatedPostId, '_has_been_translated_by_tsm', "true");
             update_post_meta($this->translatedPostId, '_translated_by_tsm_from', $this->codeFrom);
             update_post_meta($this->translatedPostId, '_tsm_first_visit_after_translation', "true");
+            update_post_meta($this->translatedPostId, '_summary_translated_by_tsm', [
+                "linksTranslated" => $this->linkManager->getLinksTranslatedCount(),
+                "categoriesTranslated" => $countCategoriesCreated,
+                "slugTranslated" => isset($this->dataToTranslate["slug"]) && $this->dataToTranslate["slug"] !== $this->originalPost->post_name,
+                "assetsTranslated" => $countAssetsCreated,
+                "yoastTranslated" => $yoastTranslated,
+                "rankMathTranslated" => $rankMathTranslated
+            ]);
             $this->action->save();
         } catch (Exception $e) {
             $this->action->setAsError()->setResponse(["error" => $e->getMessage()])->save();
@@ -111,6 +124,7 @@ class TranslateHelper
 
     private function handleAssetsTranslations()
     {
+        $countAssetsCreated = 0;
         $content = $this->dataToTranslate["content"];
         foreach ($this->dataToTranslate as $key => $value) {
             if (!strstr($key, "src-")) {
@@ -134,8 +148,10 @@ class TranslateHelper
             $content = str_replace($originalUrlAsset, $newUrl, $content);
             $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content);
             $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content);
+            $countAssetsCreated++;
         }
         $this->dataToTranslate["content"] = $content;
+        return $countAssetsCreated;
     }
 
     private function duplicateMedia($mediaId, $name)
@@ -218,13 +234,14 @@ class TranslateHelper
             "parent" => $category->parent
         ]);
         if (is_wp_error($categoryTranslated)) {
-            return;
+            return false;
         }
         $allTranslationsTerms = $this->polylangManager->getAllTranslationsTerm($originalCategoryId);
         if (isset($allTranslationsTerms[$codeTo])) {
             $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
         }
         $this->polylangManager->saveAllTranslationsTerms($allTranslationsTerms);
+        return true;
     }
 
     private function createPost()
@@ -327,35 +344,46 @@ class TranslateHelper
 
     private function handleYoast()
     {
+        $translated = false;
         if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
             if (isset($this->dataToTranslate["metaTitle"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
             }
             if (isset($this->dataToTranslate["metaDescription"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_metadesc", $this->dataToTranslate["metaDescription"]);
             }
             if (isset($this->dataToTranslate["metaKeywords"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
             }
             if (isset($this->dataToTranslate["yoastFocusKeyword"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
             }
         }
+        return $translated;
     }
 
     private function handleRankMath()
     {
+        $translated = false;
         if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
             if (isset($this->dataToTranslate["rankMathDescription"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "rank_math_description", $this->dataToTranslate["rankMathDescription"]);
             }
             if (isset($this->dataToTranslate["rankMathTitle"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "rank_math_title", $this->dataToTranslate["rankMathTitle"]);
             }
             if (isset($this->dataToTranslate["rankMathFocusKeyword"])) {
+                $translated = true;
                 update_post_meta($this->translatedPostId, "rank_math_focus_keyword", $this->dataToTranslate["rankMathFocusKeyword"]);
             }
         }
+        return $translated;
     }
 
     private function handleSEOPress()
