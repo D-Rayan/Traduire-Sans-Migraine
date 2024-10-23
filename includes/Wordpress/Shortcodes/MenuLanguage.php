@@ -56,13 +56,14 @@ class MenuLanguage
             return strcmp($a["name"], $b["name"]);
         });
         foreach ($languages as $language) {
+            $isCurrent = $currentLanguageSlug === $language["code"];
             if ($this->hideEmpty && $language["no_translation"]) {
                 continue;
             }
-            if ($this->hideCurrent && $currentLanguageSlug === $language["code"]) {
+            if ($this->hideCurrent && $isCurrent) {
                 continue;
             }
-            $this->displayLanguage($language, $position++);
+            $this->displayLanguage($language, $isCurrent, $position++);
         }
         $this->displayContainerEnd();
         return ob_get_clean();
@@ -80,12 +81,12 @@ class MenuLanguage
                 "hideCurrent" => "false",
             ], $args, "menu_language"
         );
-        $this->list = boolval($properties["list"]);
-        $this->name = boolval($properties["name"]);
-        $this->flag = boolval($properties["flag"]);
-        $this->hideEmpty = boolval($properties["hideEmpty"]);
-        $this->redirectHome = boolval($properties["redirectHome"]);
-        $this->hideCurrent = boolval($properties["hideCurrent"]);
+        $this->list = $properties["list"] === "true";
+        $this->name = $properties["name"] === "true";
+        $this->flag = $properties["flag"] === "true";
+        $this->hideEmpty = $properties["hideEmpty"] === "true";
+        $this->redirectHome = $properties["redirectHome"] === "true";
+        $this->hideCurrent = $properties["hideCurrent"] === "true";
     }
 
     private function displayContainerStart()
@@ -97,14 +98,20 @@ class MenuLanguage
         echo "<div class='" . implode(" ", $classList) . "'>";
     }
 
-    private function displayLanguage($language, $position)
+    private function displayLanguage($language, $isCurrent, $position)
     {
         if (!$this->redirectHome && empty($language["postId"])) {
             return;
         }
         global $tsm;
         $Polylang = $tsm->getPolylangManager();
-        $url = $this->redirectHome ? $Polylang->getHomeUrl($language["code"]) : get_permalink($language["postId"]);
+        if ($this->redirectHome) {
+            $url = $Polylang->getHomeUrl($language["code"]);
+        } else if ($isCurrent) {
+            $url = "#";
+        } else {
+            $url = get_permalink($language["postId"]);
+        }
         echo '<a href="' . $url . '">';
         if ($this->flag) {
             echo $language["flag"];
