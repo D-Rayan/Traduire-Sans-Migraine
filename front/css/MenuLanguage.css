@@ -8,6 +8,13 @@
     background: #fff;
     width: max-content;
     position: relative;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.menu-language.list:hover {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .menu-language a {
@@ -18,7 +25,8 @@
 }
 
 .menu-language.list .sub-menu-language {
-    display: none
+    display: none;
+    z-index: 1000;
 }
 
 .menu-language.list:hover .sub-menu-language {
@@ -28,4 +36,8 @@
     background: #fff;
     width: max-content;
     position: absolute;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }

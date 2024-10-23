@@ -47,7 +47,6 @@ class MenuLanguage
         $currentLanguageSlug = $Polylang->getCurrentLanguageSlug();
         ob_start();
         $this->displayContainerStart();
-        $position = -1;
         usort($languages, function ($a, $b) {
             if ($a["default"]) {
                 return -1;
@@ -57,23 +56,17 @@ class MenuLanguage
             }
             return strcmp($a["name"], $b["name"]);
         });
+        $this->displayTextMenu($languages[0]);
+        $this->displaySubContainerStart();
         foreach ($languages as $language) {
             $isCurrent = $currentLanguageSlug === $language["code"];
-            $position++;
             if ($this->hideEmpty && $language["no_translation"]) {
                 continue;
             }
             if ($this->hideCurrent && $isCurrent) {
-                if ($position === 0) {
-                    $this->displayTextMenu();
-                    $this->displaySubContainerStart();
-                }
                 continue;
             }
-            $this->displayLanguage($language, $isCurrent, $position);
-            if ($position === 0) {
-                $this->displaySubContainerStart();
-            }
+            $this->displayLanguage($language, $isCurrent);
         }
         $this->displaySubContainerEnd();
         $this->displayContainerEnd();
@@ -109,9 +102,23 @@ class MenuLanguage
         echo "<div class='" . implode(" ", $classList) . "'>";
     }
 
-    private function displayTextMenu()
+    private function displayTextMenu($language)
     {
-        echo "<span>" . TextDomain::__("Change language") . "</span>" . $this->displayIcon();
+        echo "<a href='#'>";
+        if ($this->hideCurrent) {
+            echo "<span>" . TextDomain::__("Change language") . "</span>";
+        } else {
+            if ($this->flag) {
+                echo $language["flag"];
+            }
+            if ($this->name) {
+                echo $language["name"];
+            } else if (!$this->flag) {
+                echo $language["code"];
+            }
+        }
+        $this->displayIcon();
+        echo "</a>";
     }
 
     private function displayIcon()
@@ -128,7 +135,7 @@ class MenuLanguage
         echo "<div class='sub-menu-language'>";
     }
 
-    private function displayLanguage($language, $isCurrent, $position)
+    private function displayLanguage($language, $isCurrent)
     {
         if (!$this->redirectHome && empty($language["postId"])) {
             return;
@@ -150,9 +157,6 @@ class MenuLanguage
             echo $language["name"];
         } else if (!$this->flag) {
             echo $language["code"];
-        }
-        if ($position === 0) {
-            $this->displayIcon();
         }
         echo "</a>";
     }
