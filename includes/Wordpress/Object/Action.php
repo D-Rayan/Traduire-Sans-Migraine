@@ -2,6 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Object;
 
+use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\Queue;
 use TraduireSansMigraine\Wordpress\StartTranslation;
@@ -18,6 +19,8 @@ class Action
     private $createdAt;
     private $updatedAt;
     private $lock;
+
+    private $estimatedQuota;
 
     private $originalAction;
 
@@ -52,6 +55,9 @@ class Action
         }
         if (isset($args["lock"])) {
             $this->lock = $args["lock"];
+        }
+        if (isset($args["estimatedQuota"])) {
+            $this->estimatedQuota = $args["estimatedQuota"];
         }
         if (!$isCopy) {
             $this->originalAction = new Action($this->toArray(), true);
@@ -89,6 +95,9 @@ class Action
         }
         if (!empty($this->getUpdatedAt())) {
             $data["updatedAt"] = $this->getUpdatedAt();
+        }
+        if (!empty($this->getEstimatedQuota())) {
+            $data["estimatedQuota"] = $this->getEstimatedQuota();
         }
 
         return $data;
@@ -256,6 +265,34 @@ class Action
         return $this;
     }
 
+    public function getEstimatedQuota()
+    {
+        if (!is_int($this->estimatedQuota)) {
+            $this->retrieveEstimatedQuota();
+        }
+        return $this->estimatedQuota;
+    }
+
+    public function retrieveEstimatedQuota()
+    {
+        global $tsm;
+        $instance = StartTranslation::getInstance();
+        $post = get_post($this->getPostId());
+        if (empty($post)) {
+            $this->estimatedQuota = 0;
+            return;
+        }
+        $instance->prepareDataToTranslate($post, $this->getSlugTo());
+        $result = $tsm->getClient()->getEstimatedQuota($instance->getDatatoTranslate(), [
+            "translateAssets" => $tsm->getSettings()->settingIsEnabled(Settings::$KEYS["translateAssets"])
+        ]);
+        if (!$result["success"]) {
+            $this->estimatedQuota = 0;
+            return;
+        }
+        $this->estimatedQuota = $result["data"]["estimatedCredits"];
+    }
+
     public static function loadByToken($tokenId)
     {
         $args = DAOActions::getActionByToken($tokenId);
@@ -354,7 +391,8 @@ class Action
             if (Queue::getInstance()->isQueueDone() && $this->getOrigin() == DAOActions::$ORIGINS["QUEUE"]) {
                 Queue::getInstance()->setAsArchived();
             }
-            $this->ID = DAOActions::createAction($this->postId, $this->slugTo, $this->origin);
+            $this->retrieveEstimatedQuota();
+            $this->ID = DAOActions::createAction($this->postId, $this->slugTo, $this->origin, $this->estimatedQuota);
             Queue::getInstance()->startNextProcess();
         }
         $this->originalAction = new Action($this->toArray(), true);
@@ -446,11 +484,6 @@ class Action
     public function isQuotaIssue()
     {
         return !empty($this->response) && is_array($this->response) && isset($this->response["reachedMaxQuota"]);
-    }
-
-    public function getEstimatedQuota()
-    {
-        return !empty($this->response) && is_array($this->response) && isset($this->response["estimatedQuota"]) ? $this->response["estimatedQuota"] : PHP_INT_MAX;
     }
 
     public function isLanguagesIssue()

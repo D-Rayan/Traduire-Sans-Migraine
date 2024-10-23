@@ -32,7 +32,7 @@ class PolylangManager
         return pll_get_post_language($postId, "slug");
     }
 
-    public function getAllTranslationsPost(string $postId): array
+    public function getAllTranslationsPost($postId)
     {
         $languages = $this->getLanguagesActives();
 
@@ -47,7 +47,7 @@ class PolylangManager
         return $results;
     }
 
-    public function getLanguagesActives(): array
+    public function getLanguagesActives()
     {
         if (!function_exists("pll_languages_list")) {
             return [];
@@ -70,7 +70,7 @@ class PolylangManager
         return $results;
     }
 
-    public function getTranslationPost(string $postId, string $codeLanguage)
+    public function getTranslationPost($postId, $codeLanguage)
     {
         if (!function_exists("pll_get_post")) {
             return null;
@@ -97,7 +97,7 @@ class PolylangManager
         return pll_current_language("slug");
     }
 
-    public function getAllTranslationsTerm(string $termId): array
+    public function getAllTranslationsTerm($termId)
     {
         $languages = $this->getLanguagesActives();
 
@@ -114,7 +114,7 @@ class PolylangManager
         return $results;
     }
 
-    public function saveAllTranslationsPost(array $translationsMap)
+    public function saveAllTranslationsPost($translationsMap)
     {
         if (!function_exists("pll_save_post_translations")) {
             return;
@@ -132,7 +132,7 @@ class PolylangManager
         pll_save_post_translations($cleanMap);
     }
 
-    public function saveAllTranslationsTerms(array $translationsMap)
+    public function saveAllTranslationsTerms($translationsMap)
     {
         if (!function_exists("pll_save_term_translations")) {
             return;
@@ -151,9 +151,9 @@ class PolylangManager
         pll_save_term_translations($cleanMap);
     }
 
-    function getTranslationCategories(array $categories, string $codeLanguage): array
+    function getTranslationCategories($categories, $codeLanguage)
     {
-        if (!function_exists("pll_get_term")) {
+        if (!function_exists("pll_get_term") || empty($codeLanguage)) {
             return [];
         }
 
@@ -168,7 +168,7 @@ class PolylangManager
         return $results;
     }
 
-    public function addLanguage(string $locale): bool
+    public function addLanguage($locale)
     {
         $all_languages = include POLYLANG_DIR . '/settings/languages.php';
         if (!isset($all_languages[$locale])) {

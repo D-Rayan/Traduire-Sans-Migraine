@@ -23,7 +23,29 @@ class Client
         $this->loadCache();
     }
 
-    public function fetchAccount() {
+    private function loadCache()
+    {
+        $this->cache = get_option("tsm-cache-client", []);
+    }
+
+    static public function getInstance()
+    {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
+    }
+
+    public function checkCredential()
+    {
+        $this->fetchAccount();
+
+        return $this->account !== null;
+    }
+
+    public function fetchAccount()
+    {
         $this->authenticate();
         $response = $this->client->get("/accounts");
 
@@ -39,23 +61,27 @@ class Client
         return true;
     }
 
-    public function checkCredential() {
-        $this->fetchAccount();
+    private function authenticate()
+    {
+        global $tsm;
+        $this->client->setAuthorization($tsm->getSettings()->getToken());
 
-        return $this->account !== null;
     }
 
-    public function sendDebugData($data) {
+    public function sendDebugData($data)
+    {
         $this->authenticate();
         return $this->client->post("/debugs", $data);
     }
 
-    public function sendReasonDeactivate($data) {
+    public function sendReasonDeactivate($data)
+    {
         $this->authenticate();
         return $this->client->post("/reasons-deactivate", $data);
     }
 
-    public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo, array $options = []): array {
+    public function startTranslation(array $dataToTranslate, string $codeFrom, string $codeTo, array $options = []): array
+    {
         $this->authenticate();
         return $this->client->post("/translations", [
             "dataToTranslate" => $dataToTranslate,
@@ -67,12 +93,25 @@ class Client
         ]);
     }
 
-    public function getTranslation($tokenId) {
+    public function getEstimatedQuota(array $dataToTranslate, array $options = []): array
+    {
+        $this->authenticate();
+        return $this->client->post("/translations/estimate", [
+            "dataToTranslate" => $dataToTranslate,
+            "restUrl" => get_rest_url(),
+            "translateAssets" => $options["translateAssets"] ?? false,
+            "version" => TSM__VERSION
+        ]);
+    }
+
+    public function getTranslation($tokenId)
+    {
         $this->authenticate();
         return $this->client->get("/translations/$tokenId");
     }
 
-    public function fetchAllFinishedTranslations() {
+    public function fetchAllFinishedTranslations()
+    {
         $this->authenticate();
         $response = $this->client->get("/translations");
         if (!$response["success"]) {
@@ -81,7 +120,8 @@ class Client
         return $response["data"]["translations"];
     }
 
-    public function getLanguages() {
+    public function getLanguages()
+    {
         if (isset($this->cache["getLanguages"])) {
             return $this->cache["getLanguages"];
         }
@@ -99,7 +139,13 @@ class Client
         return $response["data"];
     }
 
-    public function getProducts() {
+    private function saveCache()
+    {
+        update_option("tsm-cache-client", $this->cache);
+    }
+
+    public function getProducts()
+    {
         $this->authenticate();
         $response = $this->client->get("/products");
         if (!$response["success"]) {
@@ -109,7 +155,8 @@ class Client
         return $response["data"]["products"];
     }
 
-    public function loadDictionary($language) {
+    public function loadDictionary($language)
+    {
         $this->authenticate();
         $response = $this->client->get("/glossaries?langTo=$language");
         if (!$response["success"]) {
@@ -119,7 +166,8 @@ class Client
         return $response["data"]["glossaries"];
     }
 
-    public function updateWordToDictionary($id, $entry, $translation, $langFrom) {
+    public function updateWordToDictionary($id, $entry, $translation, $langFrom)
+    {
         $this->authenticate();
         $response = $this->client->put("/glossaries/$id", [
             "entry" => $entry,
@@ -133,7 +181,8 @@ class Client
         return true;
     }
 
-    public function addWordToDictionary($entry, $translation, $langFrom, $langTo) {
+    public function addWordToDictionary($entry, $translation, $langFrom, $langTo)
+    {
         $this->authenticate();
         $response = $this->client->post("/glossaries", [
             "entry" => $entry,
@@ -148,7 +197,8 @@ class Client
         return $response["data"]["glossaryId"];
     }
 
-    public function deleteWordFromDictionary($id) {
+    public function deleteWordFromDictionary($id)
+    {
         $this->authenticate();
         $response = $this->client->delete("/glossaries/$id");
         if (!$response["success"]) {
@@ -158,7 +208,8 @@ class Client
         return true;
     }
 
-    public function updateLanguageSettings($slug, $formality = null, $country = null) {
+    public function updateLanguageSettings($slug, $formality = null, $country = null)
+    {
         $this->authenticate();
         $body = [
             "slug" => $slug
@@ -177,7 +228,8 @@ class Client
         return true;
     }
 
-    public function enableLanguage($language) {
+    public function enableLanguage($language)
+    {
         $this->authenticate();
         $response = $this->client->post("/languages/enable", [
             "slug" => $language
@@ -189,36 +241,16 @@ class Client
         return true;
     }
 
-    public function getAccount() {
+    public function getAccount()
+    {
         if (!$this->account) {
             $this->fetchAccount();
         }
         return $this->account;
     }
 
-    public function getRedirect() {
+    public function getRedirect()
+    {
         return $this->redirect;
-    }
-
-    private function authenticate() {
-        global $tsm;
-        $this->client->setAuthorization($tsm->getSettings()->getToken());
-
-    }
-
-    private function loadCache() {
-        $this->cache = get_option("tsm-cache-client", []);
-    }
-
-    private function saveCache() {
-        update_option("tsm-cache-client", $this->cache);
-    }
-
-    static public function getInstance() {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
     }
 }

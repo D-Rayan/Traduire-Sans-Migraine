@@ -96,7 +96,7 @@ class GetPosts
         }
         $fromTermId = $languages[$slugFrom]["id"];
         $posts = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder, $offset, $pageSize);
-        $posts = $this->filterPosts($posts, $languagesTranslated);
+        $posts = $this->populatePosts($posts, $languagesTranslated);
         wp_send_json_success([
             "posts" => $posts,
             "pagination" => [
@@ -144,7 +144,7 @@ class GetPosts
         return $wpdb->get_results($queryFetchPosts);
     }
 
-    private function filterPosts($posts, $languagesTranslated)
+    private function populatePosts($posts, $languagesTranslated)
     {
         $filteredPosts = [];
         foreach ($posts as $post) {

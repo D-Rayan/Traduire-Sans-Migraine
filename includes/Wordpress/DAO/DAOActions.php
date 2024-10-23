@@ -21,7 +21,7 @@ class DAOActions
 
     public function __construct()
     {
-        $this->currentVersion = get_site_option($this->optionVersion) || '0.0.0';
+        $this->currentVersion = get_site_option($this->optionVersion);
     }
 
     public static function updateDatabaseIfNeeded()
@@ -29,6 +29,8 @@ class DAOActions
         $instance = self::getInstance();
         if ($instance->needUpdateDatabase()) {
             $instance->updateDatabase();
+        } else {
+            $instance->updateDatabaseVersion220();
         }
     }
 
@@ -48,6 +50,7 @@ class DAOActions
     public function updateDatabase()
     {
         $this->installDatabaseVersion200();
+        $this->updateDatabaseVersion220();
         update_option($this->optionVersion, TSM__VERSION, true);
     }
 
@@ -84,6 +87,17 @@ class DAOActions
         dbDelta($sql);
     }
 
+    private function updateDatabaseVersion220()
+    {
+        if (version_compare($this->currentVersion, '2.2.0') >= 0) {
+            return;
+        }
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $sql = "ALTER TABLE $tableName ADD COLUMN `estimatedQuota` INT NULL";
+        $wpdb->query($sql);
+    }
+
     public static function deleteTable()
     {
         global $wpdb;
@@ -97,7 +111,7 @@ class DAOActions
      * @param $origin string
      * @return int
      */
-    public static function createAction($postId, $slugTo, $origin)
+    public static function createAction($postId, $slugTo, $origin, $estimatedQuota)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
@@ -108,6 +122,7 @@ class DAOActions
             'origin' => $origin,
             'createdAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
             'updatedAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
+            'estimatedQuota' => $estimatedQuota
         ]);
         return $wpdb->insert_id;
     }

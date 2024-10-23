@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
+use TraduireSansMigraine\Wordpress\Object\Action;
+
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -80,6 +82,11 @@ class GetPost
                 }
             }
         }
+        $temporaryAction = new Action([
+            "postId" => $post["ID"],
+            "slugTo" => $translationPost["code"],
+            "origin" => "HOOK"
+        ]);
         return [
             "name" => $translationPost["name"],
             "code" => $translationPost["code"],
@@ -89,6 +96,7 @@ class GetPost
                 "urlNotPublished" => $notPublished,
                 "categoriesNotTranslated" => $missingCategories
             ],
+            "estimatedQuota" => $temporaryAction->getEstimatedQuota(),
         ];
     }
 }
