@@ -63,10 +63,10 @@ class MenuLanguage
             if ($this->hideEmpty && $language["no_translation"]) {
                 continue;
             }
-            if ($this->hideCurrent && $isCurrent) {
+            if ($isCurrent) {
                 continue;
             }
-            $this->displayLanguage($language, $isCurrent);
+            $this->displayLanguage($language);
         }
         $this->displaySubContainerEnd();
         $this->displayContainerEnd();
@@ -135,7 +135,7 @@ class MenuLanguage
         echo "<div class='sub-menu-language'>";
     }
 
-    private function displayLanguage($language, $isCurrent)
+    private function displayLanguage($language)
     {
         if (!$this->redirectHome && empty($language["postId"])) {
             return;
@@ -144,8 +144,6 @@ class MenuLanguage
         $Polylang = $tsm->getPolylangManager();
         if ($this->redirectHome) {
             $url = $Polylang->getHomeUrl($language["code"]);
-        } else if ($isCurrent) {
-            $url = "#";
         } else {
             $url = get_permalink($language["postId"]);
         }

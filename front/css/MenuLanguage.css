@@ -12,11 +12,6 @@
     padding-right: 1rem;
 }
 
-.menu-language.list:hover {
-    padding-left: 0;
-    padding-right: 0;
-}
-
 .menu-language a {
     display: flex;
     gap: .2rem;
@@ -34,10 +29,11 @@
     gap: 1rem;
     flex-direction: column;
     background: #fff;
-    width: max-content;
+    width: calc(100% + 1rem);
     position: absolute;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 11px;
+    border-bottom-right-radius: 11px;
+    top: 100%;
+    right: 0;
+    padding: 1rem 1rem 1rem 2rem;
 }
