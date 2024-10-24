@@ -420,7 +420,7 @@ class TranslateHelper
                 }
             }
             if ($hasMetaElementor) {
-                $document = Plugin::$instance->documents->get($this->translatedPostId);
+                $document = Plugin::$instance->documents->get($this->translatedPostId, false);
                 if ($document) {
                     $document->save($document->get_elements_data());
                 }
