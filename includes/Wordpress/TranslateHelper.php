@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress;
 
 
+use Elementor\Core\Files\CSS\Post as Post_CSS;
 use Elementor\Plugin;
 use Exception;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
@@ -422,6 +423,11 @@ class TranslateHelper
             if ($hasMetaElementor) {
                 $document = Plugin::$instance->documents->get($this->translatedPostId, false);
                 if ($document) {
+                    $document->save_template_type();
+                    $document->save_version();
+                    // Remove Post CSS
+                    $post_css = Post_CSS::create($this->translatedPostId);
+                    $post_css->delete();
                     $document->save($document->get_elements_data());
                 }
             }
