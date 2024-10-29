@@ -111,7 +111,7 @@ class GetPosts
     private function getAuthorsIDFromDB()
     {
         global $wpdb;
-        $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_status IN ('publish', 'draft')");
+        $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_type IN ('page', 'post')");
         $authors = [];
         foreach ($posts as $post) {
             $authorId = $post->post_author;
@@ -150,7 +150,9 @@ class GetPosts
         foreach ($posts as $post) {
             $translationMap = !empty($post->translationMap) ? unserialize($post->translationMap) : [];
             $post->translationMap = [];
-            $post->filters = [];
+            $post->filters = [
+                "display" => true
+            ];
             foreach ($languagesTranslated as $slug => $status) {
                 $shouldBeDone = in_array("done", $status);
                 $shouldBeNotTranslated = in_array("not_translated", $status);
@@ -175,7 +177,7 @@ class GetPosts
                     ] : null,
                     "translationIsUpdated" => $translationIsUpdated,
                 ];
-                $post->filters["display"] = $shouldKeepIt;
+                $post->filters["display"] = $post->filters["display"] && $shouldKeepIt;
             }
             $filteredPosts[] = $post;
         }

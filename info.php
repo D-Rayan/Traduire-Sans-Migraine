@@ -15,7 +15,10 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 24 Octobre 2024</h4><ul>
+        "changelog" => "<h4>Mise à jour du 29 Octobre 2024</h4><ul>
+        <li>Fix : Correction d'un problème d'affichage et de filtres dans la recherche des traductions groupés</li>
+        </ul>
+        <h4>Mise à jour du 24 Octobre 2024</h4><ul>
         <li>New : Vous pouvez voir un coût estimé pour chaque traduction</li>
         <li>Fix : Lors de certains cas la génération du fichier de design d'Elementor ne se faisait pas</li>
         </ul>

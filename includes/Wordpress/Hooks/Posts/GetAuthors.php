@@ -52,7 +52,7 @@ class GetAuthors
     private function getAuthorsFromDB()
     {
         global $wpdb;
-        $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_status IN ('publish', 'draft')");
+        $posts = $wpdb->get_results("SELECT DISTINCT post_author FROM $wpdb->posts WHERE post_type IN ('page', 'post')");
         $authors = [];
         foreach ($posts as $post) {
             $authorId = $post->post_author;
