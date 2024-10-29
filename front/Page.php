@@ -1,6 +1,9 @@
 <?php
 
 namespace TraduireSansMigraine\Front;
+
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+
 class Page
 {
     private static $mainData = [];
@@ -42,13 +45,19 @@ class Page
             'urlClient' => TSM__CLIENT_LOGIN_DOMAIN,
         ];
         if (isset($_GET["post"])) {
-            self::$mainData['translations'] = $tsm->getPolylangManager()->getAllTranslationsPost($_GET["post"]);
-            self::$mainData['firstVisitAfterTSMTranslatedIt'] = get_post_meta($_GET["post"], '_tsm_first_visit_after_translation', true);
-            self::$mainData['hasTSMTranslatedIt'] = get_post_meta($_GET["post"], '_has_been_translated_by_tsm', true);
-            self::$mainData['translatedFromSlug'] = get_post_meta($_GET["post"], '_translated_by_tsm_from', true);
-            self::$mainData['summary'] = get_post_meta($_GET["post"], '_summary_translated_by_tsm', true);
-            self::$mainData['postId'] = $_GET["post"];
-            delete_post_meta($_GET["post"], '_tsm_first_visit_after_translation');
+            $postId = $_GET["post"];
+        } else if (isset($_GET["page"]) && $_GET["page"] === "wc-admin" && isset($_GET["path"])) {
+            $tmp = explode("/", $_GET["path"]);
+            foreach ($tmp as $value) {
+                if (is_numeric($value)) {
+                    $postId = $value;
+                    break;
+                }
+            }
+        }
+        if (isset($postId)) {
+            self::$mainData['objectId'] = $postId;
+            self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"];
         }
     }
 }

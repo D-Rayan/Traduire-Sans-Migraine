@@ -4,6 +4,7 @@
 namespace TraduireSansMigraine\Wordpress\Shortcodes;
 
 
+use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 if (!defined("ABSPATH")) {
@@ -40,10 +41,9 @@ class MenuLanguage
     public function displayMenuLanguage($args)
     {
         global $tsm;
-        $id = get_the_ID();
         $Polylang = $tsm->getPolylangManager();
         $this->setArguments($args);
-        $languages = $id === false ? $Polylang->getLanguagesActives() : $Polylang->getAllTranslationsPost($id);
+        $languages = $Polylang->getLanguagesActives();
         $currentLanguageSlug = $Polylang->getCurrentLanguageSlug();
         ob_start();
         $this->displayContainerStart();
@@ -56,6 +56,13 @@ class MenuLanguage
             }
             return strcmp($a["name"], $b["name"]);
         });
+        $id = get_the_ID();
+        if ($id) {
+            $translations = TranslationPost::findTranslationFor($id);
+            array_filter($languages, function ($language) use ($translations) {
+                return !empty($translations->getTranslation($language["code"]));
+            });
+        }
         $this->displayTextMenu($languages[0]);
         $this->displaySubContainerStart();
         foreach ($languages as $language) {

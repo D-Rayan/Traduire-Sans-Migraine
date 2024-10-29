@@ -3,6 +3,8 @@
 namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
 use TraduireSansMigraine\Settings;
+use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguagePost;
+use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\TextDomain;
 
 class OnDeletionPosts
@@ -38,11 +40,18 @@ class OnDeletionPosts
         if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["autoDeletionTranslations"])) {
             return;
         }
-        $translations = $tsm->getPolylangManager()->getAllTranslationsPost($postId);
-        $currentSlug = $tsm->getPolylangManager()->getLanguageSlugForPost($postId);
+        $defaultLanguage = LanguagePost::getDefaultLanguage();
+        if (empty($defaultLanguage)) {
+            return;
+        }
+        $translations = TranslationPost::findTranslationFor($postId);
+        $language = LanguagePost::getLanguage($postId);
         $isDefault = false;
-        foreach ($translations as $translation) {
-            if (($translation["postId"] == $postId || $translation["code"] === $currentSlug) && $translation["default"]) {
+        foreach ($translations->getTranslations() as $code => $translationPostId) {
+            $isCurrentPost = $translationPostId == $postId;
+            $isSameLanguage = $language && $code === $language["code"];
+            $isPostFromDefaultLanguage = $code === $defaultLanguage["code"];
+            if (($isCurrentPost || $isSameLanguage) && $isPostFromDefaultLanguage) {
                 $isDefault = true;
                 break;
             }
@@ -50,18 +59,18 @@ class OnDeletionPosts
         if (!$isDefault) {
             return;
         }
-        $this->deleteTranslations($translations);
+        $this->deleteTranslations($translations, $defaultLanguage);
     }
 
-    private function deleteTranslations($translations)
+    private function deleteTranslations($translations, $defaultLanguage)
     {
-        foreach ($translations as $translation) {
-            if ($translation["default"] || empty($translation["postId"])) {
+        foreach ($translations as $slug => $postId) {
+            if (empty($postId) || $slug === $defaultLanguage["code"]) {
                 continue;
             }
             $this->count++;
-            wp_trash_post($translation["postId"]);
-            $this->ids[] = $translation["postId"];
+            wp_trash_post($postId);
+            $this->ids[] = $postId;
         }
     }
 

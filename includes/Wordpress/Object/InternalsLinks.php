@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress\Object;
 
 use TraduireSansMigraine\Wordpress\DAO\DAOInternalsLinks;
+use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguagePost;
 
 class InternalsLinks
 {
@@ -37,37 +38,39 @@ class InternalsLinks
     public static function verifyPost($post)
     {
         global $tsm;
-        $postLanguageSlug = $tsm->getPolylangManager()->getLanguageSlugForPost($post->ID);
+        $postLanguage = LanguagePost::getLanguage($post->ID);
+        if (empty($postLanguage)) {
+            return;
+        }
         $languagesActives = $tsm->getPolylangManager()->getLanguagesActives();
         $postMeta = get_post_meta($post->ID);
         foreach ($languagesActives as $slug => $languageActive) {
-            if ($slug === $postLanguageSlug) {
+            if ($slug === $postLanguage["code"]) {
                 continue;
             }
-            $result = $tsm->getLinkManager()->getIssuedInternalLinks($post->post_content, $slug, $postLanguageSlug);
-            self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notTranslated"], false);
-            self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notPublished"], false);
-            self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["translatable"], true);
+            $result = $tsm->getLinkManager()->getIssuedInternalLinks($post->post_content, $slug, $postLanguage["code"]);
+            self::saveInternalsLinks($post->ID, $postLanguage["code"], $slug, $result["notTranslated"], false);
+            self::saveInternalsLinks($post->ID, $postLanguage["code"], $slug, $result["notPublished"], false);
+            self::saveInternalsLinks($post->ID, $postLanguage["code"], $slug, $result["translatable"], true);
 
             foreach ($postMeta as $key => $value) {
                 $valueKey = $value[0];
                 if (!is_string($valueKey)) {
                     continue;
                 }
-                $result = $tsm->getLinkManager()->getIssuedInternalLinks($valueKey, $slug, $postLanguageSlug);
-                self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notTranslated"], false);
-                self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["notPublished"], false);
-                self::saveInternalsLinks($post->ID, $postLanguageSlug, $slug, $result["translatable"], true);
+                $result = $tsm->getLinkManager()->getIssuedInternalLinks($valueKey, $slug, $postLanguage["code"]);
+                self::saveInternalsLinks($post->ID, $postLanguage["code"], $slug, $result["notTranslated"], false);
+                self::saveInternalsLinks($post->ID, $postLanguage["code"], $slug, $result["notPublished"], false);
+                self::saveInternalsLinks($post->ID, $postLanguage["code"], $slug, $result["translatable"], true);
             }
         }
     }
 
     private static function saveInternalsLinks($postId, $slugPost, $slugLinks, $links, $canBeFixed)
     {
-        global $tsm;
         foreach ($links as $notTranslatedUrl => $notTranslatedPostId) {
-            $slugLink = $tsm->getPolylangManager()->getLanguageSlugForPost($notTranslatedPostId);
-            if ($slugLink !== $slugLinks) {
+            $languagePostNotTranslated = LanguagePost::getLanguage($notTranslatedPostId);
+            if (empty($languagePostNotTranslated) || $languagePostNotTranslated["code"] !== $slugLinks) {
                 continue;
             }
             $internalsLinks = self::loadOrCreateByPostAndUrl($postId, $notTranslatedPostId);

@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\SeoSansMigraine;
 
+use TraduireSansMigraine\Cache;
+
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -14,19 +16,15 @@ class Client
     private $account;
     private $redirect;
 
-    private $cache = [];
+    private $cache;
 
     public function __construct()
     {
         $this->client = new BaseClient();
         $this->account = null;
-        $this->loadCache();
+        $this->cache = new Cache($this);
     }
 
-    private function loadCache()
-    {
-        $this->cache = get_option("tsm-cache-client", []);
-    }
 
     static public function getInstance()
     {
@@ -96,12 +94,21 @@ class Client
     public function getEstimatedQuota(array $dataToTranslate, array $options = []): array
     {
         $this->authenticate();
-        return $this->client->post("/translations/estimate", [
+        $args = ["dataToTranslate" => $dataToTranslate, "options" => $options];
+        $cache = $this->cache->getCache(__FUNCTION__, $args);
+        if (!empty($cache)) {
+            return $cache;
+        }
+        $response = $this->client->post("/translations/estimate", [
             "dataToTranslate" => $dataToTranslate,
             "restUrl" => get_rest_url(),
             "translateAssets" => $options["translateAssets"] ?? false,
             "version" => TSM__VERSION
         ]);
+        if ($response["success"]) {
+            $this->cache->setCache(__FUNCTION__, $args, $response, Cache::$EXPIRATION["MAX"]);
+        }
+        return $response;
     }
 
     public function getTranslation($tokenId)
@@ -122,8 +129,9 @@ class Client
 
     public function getLanguages()
     {
-        if (isset($this->cache["getLanguages"])) {
-            return $this->cache["getLanguages"];
+        $cache = $this->cache->getCache(__FUNCTION__);
+        if (!empty($cache)) {
+            return $cache;
         }
         $this->authenticate();
         $response = $this->client->get("/languages");
@@ -134,24 +142,22 @@ class Client
                 "glossaries" => []
             ];
         }
-        $this->cache["getLanguages"] = $response["data"];
-        $this->saveCache();
+        $this->cache->setCache(__FUNCTION__, [], $response["data"], Cache::$EXPIRATION["MAX"]);
         return $response["data"];
-    }
-
-    private function saveCache()
-    {
-        update_option("tsm-cache-client", $this->cache);
     }
 
     public function getProducts()
     {
+        $cache = $this->cache->getCache(__FUNCTION__);
+        if (!empty($cache)) {
+            return $cache;
+        }
         $this->authenticate();
         $response = $this->client->get("/products");
         if (!$response["success"]) {
             return [];
         }
-
+        $this->cache->setCache(__FUNCTION__, [], $response["data"]["products"], Cache::$EXPIRATION["MAX"]);
         return $response["data"]["products"];
     }
 

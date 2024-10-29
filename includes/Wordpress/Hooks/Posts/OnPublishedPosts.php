@@ -3,6 +3,8 @@
 namespace TraduireSansMigraine\Wordpress\Hooks\Posts;
 
 use TraduireSansMigraine\Wordpress\DAO\DAOInternalsLinks;
+use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguagePost;
+use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 
 class OnPublishedPosts
 {
@@ -14,15 +16,20 @@ class OnPublishedPosts
 
     public function handlePublication($ID, $post)
     {
-        global $tsm;
-        $translations = $tsm->getPolylangManager()->getAllTranslationsPost($ID);
-        $currentSlug = $tsm->getPolylangManager()->getLanguageSlugForPost($ID);
-
-        foreach ($translations as $translation) {
-            if ($translation["code"] === $currentSlug || empty($translation["postId"])) {
+        $translations = TranslationPost::findTranslationFor($ID);
+        $language = LanguagePost::getLanguage($ID);
+        $defaultLanguage = LanguagePost::getDefaultLanguage();
+        if (empty($language)) {
+            return;
+        }
+        foreach ($translations->getTranslations() as $code => $translatedPostId) {
+            if (($code === $language["code"]) || empty($translatedPostId)) {
                 continue;
             }
-            DAOInternalsLinks::setToBeFixed($translation["postId"], $currentSlug);
+            if ($defaultLanguage && $code === $defaultLanguage["code"]) {
+                do_action("tsm-post-published", $translatedPostId, $ID);
+            }
+            DAOInternalsLinks::setToBeFixed($translatedPostId, $language["code"]);
         }
     }
 }

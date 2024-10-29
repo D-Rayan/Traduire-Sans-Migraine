@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "traduire-sans-migraine/woocommerce-languages",
+  "version": "0.1.0",
+  "title": "Select your language",
+  "category": "woocommerce",
+  "icon": "smiley",
+  "description": "Example block scaffolded with Create Block tool.",
+  "example": {},
+  "keywords": [
+    "products"
+  ],
+  "usesContext": [
+    "postType"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": true,
+    "inserter": false
+  },
+  "textdomain": "traduire-sans-migraine",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php",
+  "attributes": {
+    "ajaxUrl": {
+      "type": "string"
+    },
+    "nonce": {
+      "type": "string"
+    },
+    "currentLocale": {
+      "type": "string"
+    },
+    "polylangUrl": {
+      "type": "string"
+    }
+  }
+}

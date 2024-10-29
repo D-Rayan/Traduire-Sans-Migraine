@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
-use TraduireSansMigraine\Wordpress\Queue;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 
 
 if (!defined("ABSPATH")) {
@@ -47,8 +47,11 @@ class GetQueue
         }
         do_action("fetchTranslationsBackground");
         do_action("startNextProcess");
+        $queue = DAOActions::getActionsForQueue();
+        $queue = apply_filters("tsm-enrich-actions", $queue);
+
         wp_send_json_success([
-            "queue" => Queue::getInstance()->getActionsEnriched(),
+            "queue" => $queue,
         ]);
         wp_die();
     }

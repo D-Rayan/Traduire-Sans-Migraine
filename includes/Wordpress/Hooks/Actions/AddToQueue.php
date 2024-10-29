@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
+use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
-use TraduireSansMigraine\Wordpress\Object\Action;
 
 
 if (!defined("ABSPATH")) {
@@ -47,7 +47,11 @@ class AddToQueue
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
         }
-        if (!isset($_POST["postId"]) || !is_numeric($_POST["postId"])) {
+        if (!isset($_POST["objectId"])) {
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
+            wp_die();
+        }
+        if (!isset($_POST["objectType"])) {
             wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
@@ -56,15 +60,13 @@ class AddToQueue
             wp_die();
         }
         $languageTo = $_POST["languageTo"];
-        $postId = intval($_POST["postId"]);
-        $languageFrom = $tsm->getPolylangManager()->getLanguageSlugForPost($postId);
-        if ($languageFrom === $languageTo) {
-            wp_send_json_error([
-                "message" => seoSansMigraine_returnErrorForImpossibleReasons()
-            ], 400);
+        $objectId = $_POST["objectId"];
+        $actionType = $_POST["objectType"];
+        if (!in_array($actionType, DAOActions::$ACTION_TYPE)) {
+            wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
             wp_die();
         }
-        $existingAction = Action::loadByPostId($postId, $languageTo);
+        $existingAction = AbstractAction::loadByObjectId($objectId, $languageTo, $actionType);
         if ($existingAction && $existingAction->willBeProcessing()) {
             $existingAction->setOrigin(isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"]);
             $existingAction->save();
@@ -73,15 +75,15 @@ class AddToQueue
             ]);
             wp_die();
         }
-        $action = new Action([
-            "postId" => $postId,
+        $action = AbstractAction::getInstance([
+            "objectId" => $objectId,
             "slugTo" => $languageTo,
-            "origin" => isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"]
+            "origin" => isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"],
+            "actionType" => $actionType
         ]);
         $action->save();
-        wp_send_json_success([
-            "ID" => $action->getID()
-        ]);
+        $enrichedAction = apply_filters("tsm-enrich-actions", $action);
+        wp_send_json_success($enrichedAction);
         wp_die();
     }
 }

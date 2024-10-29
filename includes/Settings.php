@@ -15,6 +15,7 @@ class Settings
         "translateAssets" => "translateAssets",
         "translateCategories" => "translateCategories",
         "autoTranslateLinks" => "autoTranslateLinks",
+        "enabledWoocommerce" => "enabledWoocommerce",
         "autoDeletionTranslations" => "autoDeletionTranslations"
     ];
     private $settings;
@@ -118,6 +119,10 @@ class Settings
                 "enabled" => false,
                 "available" => true
             ],
+            self::$KEYS["enabledWoocommerce"] => [
+                "enabled" => false,
+                "available" => is_plugin_active("woocommerce/woocommerce.php")
+            ]
         ];
         $settings = get_option("seo_sans_migraine_settings");
         if (!empty($settings)) {

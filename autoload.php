@@ -8,6 +8,7 @@ spl_autoload_register(function ($class) {
         ["prefix" => "TraduireSansMigraine\\SeoSansMigraine\\", "base_dir" => __DIR__ . "/includes/SeoSansMigraine/"],
         ["prefix" => "TraduireSansMigraine\\Languages\\", "base_dir" => __DIR__ . "/includes/Languages/"],
         ["prefix" => "TraduireSansMigraine\\Wordpress\\", "base_dir" => __DIR__ . "/includes/Wordpress/"],
+        ["prefix" => "TraduireSansMigraine\\Woocommerce\\", "base_dir" => __DIR__ . "/includes/Woocommerce/"],
         ["prefix" => "TraduireSansMigraine\\Front\\", "base_dir" => __DIR__ . "/front/"],
     ];
 

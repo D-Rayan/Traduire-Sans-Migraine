@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
+use TraduireSansMigraine\Settings;
+
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -48,6 +50,7 @@ class UpdateSettings
             wp_die();
         }
         $settings = $tsm->getSettings()->getSettings();
+        $oldSettings = $tsm->getSettings()->getSettings();
         foreach ($_POST["settings"] as $key => $value) {
             if (!is_bool($value)) {
                 continue;
@@ -63,6 +66,9 @@ class UpdateSettings
             $settings[$key] = $value["enabled"] && $value["available"];
         }
         $tsm->getSettings()->saveSettings($settings);
+        if (!$oldSettings[Settings::$KEYS["enabledWoocommerce"]] && $settings[Settings::$KEYS["enabledWoocommerce"]]) {
+            do_action("traduire-sans-migraine_enable_woocommerce");
+        }
         wp_send_json_success(["settings" => $settings]);
         wp_die();
     }

@@ -3,6 +3,7 @@
 namespace TraduireSansMigraine\Wordpress;
 
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Wordpress\AbstractClass\AbstractApplyTranslation;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 
 class OfflineProcess
@@ -44,9 +45,11 @@ class OfflineProcess
         foreach ($translations as $translation) {
             $tokenId = $translation["tokenId"];
             $translationData = $translation["translation"];
-            $codeTo = $translation["codeTo"];
-            $TranslationHelper = new TranslateHelper($tokenId, $translationData, $codeTo);
-            $TranslationHelper->handleTranslationResult();
+            $instanceTranslation = AbstractApplyTranslation::getInstance($tokenId, $translationData);
+            if (empty($instanceTranslation)) {
+                continue;
+            }
+            $instanceTranslation->applyTranslation();
         }
     }
 }

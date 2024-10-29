@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
+use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
+
 class LinkManager
 {
 
@@ -24,6 +26,9 @@ class LinkManager
 
     public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo, $getErrors = false)
     {
+        if (!is_string($translateFrom) || !is_array($translateTo)) {
+            return [];
+        }
         $homeUrl = str_replace("/", "\/", home_url());
         $regexAbsoluteUrl = '/' . $homeUrl . '\/(' . $translateFrom . '\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?/i';
         $regexRelativeUrl = '/"\/(' . $translateFrom . '\/)?([a-z0-9-_\/\=\?#]+)(\/)*(#[a-z0-9-_\/\=\%]+)?"/i';
@@ -169,15 +174,17 @@ class LinkManager
             } else if ($this->is_serialized($value)) {
                 return $this->replaceLink(unserialize($value), $linkToReplace, $linkPostId, $slugTo);
             }
-
-            $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($linkPostId, $slugTo);
-            if ($internalPostIdTranslated) {
-                $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
-                if ($titleInternalPostIdTranslated && false === strpos($titleInternalPostIdTranslated, "p=")) {
-                    $this->linksTranslatedCount += substr_count($value, $linkToReplace);
-                    $value = str_replace($linkToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $value);
-                }
+            $translations = TranslationPost::findTranslationFor($linkPostId);
+            $internalPostIdTranslated = $translations->getTranslation($slugTo);
+            if (empty($internalPostIdTranslated)) {
+                return $value;
             }
+            $titleInternalPostIdTranslated = get_permalink($internalPostIdTranslated);
+            if (empty($titleInternalPostIdTranslated) || false !== strpos($titleInternalPostIdTranslated, "p=")) {
+                return $value;
+            }
+            $this->linksTranslatedCount += substr_count($value, $linkToReplace);
+            $value = str_replace($linkToReplace, $this->formatUrlToAbsolute($titleInternalPostIdTranslated), $value);
         }
         return $value;
     }
@@ -206,7 +213,8 @@ class LinkManager
         $internalsPostIds = $this->extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo);
         $notTranslatedInternalLinks = $notPublishedInternalLinks = [];
         foreach ($internalsPostIds as $urlToReplace => $postIdRelated) {
-            $internalPostIdTranslated = $tsm->getPolylangManager()->getTranslationPost($postIdRelated, $translateTo);
+            $translations = TranslationPost::findTranslationFor($postIdRelated);
+            $internalPostIdTranslated = $translations->getTranslation($translateTo);
             if (!$internalPostIdTranslated) {
                 $notTranslatedInternalLinks[$urlToReplace] = $postIdRelated;
                 continue;

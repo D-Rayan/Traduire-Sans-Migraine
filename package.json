@@ -1,9 +1,11 @@
 {
   "scripts": {
-    "minifyCSS": "cleancss -b --batch-suffix '.min' **/*.css !**/*.min.css",
-    "build": "npm run minifyCSS"
+    "minifyCSS": "cleancss -b --batch-suffix '.min' ./front/css/*.css !./front/css/*.min.css",
+    "minifyJS": "minify ./front/js/form.js > ./front/js/form.min.js",
+    "build": "npm run minifyCSS && npm run minifyJS"
   },
   "devDependencies": {
-    "clean-css-cli": "^5.6.3"
+    "clean-css-cli": "^5.6.3",
+    "minify": "^11.4.1"
   }
 }

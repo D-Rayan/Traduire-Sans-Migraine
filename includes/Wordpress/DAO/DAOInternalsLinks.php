@@ -143,7 +143,7 @@ class DAOInternalsLinks
 
         return $wpdb->get_results("SELECT posts.ID, posts.post_content FROM $wpdb->posts posts
                     WHERE 
-                        posts.post_type IN ('page', 'post') AND
+                        posts.post_type IN ('page', 'post', 'elementor_library') AND
                         posts.post_status IN ('draft', 'publish', 'future', 'private', 'pending') AND 
                         posts.ID > $lastPostId
                     ORDER BY posts.ID ASC 
@@ -157,7 +157,7 @@ class DAOInternalsLinks
 
         return $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->posts posts
                     WHERE 
-                        posts.post_type IN ('page', 'post') AND
+                        posts.post_type IN ('page', 'post', 'elementor_library') AND
                         posts.post_status IN ('draft', 'publish', 'future', 'private', 'pending') AND
                         posts.ID > $lastPostId
                     ");

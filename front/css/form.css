@@ -1,0 +1,35 @@
+.row-translation {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+    position: relative;
+}
+
+.row-translation.hidden, .form-field.hidden {
+    display: none !important;
+}
+
+.row-translation > img:first-child {
+    position: absolute;
+    left: 5px;
+}
+
+.row-translation > input[type='text'] {
+    padding-left: 21px;
+}
+
+.row-translation > a {
+    text-decoration: none;
+}
+
+.row-translation > a > span {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+}
+
+th.wc-email-settings-table-traduire_sans_migraine_language {
+    width: 0px;
+    padding: unset !important;
+}

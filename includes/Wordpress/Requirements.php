@@ -59,7 +59,11 @@ class Requirements
                                 Spinner.classList.add("is-active");
                                 buttonInstall.append(Spinner);
                                 jQuery.post(ajaxurl, data, function (response) {
-                                    window.location = `${window.location}&tsm=polylang_installed`;
+                                    if (window.location.indexOf("?") === -1) {
+                                        window.location += "?tsm=polylang_installed";
+                                    } else {
+                                        window.location = `${window.location}&tsm=polylang_installed`;
+                                    }
                                 });
                             });
                         })();

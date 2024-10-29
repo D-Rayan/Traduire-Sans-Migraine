@@ -3,6 +3,8 @@
 namespace TraduireSansMigraine\Languages;
 
 use Exception;
+use PLL_Language;
+use TraduireSansMigraine\Cache;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -10,9 +12,9 @@ if (!defined("ABSPATH")) {
 
 class PolylangManager
 {
-    private $languagesAllowed;
-    private $glossaries;
     private $languagesPolylang;
+
+    private $cache;
 
     public function __construct()
     {
@@ -21,64 +23,7 @@ class PolylangManager
         } else {
             $this->languagesPolylang = [];
         }
-    }
-
-    public function getLanguageSlugForPost(string $postId): string
-    {
-        if (!function_exists("pll_get_post_language")) {
-            return "";
-        }
-
-        return pll_get_post_language($postId, "slug");
-    }
-
-    public function getAllTranslationsPost($postId)
-    {
-        $languages = $this->getLanguagesActives();
-
-        $results = [];
-        foreach ($languages as $language) {
-            $postIdTranslated = $this->getTranslationPost($postId, $language["code"]);
-            $results[$language["code"]] = array_merge($language, [
-                "postId" => $postIdTranslated,
-            ]);
-        }
-
-        return $results;
-    }
-
-    public function getLanguagesActives()
-    {
-        if (!function_exists("pll_languages_list")) {
-            return [];
-        }
-
-        $languages = pll_languages_list(['fields' => []]);
-        $results = [];
-        foreach ($languages as $language) {
-            $results[$language->slug] = [
-                "id" => $language->term_id,
-                "default" => (bool)$language->is_default,
-                "name" => $language->name,
-                "flag" => $language->flag,
-                "code" => $language->slug,
-                "term_group" => $language->term_group,
-                "no_translation" => $language->no_translation
-            ];
-        }
-
-        return $results;
-    }
-
-    public function getTranslationPost($postId, $codeLanguage)
-    {
-        if (!function_exists("pll_get_post")) {
-            return null;
-        }
-
-        $postId = pll_get_post($postId, $codeLanguage);
-
-        return $postId && get_post_status($postId) !== "trash" ? $postId : null;
+        $this->cache = new Cache($this);
     }
 
     public function getHomeUrl($slug)
@@ -94,78 +39,7 @@ class PolylangManager
         if (!function_exists("pll_current_language")) {
             return get_locale();
         }
-        return pll_current_language("slug");
-    }
-
-    public function getAllTranslationsTerm($termId)
-    {
-        $languages = $this->getLanguagesActives();
-
-        $results = [];
-        foreach ($languages as $language) {
-            $results[$language["code"]] = [
-                "name" => $language["name"],
-                "flag" => $language["flag"],
-                "code" => $language["code"],
-                "termId" => pll_get_term($termId, $language["code"])
-            ];
-        }
-
-        return $results;
-    }
-
-    public function saveAllTranslationsPost($translationsMap)
-    {
-        if (!function_exists("pll_save_post_translations")) {
-            return;
-        }
-
-        $languages = $this->getLanguagesActives();
-        $cleanMap = [];
-        foreach ($translationsMap as $codeLanguage => $postId) {
-            if (!isset($languages[$codeLanguage]) || empty($postId)) {
-                continue;
-            }
-            $cleanMap[$codeLanguage] = $postId;
-            pll_set_post_language($postId, $codeLanguage);
-        }
-        pll_save_post_translations($cleanMap);
-    }
-
-    public function saveAllTranslationsTerms($translationsMap)
-    {
-        if (!function_exists("pll_save_term_translations")) {
-            return;
-        }
-
-        $languages = $this->getLanguagesActives();
-        $cleanMap = [];
-        foreach ($translationsMap as $codeLanguage => $term) {
-            $termId = is_array($term) ? $term["termId"] : $term;
-            if (!isset($languages[$codeLanguage]) || empty($termId)) {
-                continue;
-            }
-            $cleanMap[$codeLanguage] = $termId;
-            pll_set_term_language($termId, $codeLanguage);
-        }
-        pll_save_term_translations($cleanMap);
-    }
-
-    function getTranslationCategories($categories, $codeLanguage)
-    {
-        if (!function_exists("pll_get_term") || empty($codeLanguage)) {
-            return [];
-        }
-
-        $results = [];
-        foreach ($categories as $index => $category) {
-            $categoryTranslated = pll_get_term($category, $codeLanguage);
-            if ($categoryTranslated) {
-                $results[$index] = $categoryTranslated;
-            }
-        }
-
-        return $results;
+        return pll_current_language();
     }
 
     public function addLanguage($locale)
@@ -194,6 +68,9 @@ class PolylangManager
             "_wp_http_referer" => admin_url("admin.php?page=mlang"),
         ]);
         $isSuccess = strpos($response, 'setting-error-pll') === false || strpos($response, 'setting-error-pll_languages_created') !== false;
+        if ($isSuccess) {
+            $this->cache->clearCacheByMethod("getLanguagesActives");
+        }
         if ($isSuccess && $is_first_language) {
             $this->makeRequestPolylang(admin_url("admin.php?page=mlang&pll_action=content-default-lang&noheader=true&_wpnonce=" . wp_create_nonce("content-default-lang")));
             if (isset($primaryNavMenu)) {
@@ -212,6 +89,7 @@ class PolylangManager
                 $options["default_lang"] = $data["code"];
                 update_option('polylang', $options);
             }
+            $this->makeRequestNewDefaultLanguage($data["code"]);
         }
         return $isSuccess;
     }
@@ -234,6 +112,19 @@ class PolylangManager
         $response = curl_exec($curl);
         curl_close($curl);
 
+        return $response;
+    }
+
+    private function makeRequestNewDefaultLanguage($code)
+    {
+        $url = admin_url("admin-ajax.php?action=traduire-sans-migraine_handle_new_default_language&wpNonce=" . wp_create_nonce("traduire-sans-migraine") . "&defaultCode=" . $code);
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+        ]);
+        $response = curl_exec($curl);
+        curl_close($curl);
         return $response;
     }
 
@@ -262,10 +153,13 @@ class PolylangManager
             "_wp_http_referer" => admin_url("admin.php?page=mlang"),
         ]);
         $isSuccess = strpos($response, 'setting-error-pll') === false || strpos($response, 'setting-error-pll_languages_updated') !== false;
+        if ($isSuccess) {
+            $this->cache->clearCacheByMethod("getLanguagesActives");
+        }
         return $isSuccess;
     }
 
-    public function getLanguagePolylangByIncompleteLocale($incompleteLocale)
+    private function getLanguagePolylangByIncompleteLocale($incompleteLocale)
     {
         $bestMatch = null;
         $incompleteLocaleLower = strtolower($incompleteLocale);
@@ -293,9 +187,59 @@ class PolylangManager
         return $bestMatch;
     }
 
+    public function getLanguagesActives()
+    {
+        if (!function_exists("pll_languages_list")) {
+            return [];
+        }
+
+        $cache = $this->cache->getCache(__FUNCTION__, []);
+        if (!empty($cache)) {
+            return $cache;
+        }
+
+        $languages = pll_languages_list(['fields' => []]);
+        $results = [];
+        foreach ($languages as $language) {
+            /**
+             * @var PLL_Language $language
+             */
+            $results[$language->slug] = [
+                "id" => $language->term_id,
+                "default" => (bool)$language->is_default,
+                "name" => $language->name,
+                "flag" => $language->flag,
+                "code" => $language->slug,
+                "term_group" => $language->term_group,
+                "no_translation" => $language->no_translation
+            ];
+        }
+        // @todo : Should check polylang update to clear cache when language is added or removed, After that we can set the cache in memory
+        $this->cache->setCache(__FUNCTION__, [], $results, Cache::$EXPIRATION["ONLY_MEMORY"]);
+
+        return $this->getLanguagesActives();
+    }
+
+    private function getLanguagesDataFromAPI()
+    {
+        $cache = $this->cache->getCache(__FUNCTION__, []);
+        if (!empty($cache)) {
+            return $cache;
+        }
+        global $tsm;
+        $response = $tsm->getClient()->getLanguages();
+        $this->cache->setCache(__FUNCTION__, [], $response, Cache::$EXPIRATION["ONE_DAY"]);
+        return $this->getLanguagesDataFromAPI();
+    }
+
     public function getLanguages()
     {
         global $tsm;
+
+        $cache = $this->cache->getCache(__FUNCTION__, []);
+        if (!empty($cache)) {
+            return $cache;
+        }
 
         try {
             $enabledLanguages = $this->getLanguagesActives();
@@ -323,7 +267,7 @@ class PolylangManager
             }
             $slug = strtolower(substr($language["language"], 0, 2));
             $glossaries = [];
-            foreach ($this->glossaries as $glossary) {
+            foreach ($this->getGlossaries() as $glossary) {
                 if ($glossary["target_lang"] === $slug) {
                     $glossaries[] = $glossary["source_lang"];
                 }
@@ -337,6 +281,7 @@ class PolylangManager
                 }
             }
             $languages[] = [
+                "id" => isset($enabledLanguages[$slug]) ? $enabledLanguages[$slug]["id"] : null,
                 "slug" => $slug,
                 "locale" => $polylangLanguage["locale"],
                 "enabled" => isset($enabledLanguages[$slug]),
@@ -353,18 +298,20 @@ class PolylangManager
         usort($languages, function ($a, $b) {
             return strcmp($a["name"], $b["name"]);
         });
-        return $languages;
+
+        $this->cache->setCache(__FUNCTION__, [], $languages, Cache::$EXPIRATION["ONLY_MEMORY"]);
+        return $this->getLanguages();
     }
 
     private function getLanguagesAllowed()
     {
-        if (!isset($this->languagesAllowed)) {
-            global $tsm;
-            $response = $tsm->getClient()->getLanguages();
-            $this->languagesAllowed = $response["complete"];
-            $this->glossaries = $response["glossaries"];
-        }
+        $response = $this->getLanguagesDataFromAPI();
+        return $response["complete"];
+    }
 
-        return $this->languagesAllowed;
+    private function getGlossaries()
+    {
+        $response = $this->getLanguagesDataFromAPI();
+        return $response["glossaries"];
     }
 }

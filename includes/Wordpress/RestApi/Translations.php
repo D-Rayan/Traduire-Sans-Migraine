@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\RestApi;
 
-use TraduireSansMigraine\Wordpress\TranslateHelper;
+use TraduireSansMigraine\Wordpress\AbstractClass\AbstractApplyTranslation;
 use WP_REST_Response;
 
 if (!defined("ABSPATH")) {
@@ -13,15 +13,6 @@ class Translations
 {
     public function __construct()
     {
-    }
-
-    public static function getInstance()
-    {
-        static $instance = null;
-        if (null === $instance) {
-            $instance = new static();
-        }
-        return $instance;
     }
 
     public function setTranslations($data)
@@ -35,14 +26,28 @@ class Translations
             return new WP_REST_Response(["success" => false, "error" => "Domain key not valid"], 400);
         }
 
-        $TranslateHelper = new TranslateHelper($data["id"], $data["dataToTranslate"], $data["codeTo"]);
-        $TranslateHelper->handleTranslationResult();
-        if ($TranslateHelper->isSuccess()) {
+
+        $instanceTranslation = AbstractApplyTranslation::getInstance($data["id"], $data["dataToTranslate"]);
+        if (!$instanceTranslation) {
+            return new WP_REST_Response(["success" => false, "error" => "Action not found"], 404);
+        }
+
+        $translationIsSuccess = $instanceTranslation->applyTranslation();
+        if ($translationIsSuccess === true) {
             $response = new WP_REST_Response(["success" => true], 200);
         } else {
-            $response = new WP_REST_Response(["success" => false, "error" => $TranslateHelper->getResponse()], 500);
+            $response = new WP_REST_Response(["success" => false, "error" => $instanceTranslation->getResponse()], 500);
         }
         return $response;
+    }
+
+    public static function getInstance()
+    {
+        static $instance = null;
+        if (null === $instance) {
+            $instance = new static();
+        }
+        return $instance;
     }
 
     public function registerEndpoints()

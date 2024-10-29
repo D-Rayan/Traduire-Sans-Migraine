@@ -14,6 +14,13 @@ class DAOActions
         'PAUSE' => 'PAUSE',
         'ARCHIVED' => 'ARCHIVED',
     ];
+    public static $ACTION_TYPE = [
+        'POST_PAGE_PRODUCT' => 'POST_PAGE_PRODUCT',
+        'EMAIL' => 'EMAIL',
+        'MODEL_ELEMENTOR' => 'MODEL_ELEMENTOR',
+        'TERMS' => 'TERMS',
+        'ATTRIBUTES' => 'ATTRIBUTE',
+    ];
     private static $TABLE_NAME = "tsm_actions";
     private static $instance = null;
     private $currentVersion;
@@ -51,6 +58,7 @@ class DAOActions
     {
         $this->installDatabaseVersion200();
         $this->updateDatabaseVersion220();
+        $this->updateDatabaseVersion230();
         update_option($this->optionVersion, TSM__VERSION, true);
     }
 
@@ -98,6 +106,23 @@ class DAOActions
         $wpdb->query($sql);
     }
 
+    private function updateDatabaseVersion230()
+    {
+        if (version_compare($this->currentVersion, '2.3.0') >= 0) {
+            return;
+        }
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $sql = "ALTER TABLE $tableName ADD COLUMN `actionType` VARCHAR(255) NOT NULL DEFAULT '" . self::$ACTION_TYPE["POST_PAGE_PRODUCT"] . "'";
+        $wpdb->query($sql);
+        $sql = "ALTER TABLE $tableName ADD COLUMN `actionParent` INT NULL";
+        $wpdb->query($sql);
+        $sql = "ALTER TABLE $tableName CHANGE `postId` `objectId` VARCHAR(255) NOT NULL";
+        $wpdb->query($sql);
+        $sql = "ALTER TABLE $tableName ADD COLUMN `objectIdTranslated` VARCHAR(255) NULL";
+        $wpdb->query($sql);
+    }
+
     public static function deleteTable()
     {
         global $wpdb;
@@ -105,24 +130,19 @@ class DAOActions
         $wpdb->query("DROP TABLE IF EXISTS $tableName");
     }
 
-    /**
-     * @param $postId int
-     * @param $slugTo string
-     * @param $origin string
-     * @return int
-     */
-    public static function createAction($postId, $slugTo, $origin, $estimatedQuota)
+    public static function createAction($objectId, $slugTo, $origin, $estimatedQuota, $actionType)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->insert($tableName, [
-            'postId' => $postId,
+            'objectId' => $objectId,
             'slugTo' => $slugTo,
             'state' => self::$STATE["PENDING"],
             'origin' => $origin,
             'createdAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
             'updatedAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
-            'estimatedQuota' => $estimatedQuota
+            'estimatedQuota' => $estimatedQuota,
+            'actionType' => $actionType
         ]);
         return $wpdb->insert_id;
     }
@@ -143,72 +163,92 @@ class DAOActions
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE tokenId = $tokenId", ARRAY_A);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE tokenId = %d",
+            $tokenId
+        );
+        return $wpdb->get_row($preparedQuery, ARRAY_A);
     }
 
-    public static function getActionByPostId($postId, $slugTo)
+    public static function getActionByObjectId($objectId, $slugTo, $actionType)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE postId = $postId AND slugTo = '$slugTo' AND state != '" . self::$STATE["ARCHIVED"] . "' ORDER BY ID DESC LIMIT 1", ARRAY_A);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE actionType = %s AND objectId = %s AND slugTo = %s AND state != %s ORDER BY ID DESC LIMIT 1",
+            $actionType, $objectId, $slugTo, self::$STATE["ARCHIVED"]
+        );
+        return $wpdb->get_row($preparedQuery, ARRAY_A);
     }
 
-    public static function getActionsByPostId($postId)
+    public static function getActionsByObjectId($objectId, $actionType)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_results("SELECT * FROM $tableName WHERE ID IN (SELECT MAX(ID) FROM $tableName WHERE postId = $postId GROUP BY slugTo)", ARRAY_A);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE ID IN (SELECT MAX(ID) FROM $tableName WHERE objectId = %s AND actionType = %s GROUP BY slugTo)",
+            $objectId, $actionType
+        );
+        return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
 
     public static function getActionPaused()
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE state = '" . self::$STATE["PAUSE"] . "' ORDER BY ID DESC LIMIT 1", ARRAY_A);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE state = %s ORDER BY ID DESC LIMIT 1",
+            self::$STATE["PAUSE"]
+        );
+        return $wpdb->get_row($preparedQuery, ARRAY_A);
     }
 
     public static function get($id)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE ID = $id", ARRAY_A);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE ID = %d",
+            $id
+        );
+        return $wpdb->get_row($preparedQuery, ARRAY_A);
     }
 
     public static function getActionsForQueue()
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_results("SELECT actions.*, posts.post_title, posts.post_author, posts.post_status, posts.post_modified, (SELECT trTaxonomyTo.description FROM $wpdb->term_taxonomy trTaxonomyTo WHERE 
-                                trTaxonomyTo.taxonomy = 'post_translations' AND 
-                                trTaxonomyTo.term_taxonomy_id IN (
-                                    SELECT trTo.term_taxonomy_id FROM $wpdb->term_relationships trTo WHERE trTo.object_id = posts.ID
-                                )
-                            ) AS translationMap  FROM $tableName actions
-                        LEFT JOIN $wpdb->posts posts ON posts.ID = actions.postId
-                        WHERE actions.state != '" . self::$STATE["ARCHIVED"] . "' 
-                         ORDER BY actions.origin DESC, actions.ID ASC", ARRAY_A);
-    }
-
-    public static function removeAction($itemId)
-    {
-        global $wpdb;
-        $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        $deletePending = $wpdb->delete($tableName, ['ID' => $itemId, 'state' => self::$STATE["PENDING"]]);
-        if ($deletePending) {
-            return $deletePending;
-        }
-        $deletePause = $wpdb->delete($tableName, ['ID' => $itemId, 'state' => self::$STATE["PAUSE"]]);
-        if ($deletePause) {
-            return $deletePause;
-        }
-        return $wpdb->delete($tableName, ['ID' => $itemId, 'state' => self::$STATE["PROCESSING"]]);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE state != %s AND actionParent IS NULL ORDER BY origin DESC, ID",
+            self::$STATE["ARCHIVED"]
+        );
+        return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
 
     public static function getNextOrCurrentAction()
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        return $wpdb->get_row("SELECT * FROM $tableName WHERE state IN ('" . self::$STATE["PENDING"] . "', '" . self::$STATE["PAUSE"] . "', '" . self::$STATE["PROCESSING"] . "') ORDER BY origin DESC, ID ASC LIMIT 1", ARRAY_A);
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE state IN (%s, %s, %s) AND actionParent IS NULL ORDER BY origin DESC, ID LIMIT 1",
+            self::$STATE["PENDING"], self::$STATE["PAUSE"], self::$STATE["PROCESSING"]
+        );
+        return $wpdb->get_row($preparedQuery, ARRAY_A);
+    }
+
+    public static function removeAction($id)
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $deletePending = $wpdb->delete($tableName, ['ID' => $id, 'state' => self::$STATE["PENDING"]]);
+        if ($deletePending) {
+            return $deletePending;
+        }
+        $deletePause = $wpdb->delete($tableName, ['ID' => $id, 'state' => self::$STATE["PAUSE"]]);
+        if ($deletePause) {
+            return $deletePause;
+        }
+        return $wpdb->delete($tableName, ['ID' => $id, 'state' => self::$STATE["PROCESSING"]]);
     }
 
     public static function releaseLock($id, $lock)
@@ -223,6 +263,17 @@ class DAOActions
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, ['state' => self::$STATE["ARCHIVED"]], ['state' => self::$STATE["DONE"]]);
+    }
+
+    public static function getChildren($id)
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $preparedQuery = $wpdb->prepare(
+            "SELECT * FROM $tableName WHERE actionParent = %d",
+            $id
+        );
+        return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
 }
 

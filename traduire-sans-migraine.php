@@ -18,8 +18,10 @@ use TraduireSansMigraine\Front\EditorPage;
 use TraduireSansMigraine\Front\NotificationsPage;
 use TraduireSansMigraine\Front\PluginsPage;
 use TraduireSansMigraine\SeoSansMigraine\Client;
+use TraduireSansMigraine\Woocommerce\Woocommerce;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\DAO\DAOInternalsLinks;
+use TraduireSansMigraine\Wordpress\Filters\Filters;
 use TraduireSansMigraine\Wordpress\Hooks\Hooks;
 use TraduireSansMigraine\Wordpress\Menu;
 use TraduireSansMigraine\Wordpress\OfflineProcess;
@@ -54,7 +56,6 @@ class TraduireSansMigraine
         $this->client = new Client();
         $this->polylangManager = new Languages\PolylangManager();
         $this->linkManager = new Wordpress\LinkManager();
-        $this->init();
     }
 
     public function init()
@@ -79,12 +80,15 @@ class TraduireSansMigraine
         OfflineProcess::init();
         Queue::init();
         Menu::init();
+        RestAPI::init();
+        Filters::init();
+        Hooks::init();
+        Shortcodes::init();
+        Woocommerce::init();
+
         EditorPage::init();
         PluginsPage::init();
         NotificationsPage::init();
-        RestAPI::init();
-        Hooks::init();
-        Shortcodes::init();
     }
 
     public function setPluginAsEnabled()
@@ -161,4 +165,5 @@ class TraduireSansMigraine
 }
 
 $tsm = new TraduireSansMigraine();
-global $tsm;
+$GLOBALS['tsm'] = $tsm;
+$tsm->init();

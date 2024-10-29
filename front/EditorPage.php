@@ -7,6 +7,8 @@ use TraduireSansMigraine\Wordpress\TextDomain;
 class EditorPage extends Page
 {
     private static $instance = null;
+    private $allowedTypes;
+    private $currentPostType;
 
     public static function init()
     {
@@ -25,7 +27,11 @@ class EditorPage extends Page
     public function loadAdminHooks()
     {
         global $pagenow;
-        if (!isset($_GET["post"]) || $pagenow !== "post.php" || !in_array(get_post_type($_GET["post"]), ["post", "page"]) || !is_admin()) {
+        $this->allowedTypes = apply_filters("tsm-post-type-translatable", ["post", "page", "elementor_library"]);
+        $this->currentPostType = (isset($_GET["post"])) ? get_post_type($_GET["post"]) : null;
+        $editingPostPageProduct = (isset($_GET["post"]) && $pagenow === "post.php" && in_array($this->currentPostType, $this->allowedTypes));
+        $editingMail = (isset($_GET["page"]) && $_GET["page"] === "wc-settings" && isset($_GET["tab"]) && $_GET["tab"] === "email");
+        if (!is_admin() || !($editingPostPageProduct || $editingMail)) {
             return;
         }
         add_action('admin_enqueue_scripts', [$this, 'loadJSReact']);
@@ -50,18 +56,23 @@ class EditorPage extends Page
                 z-index: 90000;
             }
 
-            #display-traduire-sans-migraine-button {
+            .button#display-traduire-sans-migraine-button {
                 background-color: #1626b0;
                 border-color: #1626b0;
                 padding: 0.2rem 1rem;
                 border-radius: 20px;
                 font-weight: 600;
+                color: white;
 
                 &:hover {
                     background-color: white;
                     color: #1626b0;
                     cursor: pointer;
                 }
+            }
+
+            .components-button#display-traduire-sans-migraine-button:hover {
+                text-decoration: underline;
             }
         </style>
         <?php
@@ -74,17 +85,31 @@ class EditorPage extends Page
 
     public function displayTraduireSansMigraineMetabox()
     {
-        ?>
-        <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
-            <button class="button button-primary"
-                    id="display-traduire-sans-migraine-button"><?php echo TextDomain::__("Translate 💊"); ?></button>
-        </div>
-        <?php
+        if ($this->currentPostType === "product") {
+            ?>
+            <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
+                <button class="components-button woocommerce-layout__activity-panel-tab"
+                        id="display-traduire-sans-migraine-button"><span
+                            style="height:24px;width:24px;">💊</span><br/> <?php echo TextDomain::__("Translate"); ?>
+                </button>
+            </div>
+            <?php
+        } else { ?>
+            <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
+                <button class="button button-primary"
+                        id="display-traduire-sans-migraine-button"><?php echo TextDomain::__("Translate 💊"); ?></button>
+            </div>
+            <?php
+        }
     }
 
     public function registerMetaBox()
     {
-        add_meta_box('metaboxTraduireSansMigraine', TSM__NAME, [$this, "displayTraduireSansMigraineMetabox"], 'post', 'side', 'high');
-        add_meta_box('metaboxTraduireSansMigraine', TSM__NAME, [$this, "displayTraduireSansMigraineMetabox"], 'page', 'side', 'high');
+        foreach ($this->allowedTypes as $type) {
+            if ($type !== $this->currentPostType) {
+                continue;
+            }
+            add_meta_box('metaboxTraduireSansMigraine', TSM__NAME, [$this, "displayTraduireSansMigraineMetabox"], $type, 'side', 'high');
+        }
     }
 }

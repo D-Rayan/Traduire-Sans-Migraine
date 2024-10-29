@@ -23,7 +23,10 @@ class NotificationsPage extends Page
     public function loadAdminHooks()
     {
         global $pagenow;
-        if (!isset($_GET["post"]) || $pagenow !== "post.php" || !in_array(get_post_type($_GET["post"]), ["post", "page"]) || !is_admin()) {
+        $allowedTypes = apply_filters("tsm-post-type-translatable", ["post", "page", "elementor_library"]);
+        $editingPostPageProduct = (isset($_GET["post"]) && $pagenow === "post.php" && in_array(get_post_type($_GET["post"]), $allowedTypes));
+        $editingMail = (isset($_GET["page"]) && $_GET["page"] === "wc-settings" && isset($_GET["tab"]) && $_GET["tab"] === "email");
+        if (!is_admin() || !($editingPostPageProduct || $editingMail)) {
             return;
         }
         add_action('admin_enqueue_scripts', [$this, 'loadJSReact']);
