@@ -125,6 +125,9 @@ class Queue
                 "translationMap" => $translationMap,
             ];
             $queue[$key]["response"] = empty($item["response"]) ? [] : json_decode($item["response"], true);
+            if (empty($queue[$key]["response"])) {
+                $queue[$key]["response"] = [];
+            }
             unset($queue[$key]["postId"]);
             unset($queue[$key]["post_title"]);
             unset($queue[$key]["post_author"]);
