@@ -127,11 +127,15 @@ class TranslateHelper
     {
         $countAssetsCreated = 0;
         $content = $this->dataToTranslate["content"];
+        $currentDomain = get_site_url();
         foreach ($this->dataToTranslate as $key => $value) {
             if (!strstr($key, "src-")) {
                 continue;
             }
             $originalUrlAsset = explode("src-", $key)[1];
+            if (strpos($originalUrlAsset, $currentDomain) !== 0) {
+                continue;
+            }
             $newName = preg_replace('/ \d+x\d+/', '', $value);
             $urlAsset = preg_replace('/-\d+x\d+/', '', $originalUrlAsset);
             $mediaId = attachment_url_to_postid($urlAsset);
