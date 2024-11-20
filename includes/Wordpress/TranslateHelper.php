@@ -119,44 +119,52 @@ class TranslateHelper
             ]);
             $this->action->save();
         } catch (Exception $e) {
-            $this->action->setAsError()->setResponse(["error" => $e->getMessage()])->save();
+            $error = $e->getMessage();
+            if (empty($error)) {
+                $error = "An error occurred during the translation";
+            }
+            $this->action->setAsError()->setResponse(["error" => $error])->save();
         }
     }
 
     private function handleAssetsTranslations()
     {
-        $countAssetsCreated = 0;
-        $content = $this->dataToTranslate["content"];
-        $currentDomain = get_site_url();
-        foreach ($this->dataToTranslate as $key => $value) {
-            if (!strstr($key, "src-")) {
-                continue;
+        try {
+            $countAssetsCreated = 0;
+            $content = $this->dataToTranslate["content"];
+            $currentDomain = get_site_url();
+            foreach ($this->dataToTranslate as $key => $value) {
+                if (!strstr($key, "src-")) {
+                    continue;
+                }
+                $originalUrlAsset = explode("src-", $key)[1];
+                if (strpos($originalUrlAsset, $currentDomain) !== 0) {
+                    continue;
+                }
+                $newName = preg_replace('/ \d+x\d+/', '', $value);
+                $urlAsset = preg_replace('/-\d+x\d+/', '', $originalUrlAsset);
+                $mediaId = attachment_url_to_postid($urlAsset);
+                if (!$mediaId) {
+                    continue;
+                }
+                $newMediaId = $this->duplicateMedia($mediaId, $newName);
+                if ($newMediaId instanceof WP_Error || !$newMediaId) {
+                    continue;
+                }
+                $newUrl = $this->getSameSizedMedia($originalUrlAsset, $mediaId, $newMediaId);
+                if (!$newUrl) {
+                    continue;
+                }
+                $content = str_replace($originalUrlAsset, $newUrl, $content);
+                $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content);
+                $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content);
+                $countAssetsCreated++;
             }
-            $originalUrlAsset = explode("src-", $key)[1];
-            if (strpos($originalUrlAsset, $currentDomain) !== 0) {
-                continue;
-            }
-            $newName = preg_replace('/ \d+x\d+/', '', $value);
-            $urlAsset = preg_replace('/-\d+x\d+/', '', $originalUrlAsset);
-            $mediaId = attachment_url_to_postid($urlAsset);
-            if (!$mediaId) {
-                continue;
-            }
-            $newMediaId = $this->duplicateMedia($mediaId, $newName);
-            if ($newMediaId instanceof WP_Error || !$newMediaId) {
-                continue;
-            }
-            $newUrl = $this->getSameSizedMedia($originalUrlAsset, $mediaId, $newMediaId);
-            if (!$newUrl) {
-                continue;
-            }
-            $content = str_replace($originalUrlAsset, $newUrl, $content);
-            $content = str_replace(":" . $mediaId, ":" . $newMediaId, $content);
-            $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content);
-            $countAssetsCreated++;
+            $this->dataToTranslate["content"] = $content;
+            return $countAssetsCreated;
+        } catch (Exception $e) {
+            return 0;
         }
-        $this->dataToTranslate["content"] = $content;
-        return $countAssetsCreated;
     }
 
     private function duplicateMedia($mediaId, $name)
@@ -232,21 +240,25 @@ class TranslateHelper
 
     private function createCategory($originalCategoryId, $codeTo, $categoryNameTranslated)
     {
-        $category = get_term($originalCategoryId, "category");
-        $categoryTranslated = wp_insert_term($categoryNameTranslated, "category", [
-            "slug" => sanitize_title($categoryNameTranslated),
-            "description" => $category->description,
-            "parent" => $category->parent
-        ]);
-        if (is_wp_error($categoryTranslated)) {
+        try {
+            $category = get_term($originalCategoryId, "category");
+            $categoryTranslated = wp_insert_term($categoryNameTranslated, "category", [
+                "slug" => sanitize_title($categoryNameTranslated),
+                "description" => $category->description,
+                "parent" => $category->parent
+            ]);
+            if (is_wp_error($categoryTranslated)) {
+                return false;
+            }
+            $allTranslationsTerms = $this->polylangManager->getAllTranslationsTerm($originalCategoryId);
+            if (isset($allTranslationsTerms[$codeTo])) {
+                $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
+            }
+            $this->polylangManager->saveAllTranslationsTerms($allTranslationsTerms);
+            return true;
+        } catch (Exception $e) {
             return false;
         }
-        $allTranslationsTerms = $this->polylangManager->getAllTranslationsTerm($originalCategoryId);
-        if (isset($allTranslationsTerms[$codeTo])) {
-            $allTranslationsTerms[$codeTo]["termId"] = $categoryTranslated["term_id"];
-        }
-        $this->polylangManager->saveAllTranslationsTerms($allTranslationsTerms);
-        return true;
     }
 
     private function createPost()
@@ -283,7 +295,11 @@ class TranslateHelper
         if (isset($this->dataToTranslate["excerpt"])) {
             $postData["post_excerpt"] = $this->dataToTranslate["excerpt"];
         }
-        $translations[$this->action->getSlugTo()] = wp_insert_post($postData, true);
+        $createdPost = wp_insert_post($postData, true);
+        if (is_wp_error($createdPost)) {
+            throw new Exception($createdPost->get_error_message());
+        }
+        $translations[$this->action->getSlugTo()] = $createdPost;
         $this->translatedPostId = $translations[$this->action->getSlugTo()];
         $tsm->getPolylangManager()->saveAllTranslationsPost($translations);
     }
@@ -311,15 +327,19 @@ class TranslateHelper
 
     private function handleDefaultMetaPosts()
     {
-        foreach ($this->postMetas as $key => $value) {
-            $valueKey = $value[0];
-            if ($this->is_json($valueKey)) {
-                $valueKey = wp_slash($valueKey);
-            } else if ($this->is_serialized($valueKey)) {
-                $valueKey = unserialize($valueKey);
+        try {
+            foreach ($this->postMetas as $key => $value) {
+                $valueKey = $value[0];
+                if ($this->is_json($valueKey)) {
+                    $valueKey = wp_slash($valueKey);
+                } else if ($this->is_serialized($valueKey)) {
+                    $valueKey = unserialize($valueKey);
+                }
+                $valueKey = $this->replaceValue($valueKey);
+                update_post_meta($this->translatedPostId, $key, $valueKey);
             }
-            $valueKey = $this->replaceValue($valueKey);
-            update_post_meta($this->translatedPostId, $key, $valueKey);
+        } catch (Exception $e) {
+            return;
         }
     }
 
@@ -350,23 +370,27 @@ class TranslateHelper
     private function handleYoast()
     {
         $translated = false;
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
-            if (isset($this->dataToTranslate["metaTitle"])) {
-                $translated = true;
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
+        try {
+            if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
+                if (isset($this->dataToTranslate["metaTitle"])) {
+                    $translated = true;
+                    update_post_meta($this->translatedPostId, "_yoast_wpseo_title", $this->dataToTranslate["metaTitle"]);
+                }
+                if (isset($this->dataToTranslate["metaDescription"])) {
+                    $translated = true;
+                    update_post_meta($this->translatedPostId, "_yoast_wpseo_metadesc", $this->dataToTranslate["metaDescription"]);
+                }
+                if (isset($this->dataToTranslate["metaKeywords"])) {
+                    $translated = true;
+                    update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
+                }
+                if (isset($this->dataToTranslate["yoastFocusKeyword"])) {
+                    $translated = true;
+                    update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
+                }
             }
-            if (isset($this->dataToTranslate["metaDescription"])) {
-                $translated = true;
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_metadesc", $this->dataToTranslate["metaDescription"]);
-            }
-            if (isset($this->dataToTranslate["metaKeywords"])) {
-                $translated = true;
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_metakeywords", $this->dataToTranslate["metaKeywords"]);
-            }
-            if (isset($this->dataToTranslate["yoastFocusKeyword"])) {
-                $translated = true;
-                update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
-            }
+        } catch (Exception $e) {
+            return false;
         }
         return $translated;
     }
@@ -440,23 +464,27 @@ class TranslateHelper
 
     private function handleACF()
     {
-        if (is_plugin_active("advanced-custom-fields/acf.php")) {
-            foreach ($this->dataToTranslate as $key => $value) {
-                if (strstr($key, "acf_")) {
-                    $key = substr($key, 4);
-                    if (isset($this->postMetas[$key]) && isset($this->postMetas["_" . $key])) {
-                        if ($this->is_json($value)) {
-                            $value = wp_slash($value);
-                        }
-                        if ($this->is_serialized($value)) {
-                            $value = unserialize($value);
-                        }
+        try {
+            if (is_plugin_active("advanced-custom-fields/acf.php")) {
+                foreach ($this->dataToTranslate as $key => $value) {
+                    if (strstr($key, "acf_")) {
+                        $key = substr($key, 4);
+                        if (isset($this->postMetas[$key]) && isset($this->postMetas["_" . $key])) {
+                            if ($this->is_json($value)) {
+                                $value = wp_slash($value);
+                            }
+                            if ($this->is_serialized($value)) {
+                                $value = unserialize($value);
+                            }
 
-                        update_post_meta($this->translatedPostId, $key, $value);
-                        update_post_meta($this->translatedPostId, "_" . $key, $this->postMetas["_" . $key][0]);
+                            update_post_meta($this->translatedPostId, $key, $value);
+                            update_post_meta($this->translatedPostId, "_" . $key, $this->postMetas["_" . $key][0]);
+                        }
                     }
                 }
             }
+        } catch (Exception $e) {
+            return;
         }
     }
 
