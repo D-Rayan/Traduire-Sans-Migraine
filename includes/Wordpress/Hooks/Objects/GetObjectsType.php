@@ -29,12 +29,12 @@ class GetObjectsType
         }
         $allowedObjectTypes = [
             DAOActions::$ACTION_TYPE["TERMS"],
-            "POST_PAGE"
+            DAOActions::$ACTION_TYPE["POST_PAGE"],
         ];
         if ($tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["EMAIL"];
-            $allowedObjectTypes[] = "PRODUCT";
-            $allowedObjectTypes[] = "ATTRIBUTE";
+            $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["PRODUCT"];
+            $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["ATTRIBUTES"];
         }
         if (is_plugin_active("elementor/elementor.php")) {
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"];

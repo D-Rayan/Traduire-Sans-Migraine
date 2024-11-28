@@ -71,6 +71,35 @@ class Settings
     public function saveSettings($settings)
     {
         update_option("seo_sans_migraine_settings", $settings);
+        $this->setSettings($settings);
+    }
+
+    private function setSettings($settings)
+    {
+        if (!empty($settings)) {
+            foreach ($settings as $key => $enabled) {
+                if (isset($this->settings[$key])) {
+                    $this->settings[$key]["enabled"] = $enabled == true && $this->settings[$key]["available"] == true;
+                    continue;
+                }
+                $oldKeys = [
+                    "rank_math_description" => self::$KEYS["rankMath"],
+                    "rank_math_title" => self::$KEYS["rankMath"],
+                    "rank_math_focus_keyword" => self::$KEYS["rankMath"],
+                    "seopress_titles_desc" => self::$KEYS["SEOPress"],
+                    "seopress_titles_title" => self::$KEYS["SEOPress"],
+                    "seopress_analysis_target_kw" => self::$KEYS["SEOPress"],
+                    "_yoast_wpseo_title" => self::$KEYS["yoastSEO"],
+                    "_yoast_wpseo_metadesc" => self::$KEYS["yoastSEO"],
+                    "_yoast_wpseo_metakeywords" => self::$KEYS["yoastSEO"],
+                    "yoast_wpseo_focuskw" => self::$KEYS["yoastSEO"],
+                ];
+                if (isset($oldKeys[$key])) {
+                    $relatedKey = $oldKeys[$key];
+                    $this->settings[$relatedKey]["enabled"] = $enabled == true && $this->settings[$relatedKey]["enabled"] == true && $this->settings[$relatedKey]["available"] == true;
+                }
+            }
+        }
     }
 
     public function getSettings()
@@ -125,30 +154,7 @@ class Settings
             ]
         ];
         $settings = get_option("seo_sans_migraine_settings");
-        if (!empty($settings)) {
-            foreach ($settings as $key => $enabled) {
-                if (isset($this->settings[$key])) {
-                    $this->settings[$key]["enabled"] = $enabled == true && $this->settings[$key]["available"] == true;
-                    continue;
-                }
-                $oldKeys = [
-                    "rank_math_description" => self::$KEYS["rankMath"],
-                    "rank_math_title" => self::$KEYS["rankMath"],
-                    "rank_math_focus_keyword" => self::$KEYS["rankMath"],
-                    "seopress_titles_desc" => self::$KEYS["SEOPress"],
-                    "seopress_titles_title" => self::$KEYS["SEOPress"],
-                    "seopress_analysis_target_kw" => self::$KEYS["SEOPress"],
-                    "_yoast_wpseo_title" => self::$KEYS["yoastSEO"],
-                    "_yoast_wpseo_metadesc" => self::$KEYS["yoastSEO"],
-                    "_yoast_wpseo_metakeywords" => self::$KEYS["yoastSEO"],
-                    "yoast_wpseo_focuskw" => self::$KEYS["yoastSEO"],
-                ];
-                if (isset($oldKeys[$key])) {
-                    $relatedKey = $oldKeys[$key];
-                    $this->settings[$relatedKey]["enabled"] = $enabled == true && $this->settings[$relatedKey]["enabled"] == true && $this->settings[$relatedKey]["available"] == true;
-                }
-            }
-        }
+        $this->setSettings($settings);
     }
 
     public function settingIsEnabled($name)

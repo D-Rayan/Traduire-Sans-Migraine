@@ -127,7 +127,7 @@ class GetStateWoocommerce
     private function actionIsInQueue($id, $type)
     {
         $action = AbstractAction::loadByObjectId($id, $this->language["code"], $type);
-        return !empty($action);
+        return !empty($action) && $action->willBeProcessing();
     }
 
     private function setAttributesStates()
@@ -173,7 +173,7 @@ class GetStateWoocommerce
     {
         $emails = wc()->mailer()->get_emails();
         foreach ($emails as $email) {
-            $estimatedQuota = $this->updateEmailState($email, "additional_content", "tsm-language-" . $this->language["code"] . "-content");
+            $estimatedQuota = $this->updateEmailState($email, "additional_content", "tsm-language-" . $this->language["code"] . "-additional_content");
             $estimatedQuota += $this->updateEmailState($email, "subject", "tsm-language-" . $this->language["code"] . "-subject");
             $estimatedQuota += $this->updateEmailState($email, "header", "tsm-language-" . $this->language["code"] . "-header");
             if ($estimatedQuota > 0) {
@@ -235,12 +235,12 @@ class GetStateWoocommerce
         $this->state["products"]["query"] = $query;
         $products = $wpdb->get_results($query);
         foreach ($products as $product) {
-            if ($this->actionIsInQueue($product->id, DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"])) {
+            if ($this->actionIsInQueue($product->id, DAOActions::$ACTION_TYPE["PRODUCT"])) {
                 $this->state["products"]["translating"]++;
                 continue;
             }
             $this->state["products"]["missing"]++;
-            $temporaryAction = new Translatable\Posts\Action([
+            $temporaryAction = new Translatable\Products\Action([
                 "objectId" => $product->id,
                 "slugTo" => $this->language["code"],
                 "origin" => "HOOK"
@@ -251,7 +251,6 @@ class GetStateWoocommerce
 
     public function updatePageState($optionName)
     {
-        global $tsm;
         $pageId = get_option($optionName);
         if (empty($pageId)) {
             return;
@@ -264,7 +263,7 @@ class GetStateWoocommerce
             }
             return;
         }
-        if ($this->actionIsInQueue($pageId, DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"])) {
+        if ($this->actionIsInQueue($pageId, DAOActions::$ACTION_TYPE["POST_PAGE"])) {
             $this->state["pages"]["translating"]++;
             return;
         }

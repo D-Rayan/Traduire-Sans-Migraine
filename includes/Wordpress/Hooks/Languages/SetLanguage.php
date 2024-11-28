@@ -71,7 +71,8 @@ class SetLanguage
         $objectType = $_POST["objectType"];
         $language = $languages[$slug];
         switch ($objectType) {
-            case DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]:
+            case DAOActions::$ACTION_TYPE["POST_PAGE"]:
+            case DAOActions::$ACTION_TYPE["PRODUCT"]:
             case DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]:
                 $postType = get_post_type($objectId);
                 $allowedPostTypes = apply_filters("tsm-post-type-translatable", ["post", "page", "elementor_library"]);

@@ -217,7 +217,7 @@ class PolylangManager
         // @todo : Should check polylang update to clear cache when language is added or removed, After that we can set the cache in memory
         $this->cache->setCache(__FUNCTION__, [], $results, Cache::$EXPIRATION["ONLY_MEMORY"]);
 
-        return $this->getLanguagesActives();
+        return $results;
     }
 
     private function getLanguagesDataFromAPI()
@@ -229,7 +229,7 @@ class PolylangManager
         global $tsm;
         $response = $tsm->getClient()->getLanguages();
         $this->cache->setCache(__FUNCTION__, [], $response, Cache::$EXPIRATION["ONE_DAY"]);
-        return $this->getLanguagesDataFromAPI();
+        return $response;
     }
 
     public function getLanguages()
@@ -300,7 +300,7 @@ class PolylangManager
         });
 
         $this->cache->setCache(__FUNCTION__, [], $languages, Cache::$EXPIRATION["ONLY_MEMORY"]);
-        return $this->getLanguages();
+        return $languages;
     }
 
     private function getLanguagesAllowed()

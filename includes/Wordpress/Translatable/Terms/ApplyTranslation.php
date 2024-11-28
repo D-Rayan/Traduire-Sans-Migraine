@@ -4,6 +4,7 @@ namespace TraduireSansMigraine\Wordpress\Translatable\Terms;
 
 
 use TraduireSansMigraine\Wordpress\AbstractClass\AbstractApplyTranslation;
+use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguageTerm;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
 
 if (!defined("ABSPATH")) {
@@ -30,11 +31,6 @@ class ApplyTranslation extends AbstractApplyTranslation
         $this->handleParent($this->originalObject->parent);
     }
 
-    protected function getTranslatedId()
-    {
-        return $this->translatedId;
-    }
-
     private function createTerm($originalTermId, $translations)
     {
         $originalTerm = ($originalTermId === $this->originalObject->term_id) ? $this->originalObject : get_term($originalTermId);
@@ -47,8 +43,9 @@ class ApplyTranslation extends AbstractApplyTranslation
         if (is_wp_error($newTermId)) {
             return;
         }
-        $this->translatedId = $newTermId;
-        $translations->addTranslation($this->codeTo, $newTermId)->save();
+        $this->translatedId = $newTermId["term_id"];
+        LanguageTerm::setLanguage($newTermId["term_id"], $this->codeTo);
+        $translations->addTranslation($this->codeTo, $newTermId["term_id"])->save();
     }
 
     private function getData($prefix = "")
@@ -96,5 +93,10 @@ class ApplyTranslation extends AbstractApplyTranslation
             $this->updateTerm($parentId, $translations);
         }
         $this->handleParent($parent->parent);
+    }
+
+    protected function getTranslatedId()
+    {
+        return $this->translatedId;
     }
 }

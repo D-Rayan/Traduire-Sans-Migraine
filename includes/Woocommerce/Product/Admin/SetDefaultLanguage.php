@@ -29,11 +29,7 @@ class SetDefaultLanguage
 
     public function setDefaultLanguage($defaultCode)
     {
-        // @todo : optimize to get product WITHOUT language
-        $products = get_posts([
-            'post_type' => 'product',
-            'posts_per_page' => -1,
-        ]);
+        $products = $this->getProductsWithoutLanguage();
         foreach ($products as $product) {
             $product_id = $product->ID;
             if (!empty(LanguagePost::getLanguage($product_id))) {
@@ -41,6 +37,19 @@ class SetDefaultLanguage
             }
             LanguagePost::setLanguage($product_id, $defaultCode);
         }
+    }
+
+    private function getProductsWithoutLanguage()
+    {
+        global $wpdb;
+
+        $query = "SELECT p.ID FROM $wpdb->posts p
+            WHERE p.post_type IN ('product', 'product_variation') AND 
+                  p.ID NOT IN (SELECT tr.object_id FROM {$wpdb->term_relationships} tr 
+                                INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id 
+                                WHERE tt.taxonomy = %s)";
+
+        return $wpdb->get_results($wpdb->prepare($query, LanguagePost::getTaxonomy()));
     }
 }
 

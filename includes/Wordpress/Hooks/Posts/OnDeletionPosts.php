@@ -44,10 +44,10 @@ class OnDeletionPosts
         if (empty($defaultLanguage)) {
             return;
         }
-        $translations = TranslationPost::findTranslationFor($postId);
+        $translations = TranslationPost::findTranslationFor($postId)->getTranslations();
         $language = LanguagePost::getLanguage($postId);
         $isDefault = false;
-        foreach ($translations->getTranslations() as $code => $translationPostId) {
+        foreach ($translations as $code => $translationPostId) {
             $isCurrentPost = $translationPostId == $postId;
             $isSameLanguage = $language && $code === $language["code"];
             $isPostFromDefaultLanguage = $code === $defaultLanguage["code"];

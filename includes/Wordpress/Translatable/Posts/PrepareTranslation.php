@@ -4,10 +4,10 @@ namespace TraduireSansMigraine\Wordpress\Translatable\Posts;
 
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\AbstractClass\AbstractPrepareTranslation;
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguagePost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
-use TraduireSansMigraine\Wordpress\Translatable\Terms;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -43,7 +43,6 @@ class PrepareTranslation extends AbstractPrepareTranslation
         $this->handleElementor($postMetas);
         $this->handleACF($postMetas);
         $this->handleCategories($post->post_category, $this->codeTo);
-        $this->dataToTranslate = apply_filters("tsm-prepare-data-to-translate", $this->dataToTranslate, $post->ID, $this->codeTo);
     }
 
     private function handleYoast($postMetas, $willBeAnUpdate)
@@ -163,24 +162,15 @@ class PrepareTranslation extends AbstractPrepareTranslation
         if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["translateCategories"])) {
             return;
         }
-        $handleCategories = [];
         foreach ($categories as $categoryId) {
-            if (in_array($categoryId, $handleCategories)) {
-                continue;
-            }
             $translations = TranslationTerms::findTranslationFor($categoryId);
             if (!empty($translations->getTranslation($codeTo))) {
                 continue;
             }
-            $childAction = new Terms\Action([
+            $this->action->addChild([
                 "objectId" => $categoryId,
-                "slugTo" => $codeTo,
-                "origin" => $this->action->getOrigin(),
-                "actionParent" => $this->action->getId(),
+                "actionType" => DAOActions::$ACTION_TYPE["TERMS"]
             ]);
-            $this->dataToTranslate = array_merge($this->dataToTranslate, $childAction->getDataToTranslate());
-            $handleCategories[] = $categoryId;
-            $handleCategories = array_merge($handleCategories, get_ancestors($categoryId, "category"));
         }
     }
 

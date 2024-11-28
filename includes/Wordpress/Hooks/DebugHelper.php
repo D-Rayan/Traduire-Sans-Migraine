@@ -55,7 +55,7 @@ class DebugHelper
         $objectId = $_POST["objectId"];
         $objectType = $_POST["objectType"];
         // @todo : implement
-        if ($objectType === DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]) {
+        if ($objectType === DAOActions::$ACTION_TYPE["POST_PAGE"]) {
             $code = $_POST["code"];
             $originalPost = get_post($objectId);
             $postMetas = get_post_meta($originalPost->ID);

@@ -57,12 +57,12 @@ class GetObjects
         }
         $allowedObjectTypes = [
             DAOActions::$ACTION_TYPE["TERMS"],
-            "POST_PAGE"
+            DAOActions::$ACTION_TYPE["POST_PAGE"]
         ];
         if ($tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["EMAIL"];
-            $allowedObjectTypes[] = "PRODUCT";
-            $allowedObjectTypes[] = "ATTRIBUTE";
+            $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["PRODUCT"];
+            $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["ATTRIBUTES"];
         }
         if (is_plugin_active("elementor/elementor.php")) {
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"];
@@ -130,7 +130,7 @@ class GetObjects
         }
         $fromTermId = $languages[$slugFrom]["id"];
         switch ($objectType) {
-            case "POST_PAGE":
+            case DAOActions::$ACTION_TYPE["POST_PAGE"]:
                 if ($onlyWoocommerce) {
                     $posts = $this->getWoocommercePages($fromTermId);
                     $totalObjects = count($posts);
@@ -138,29 +138,29 @@ class GetObjects
                     $posts = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder, $offset, $pageSize, ["page", "post"]);
                     $totalObjects = $this->countPosts($fromTermId, $postAuthors, $postStatus, ["page", "post"]);
                 }
-                $objects = $this->populatePosts($posts, $languagesTranslated);
+                $objects = $this->populatePosts($posts, $languagesTranslated, $objectType);
                 break;
-            case "PRODUCT":
+            case DAOActions::$ACTION_TYPE["PRODUCT"]:
                 $posts = $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder, $offset, $pageSize, ["product"]);
-                $objects = $this->populatePosts($posts, $languagesTranslated);
+                $objects = $this->populatePosts($posts, $languagesTranslated, $objectType);
                 $totalObjects = $this->countPosts($fromTermId, $postAuthors, $postStatus, ["product"]);
                 break;
-            case "EMAIL":
+            case DAOActions::$ACTION_TYPE["EMAIL"]:
                 $objects = $this->getAllEmails($languagesTranslated, $enabled);
                 $totalObjects = count($objects);
                 $objects = array_slice($objects, $offset, $pageSize);
                 break;
-            case "MODEL_ELEMENTOR":
+            case DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]:
                 $posts = $onlyWoocommerce ? [] : $this->searchPosts($fromTermId, $postAuthors, $postStatus, $sortField, $sortOrder, $offset, $pageSize, ["model_elementor"]);
-                $objects = $this->populatePosts($posts, $languagesTranslated);
+                $objects = $this->populatePosts($posts, $languagesTranslated, $objectType);
                 $totalObjects = $onlyWoocommerce ? 0 : $this->countPosts($fromTermId, $postAuthors, $postStatus, ["model_elementor"]);
                 break;
-            case "TERMS":
+            case DAOActions::$ACTION_TYPE["TERMS"]:
                 $fromTermId = LanguageTerm::getTermTaxonomyId(LanguageTerm::getTermIdByLanguage($fromTermId));
                 $objects = $this->searchTerms($fromTermId, $languagesTranslated, $taxonomies, $offset, $pageSize);
                 $totalObjects = $this->countTerms($fromTermId, $taxonomies);
                 break;
-            case "ATTRIBUTE":
+            case DAOActions::$ACTION_TYPE["ATTRIBUTES"]:
                 $objects = $this->getAttributes($fromTermId, $languagesTranslated, $offset, $pageSize);
                 $totalObjects = count(wc_get_attribute_taxonomies());
                 break;
@@ -271,7 +271,7 @@ class GetObjects
         return $wpdb->get_var($queryFetchPosts);
     }
 
-    private function populatePosts($posts, $languagesTranslated)
+    private function populatePosts($posts, $languagesTranslated, $actionType)
     {
         $filteredPosts = [];
         foreach ($posts as $post) {
@@ -288,7 +288,7 @@ class GetObjects
                 $translationId = isset($translationMap[$slug]) ? $translationMap[$slug] : null;
                 $translation = $translationId ? get_post($translationId) : null;
                 $isTranslated = !empty($translation);
-                $aRelatedActionExist = AbstractAction::loadByObjectId($post->ID, $slug, DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]);
+                $aRelatedActionExist = AbstractAction::loadByObjectId($post->ID, $slug, $actionType);
                 $translationIsUpdated = $translation && $translation->post_modified > $post->post_modified;
 
 

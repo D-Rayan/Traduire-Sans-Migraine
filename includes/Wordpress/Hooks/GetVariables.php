@@ -57,7 +57,7 @@ class GetVariables
             wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
             wp_die();
         }
-        if ($objectType === DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]) {
+        if ($objectType === DAOActions::$ACTION_TYPE["POST_PAGE"] || $objectType === DAOActions::$ACTION_TYPE["PRODUCT"]) {
             $data = $this->getPostData($objectId);
             delete_post_meta($objectId, '_tsm_first_visit_after_translation');
         } else if ($objectType === DAOActions::$ACTION_TYPE["EMAIL"]) {
@@ -72,8 +72,6 @@ class GetVariables
 
     private function getPostData($postId)
     {
-        global $tsm;
-
         $data = [];
         $translations = TranslationPost::findTranslationFor($postId);
         $data['translations'] = $translations->getTranslations();

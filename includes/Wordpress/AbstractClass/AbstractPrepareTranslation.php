@@ -17,9 +17,12 @@ abstract class AbstractPrepareTranslation
     protected $object;
     protected $codeTo;
 
+    /**
+     * @var AbstractAction $action
+     */
     protected $action;
 
-    public function __construct($action)
+    public function __construct(&$action)
     {
         $this->object = $action->getObject();
         $this->codeTo = $action->getSlugTo();
@@ -38,6 +41,8 @@ abstract class AbstractPrepareTranslation
             return new Translatable\Terms\PrepareTranslation($action);
         } else if ($actionType === DAOActions::$ACTION_TYPE["ATTRIBUTES"]) {
             return new Translatable\Attributes\PrepareTranslation($action);
+        } else if ($actionType === DAOActions::$ACTION_TYPE["PRODUCT"]) {
+            return new Translatable\Products\PrepareTranslation($action);
         }
 
         return new Translatable\Posts\PrepareTranslation($action);
@@ -53,6 +58,7 @@ abstract class AbstractPrepareTranslation
         }
         $codeFrom = $this->getSlugOrigin();
         $this->prepareDataToTranslate();
+        $this->addChildrenDataToTranslate();
 
         $result = $tsm->getClient()->startTranslation($this->dataToTranslate, $codeFrom, $this->codeTo, [
             "translateAssets" => $tsm->getSettings()->settingIsEnabled(Settings::$KEYS["translateAssets"])
@@ -74,6 +80,8 @@ abstract class AbstractPrepareTranslation
             $result["data"] = [
                 "error" => $result["error"]
             ];
+        } else {
+            $result["data"] = ["error" => "unknown", $result];
         }
         return [
             "success" => $result["success"],
@@ -84,6 +92,17 @@ abstract class AbstractPrepareTranslation
     abstract protected function getSlugOrigin();
 
     abstract protected function prepareDataToTranslate();
+
+    protected function addChildrenDataToTranslate()
+    {
+        $children = $this->action->getChildren();
+        if (!is_array($children)) {
+            return;
+        }
+        foreach ($children as $child) {
+            $this->dataToTranslate = array_merge($this->dataToTranslate, $child->getDataToTranslate());
+        }
+    }
 
     public function getDataToTranslate()
     {

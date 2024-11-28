@@ -29,8 +29,7 @@ class SetDefaultLanguage
 
     public function setDefaultLanguage($defaultCode)
     {
-        // @todo : optimize to get product WITHOUT language
-        $terms = $this->getTerms($this->getTaxonomies());
+        $terms = $this->getTermsWithoutLanguage();
         foreach ($terms as $term) {
             $termId = $term->term_id;
             if (!empty(LanguageTerm::getLanguage($termId))) {
@@ -40,16 +39,20 @@ class SetDefaultLanguage
         }
     }
 
-    private function getTerms($taxonomies)
+    private function getTermsWithoutLanguage()
     {
         global $wpdb;
-        return $wpdb->get_results(
-            $wpdb->query(
-                "SELECT t.term_id FROM {$wpdb->terms} t
+
+        $taxonomies = $this->getTaxonomies();
+
+        $query = "SELECT t.term_id FROM {$wpdb->terms} t
                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                WHERE tt.taxonomy IN ('" . implode("','", $taxonomies) . "')"
-            )
-        );
+                WHERE tt.taxonomy IN ('" . implode("','", $taxonomies) . "') AND 
+                  t.term_id NOT IN (SELECT tr.object_id FROM {$wpdb->term_relationships} tr 
+                                INNER JOIN {$wpdb->term_taxonomy} tt2 ON tr.term_taxonomy_id = tt2.term_taxonomy_id 
+                                WHERE tt2.taxonomy = %s)";
+
+        return $wpdb->get_results($wpdb->prepare($query, LanguageTerm::getTaxonomy()));
     }
 
     private function getTaxonomies()

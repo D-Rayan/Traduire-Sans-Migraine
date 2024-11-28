@@ -41,7 +41,7 @@ class Queue
             return;
         }
         if ($this->getState() !== DAOActions::$STATE["PENDING"]) {
-            if (!empty($nextAction->getLock()) && strtotime($nextAction->getUpdatedAt()) < strtotime("-15 seconds")) {
+            if (!empty($nextAction->getLock()) && strtotime($nextAction->getUpdatedAt()) < strtotime("-5 minutes")) {
                 $nextAction->releaseLock()->setAsPending()->save();
                 $this->startNextProcess();
             }

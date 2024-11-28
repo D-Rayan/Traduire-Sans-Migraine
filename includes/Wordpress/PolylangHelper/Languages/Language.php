@@ -84,7 +84,7 @@ abstract class Language
     protected static function getLanguage($objectId)
     {
         global $wpdb, $tsm;
-        $taxonomy = self::isPost() ? "language" : "term_language";
+        $taxonomy = self::getTaxonomy();
         $result = $wpdb->get_row($wpdb->prepare("SELECT t.slug, tr.term_taxonomy_id FROM {$wpdb->term_relationships} tr
             LEFT JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
             LEFT JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
@@ -118,6 +118,11 @@ abstract class Language
 
 
         return $languages[$slug];
+    }
+
+    protected static function getTaxonomy()
+    {
+        return self::isPost() ? LanguagePost::getTaxonomy() : LanguageTerm::getTaxonomy();
     }
 
     private static function handleDeleteLanguage($objectId, $language)

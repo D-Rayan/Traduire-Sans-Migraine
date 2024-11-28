@@ -19,12 +19,12 @@ class ApplyTranslation extends AbstractApplyTranslation
 
     public function processTranslation()
     {
-        $translations = TranslationAttribute::findTranslationFor($this->originalObject->attribute_id);
+        $translations = TranslationAttribute::findTranslationFor($this->originalObject->id);
         $translations->addTranslation($this->codeTo, $this->dataToTranslate["label"])->save();
     }
 
     protected function getTranslatedId()
     {
-        return $this->originalObject->attribute_id;
+        return $this->originalObject->id;
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Translatable\Posts;
+namespace TraduireSansMigraine\Wordpress\Translatable\Products;
 
+use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 
@@ -10,7 +11,7 @@ class Action extends AbstractAction
 
     public function __construct($args, $isCopy = false)
     {
-        $args["actionType"] = DAOActions::$ACTION_TYPE["POST_PAGE"];
+        $args["actionType"] = DAOActions::$ACTION_TYPE["PRODUCT"];
         parent::__construct($args, $isCopy);
     }
 
@@ -28,6 +29,11 @@ class Action extends AbstractAction
 
     protected function canExecute()
     {
+        global $tsm;
+        if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
+            $this->setAsError()->setResponse(["error" => "woocommerceDisabled"])->save();
+            return false;
+        }
         return parent::canExecute();
     }
 

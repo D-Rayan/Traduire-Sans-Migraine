@@ -43,6 +43,8 @@ abstract class AbstractApplyTranslation
             return new Translatable\Terms\ApplyTranslation($action, $translationData);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["ATTRIBUTES"]) {
             return new Translatable\Attributes\ApplyTranslation($action, $translationData);
+        } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["PRODUCT"]) {
+            return new Translatable\Products\ApplyTranslation($action, $translationData);
         }
 
         return new Translatable\Posts\ApplyTranslation($action, $translationData);
@@ -58,6 +60,10 @@ abstract class AbstractApplyTranslation
             return false;
         }
         try {
+            $childrenActions = $this->action->getChildren();
+            foreach ($childrenActions as $childAction) {
+                $childAction->setAsProcessing()->applyTranslation($this->dataToTranslate);
+            }
             $this->processTranslation();
             if ($this->action->isFromQueue()) {
                 $this->action->setAsDone();
@@ -66,7 +72,7 @@ abstract class AbstractApplyTranslation
             }
             $this->action->setObjectIdTranslated($this->getTranslatedId())->save();
         } catch (Exception $e) {
-            $this->action->setAsError()->setResponse(["error" => $e->getMessage()])->save();
+            $this->action->setAsError()->setResponse(["error" => $e->getMessage() ?? $e->getCode()])->save();
         }
 
         return $this->isSuccess();

@@ -70,7 +70,7 @@ class TraduireSansMigraine
             $this->setPluginAsEnabled();
         }
         if ($this->isPluginGotEnabled()) {
-            add_action("admin_init", [$this, "displayMessageEnabled"]);
+            add_action("admin_init", [$this, "redirectAfterActivation"]);
         }
         DAOActions::updateDatabaseIfNeeded();
         DAOInternalsLinks::updateDatabaseIfNeeded();
@@ -123,12 +123,10 @@ class TraduireSansMigraine
         }
     }
 
-    public function displayMessageEnabled()
+    public function redirectAfterActivation()
     {
         delete_option('tsm-has-been-activated');
-        add_action("admin_notices", function () {
-            render_seoSansMigraine_alert(TextDomain::__("Traduire Sans Migraine is enabled!"), TextDomain::__("You don't know where to start? Just click <a href='%s'>here</a> and follow the instructions", admin_url("admin.php?page=traduire-sans-migraine")), "success");
-        });
+        wp_safe_redirect(admin_url("admin.php?page=traduire-sans-migraine"));
     }
 
     public function removeAllSettings()

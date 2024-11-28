@@ -15,7 +15,8 @@ class DAOActions
         'ARCHIVED' => 'ARCHIVED',
     ];
     public static $ACTION_TYPE = [
-        'POST_PAGE_PRODUCT' => 'POST_PAGE_PRODUCT',
+        'POST_PAGE' => 'POST_PAGE',
+        'PRODUCT' => 'PRODUCT',
         'EMAIL' => 'EMAIL',
         'MODEL_ELEMENTOR' => 'MODEL_ELEMENTOR',
         'TERMS' => 'TERMS',
@@ -113,7 +114,7 @@ class DAOActions
         }
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        $sql = "ALTER TABLE $tableName ADD COLUMN `actionType` VARCHAR(255) NOT NULL DEFAULT '" . self::$ACTION_TYPE["POST_PAGE_PRODUCT"] . "'";
+        $sql = "ALTER TABLE $tableName ADD COLUMN `actionType` VARCHAR(255) NOT NULL DEFAULT '" . self::$ACTION_TYPE["POST_PAGE"] . "'";
         $wpdb->query($sql);
         $sql = "ALTER TABLE $tableName ADD COLUMN `actionParent` INT NULL";
         $wpdb->query($sql);
@@ -130,7 +131,7 @@ class DAOActions
         $wpdb->query("DROP TABLE IF EXISTS $tableName");
     }
 
-    public static function createAction($objectId, $slugTo, $origin, $estimatedQuota, $actionType)
+    public static function createAction($objectId, $slugTo, $origin, $estimatedQuota, $actionType, $actionParent = null)
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
@@ -142,7 +143,8 @@ class DAOActions
             'createdAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
             'updatedAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
             'estimatedQuota' => $estimatedQuota,
-            'actionType' => $actionType
+            'actionType' => $actionType,
+            'actionParent' => $actionParent
         ]);
         return $wpdb->insert_id;
     }
@@ -158,6 +160,14 @@ class DAOActions
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, array_merge($data, ["updatedAt" => date('Y-m-d') . 'T' . date('H:i:s') . 'Z']), $where);
     }
+
+    public static function updateStateClonedActionsPending($state, $objectId, $slugTo)
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $wpdb->update($tableName, ["updatedAt" => date('Y-m-d') . 'T' . date('H:i:s') . 'Z', 'state' => $state], ['objectId' => $objectId, 'slugTo' => $slugTo, 'state' => DAOActions::$STATE["PENDING"]]);
+    }
+
 
     public static function getActionByToken($tokenId)
     {

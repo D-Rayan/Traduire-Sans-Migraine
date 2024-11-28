@@ -15,4 +15,9 @@ class LanguageTerm extends Language
     {
         return parent::getLanguage($objectId);
     }
+
+    public static function getTaxonomy()
+    {
+        return "term_language";
+    }
 }

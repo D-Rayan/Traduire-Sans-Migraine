@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Hooks\Woocommerce;
+namespace TraduireSansMigraine\Wordpress\Hooks;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -51,5 +51,5 @@ class GetProducts
     }
 }
 
-$GetProducts = new HandleNewDefaultLanguage();
+$GetProducts = new GetProducts();
 $GetProducts->init();

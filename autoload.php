@@ -1,7 +1,10 @@
 <?php
 
+require_once TSM__ABSOLUTE_PATH . "/includes/Cache.php";
 require_once TSM__ABSOLUTE_PATH . "/includes/functions.php";
 require_once TSM__ABSOLUTE_PATH . "/includes/Settings.php";
+require_once TSM__ABSOLUTE_PATH . "/includes/Wordpress/PolylangHelper/Display.php";
+require_once TSM__ABSOLUTE_PATH . "/includes/Wordpress/PolylangHelper/Submit.php";
 // Will autoload all Components
 spl_autoload_register(function ($class) {
     $parameters = [

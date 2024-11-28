@@ -1,1 +1,15 @@
-*{--primary-color:#7795ee;--primary-color-light:#e7ecfc;--primary-color-dark:#1626b0;--secondary-color:#f2f4fd;--text-color:#333;--tertiary-color:#24244d;--white-color:#fff}
+/*!******************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/shared/variables.css ***!
+  \******************************************************************************************************************************************************************************/
+* {
+  --primary-color: #7795ee;
+  --primary-color-light: #e7ecfc;
+  --primary-color-dark: #1626b0;
+  --secondary-color: #f2f4fd;
+  --text-color: #333;
+  --tertiary-color: #24244d;
+  --white-color: #fff;
+}
+
+
+/*# sourceMappingURL=index.tsx.css.map*/

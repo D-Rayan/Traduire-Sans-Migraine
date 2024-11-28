@@ -57,7 +57,7 @@ class Page
         }
         if (isset($postId)) {
             self::$mainData['objectId'] = $postId;
-            self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"];
+            self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["POST_PAGE"];
         }
     }
 }

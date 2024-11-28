@@ -27,10 +27,10 @@ class EnrichAction
             return $originalAction;
         }
         $enrichedActions = [];
-        $actions = (is_array($originalAction)) ? $originalAction : [$originalAction];
+        $actions = (is_array($originalAction)) && (is_array($originalAction[0]) || is_object($originalAction[0])) ? $originalAction : [$originalAction];
         foreach ($actions as $key => $action) {
-            $instance = AbstractAction::getInstance($action);
-            $enrichedActions[$key] = $instance->toArray();
+            $instance = is_object($action) ? $action : AbstractAction::getInstance($action);
+            $enrichedActions[$key] = $instance->toArray(true);
             $enrichedActions[$key]["label"] = $this->getLabel($instance);
             $enrichedActions[$key]["link"] = $this->getLink($instance->getActionType(), $instance->getObjectId());
             $enrichedActions[$key]["linkToTranslated"] = $this->getLink($instance->getActionType(), $instance->getObjectIdTranslated(), $instance->getSlugTo());
@@ -47,7 +47,8 @@ class EnrichAction
     {
         switch ($instance->getActionType()) {
             case DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]:
-            case DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]:
+            case DAOActions::$ACTION_TYPE["POST_PAGE"]:
+            case DAOActions::$ACTION_TYPE["PRODUCT"]:
                 return $instance->getObject()->post_title;
             case DAOActions::$ACTION_TYPE["EMAIL"]:
                 return $instance->getObject()->title;
@@ -70,8 +71,9 @@ class EnrichAction
         }
         switch ($actionType) {
             case DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]:
-            case DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]:
-                return get_edit_post_link($actionId);
+            case DAOActions::$ACTION_TYPE["POST_PAGE"]:
+            case DAOActions::$ACTION_TYPE["PRODUCT"]:
+                return get_edit_post_link($actionId, "admin");
             case DAOActions::$ACTION_TYPE["EMAIL"]:
                 return empty($language) ?
                     get_admin_url(null, "admin.php?page=wc-settings&tab=email&section=wc_email_" . $actionId) :

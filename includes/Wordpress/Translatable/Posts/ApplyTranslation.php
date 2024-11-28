@@ -31,11 +31,9 @@ class ApplyTranslation extends AbstractApplyTranslation
     {
         global $tsm;
         $countAssetsCreated = 0;
-        $type = $this->originalObject->post_type;
-        $isProduct = $type === "product";
         $language = LanguagePost::getLanguage($this->originalObject->ID);
         if (empty($language)) {
-            return;
+            throw new Exception("Language not found");
         }
         $this->codeFrom = $language["code"];
         if (isset($this->dataToTranslate["content"])) {
@@ -46,7 +44,6 @@ class ApplyTranslation extends AbstractApplyTranslation
 
         $childrenActions = $this->action->getChildren();
         foreach ($childrenActions as $childAction) {
-            $childAction->setAsProcessing()->applyTranslation($this->dataToTranslate);
             if ($childAction->getActionType() === DAOActions::$ACTION_TYPE["TERMS"]) {
                 $countCategoriesCreated++;
             }
@@ -74,7 +71,7 @@ class ApplyTranslation extends AbstractApplyTranslation
         $originalTranslations = TranslationPost::findTranslationFor($this->originalObject->ID);
         $originalTranslations
             ->addTranslation($this->codeTo, $this->translatedPostId)
-            ->addTranslation($this->originalObject->ID, $this->codeFrom)
+            ->addTranslation($this->codeFrom, $this->originalObject->ID)
             ->save();
 
         $this->handleDefaultMetaPosts();
@@ -83,7 +80,6 @@ class ApplyTranslation extends AbstractApplyTranslation
         $this->handleSEOPress();
         $this->handleElementor();
         $this->handleACF();
-        do_action("tsm-woocommerce-product-translate", $this->originalObject->ID, $this->translatedPostId, $this->dataToTranslate, $this->codeTo);
         update_post_meta($this->translatedPostId, '_has_been_translated_by_tsm', "true");
         update_post_meta($this->translatedPostId, '_translated_by_tsm_from', $this->codeFrom);
         update_post_meta($this->translatedPostId, '_tsm_first_visit_after_translation', "true");

@@ -11,15 +11,15 @@ class Display
 {
     public function __construct()
     {
-        add_action("tsm-enqueue-admin-scripts", [$this, "enqueueCSS"]);
-        add_action("tsm-enqueue-admin-scripts", [$this, "enqueueJS"]);
-        add_action("tsm-display-language-select", [$this, "displayFieldLanguage"], 10, 2);
-        add_action("tsm-display-translations-table", [$this, "displayTranslations"], 10, 2);
+
     }
 
     public function init()
     {
-
+        add_action("tsm-enqueue-admin-scripts", [$this, "enqueueCSS"]);
+        add_action("tsm-enqueue-admin-scripts", [$this, "enqueueJS"]);
+        add_action("tsm-display-language-select", [$this, "displayFieldLanguage"], 10, 2);
+        add_action("tsm-display-translations-table", [$this, "displayTranslations"], 10, 2);
     }
 
     public function enqueueCSS()

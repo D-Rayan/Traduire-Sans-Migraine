@@ -8,4 +8,9 @@ class LanguagePost extends Language
     {
         return parent::getLanguage($objectId);
     }
+
+    public static function getTaxonomy()
+    {
+        return "language";
+    }
 }

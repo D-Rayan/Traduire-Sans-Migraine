@@ -100,6 +100,15 @@ class Requirements
         foreach ($plugins as $path => $plugin) {
             if (strpos($plugin["Name"], "Polylang") !== false) {
                 activate_plugin($path);
+                delete_transient('pll_activation_redirect');
+                $dismiss = get_option("pll_dismissed_notices", []);
+                if (!is_array($dismiss)) {
+                    $dismiss = [];
+                }
+                if (!in_array('wizard', $dismiss)) {
+                    $dismiss[] = 'wizard';
+                    update_option("pll_dismissed_notices", $dismiss);
+                }
                 return true;
             }
         }

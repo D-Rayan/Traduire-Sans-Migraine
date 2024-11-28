@@ -70,9 +70,8 @@ class AddToQueue
         if ($existingAction && $existingAction->willBeProcessing()) {
             $existingAction->setOrigin(isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"]);
             $existingAction->save();
-            wp_send_json_success([
-                "ID" => $existingAction->getID()
-            ]);
+            $enrichedAction = apply_filters("tsm-enrich-actions", $existingAction);
+            wp_send_json_success($enrichedAction);
             wp_die();
         }
         $action = AbstractAction::getInstance([

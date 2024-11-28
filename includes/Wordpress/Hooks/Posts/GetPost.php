@@ -19,26 +19,7 @@ class GetPost
 
     public function init()
     {
-        $this->loadHooks();
-    }
-
-    public function loadHooks()
-    {
-        if (is_admin()) {
-            $this->loadHooksAdmin();
-        } else {
-            $this->loadHooksClient();
-        }
-    }
-
-    public function loadHooksAdmin()
-    {
         add_action("wp_ajax_traduire-sans-migraine_get_post", [$this, "getPost"]);
-    }
-
-    public function loadHooksClient()
-    {
-        // nothing to load
     }
 
     public function getPost()
@@ -57,16 +38,22 @@ class GetPost
             wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 404);
             wp_die();
         }
-        $post["translations"] = [];
         $language = LanguagePost::getLanguage($post["ID"]);
         if (empty($language)) {
             wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 404);
             wp_die();
         }
+        $post["translations"] = [];
         $post["currentSlug"] = $language["code"];
         $translations = TranslationPost::findTranslationFor($post["ID"]);
         foreach ($translations->getTranslations() as $slug => $translatedPostId) {
             $post["translations"][$slug] = $this->getTranslationPostData($post, $translatedPostId, $slug);
+        }
+        foreach ($tsm->getPolylangManager()->getLanguagesActives() as $slug => $languageActive) {
+            if (isset($post["translations"][$slug])) {
+                continue;
+            }
+            $post["translations"][$slug] = $this->getTranslationPostData($post, null, $slug);
         }
         wp_send_json_success([
             "post" => $post

@@ -29,6 +29,11 @@ abstract class AbstractAction
     protected $actionParent;
     protected $objectIdTranslated;
 
+    /**
+     * @var AbstractAction[]
+     */
+    protected $children;
+
     public function __construct($args, $isCopy = false)
     {
         $this->objectId = $args["objectId"];
@@ -73,9 +78,46 @@ abstract class AbstractAction
         if (isset($args["objectIdTranslated"])) {
             $this->objectIdTranslated = $args["objectIdTranslated"];
         }
+
+        $this->children = [];
+        if (!empty($this->ID)) {
+            $children = DAOActions::getChildren($this->ID);
+            if (is_array($children)) {
+                foreach ($children as $child) {
+                    $this->addChild($child);
+                }
+            }
+        }
+
         if (!$isCopy) {
             $this->originalAction = self::getInstance($this->toArray(), true);
         }
+    }
+
+    /**
+     * @return AbstractAction[]
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    public function addChild($args)
+    {
+        $objectId = $args["objectId"];
+        $objectType = $args["actionType"];
+        $data = [
+            "actionType" => $objectType,
+            "objectId" => $objectId,
+            "slugTo" => $this->slugTo,
+            "origin" => $this->origin,
+            "actionParent" => $this->ID,
+        ];
+        $actionChild = self::getInstance($data);
+        if ($this->haveChild($actionChild)) {
+            return;
+        }
+        $this->children[] = $actionChild;
     }
 
     public static function getInstance($args, $isCopy = false)
@@ -99,7 +141,46 @@ abstract class AbstractAction
         if ($args["actionType"] === DAOActions::$ACTION_TYPE["ATTRIBUTES"]) {
             return new Translatable\Attributes\Action($args, $isCopy);
         }
+        if ($args["actionType"] === DAOActions::$ACTION_TYPE["PRODUCT"]) {
+            return new Translatable\Products\Action($args, $isCopy);
+        }
         return new Translatable\Posts\Action($args, $isCopy);
+    }
+
+    protected function haveChild($action)
+    {
+        foreach ($this->children as $child) {
+            if ($child->getObjectId() === $action->getObjectId() && $child->getActionType() === $action->getActionType()) {
+                return true;
+            }
+            if ($child->haveChild($action)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectId()
+    {
+        return $this->objectId;
+    }
+
+    /**
+     * @param string $objectId
+     */
+    public function setObjectId($objectId)
+    {
+        $this->objectId = $objectId;
+
+        return $this;
+    }
+
+    public function getActionType()
+    {
+        return $this->actionType;
     }
 
     public function toArray($forClient = false)
@@ -118,6 +199,8 @@ abstract class AbstractAction
         }
         if (!empty($this->getState())) {
             $data["state"] = $this->getState();
+        } else {
+            $data["state"] = DAOActions::$STATE["PENDING"];
         }
         if (!$forClient) {
             if (!empty($this->getResponse())) {
@@ -145,24 +228,6 @@ abstract class AbstractAction
         }
 
         return $data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getObjectId()
-    {
-        return $this->objectId;
-    }
-
-    /**
-     * @param string $objectId
-     */
-    public function setObjectId($objectId)
-    {
-        $this->objectId = $objectId;
-
-        return $this;
     }
 
     /**
@@ -380,23 +445,9 @@ abstract class AbstractAction
         return $this;
     }
 
-    public function getActionType()
-    {
-        return $this->actionType;
-    }
-
     public static function loadByToken($tokenId)
     {
         $args = DAOActions::getActionByToken($tokenId);
-        return AbstractAction::getInstance($args);
-    }
-
-    public static function loadByObjectId($objectId, $slugTo, $actionType = null)
-    {
-        if ($actionType === null) {
-            $actionType = DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"];
-        }
-        $args = DAOActions::getActionByObjectId($objectId, $slugTo, $actionType);
         return AbstractAction::getInstance($args);
     }
 
@@ -404,22 +455,6 @@ abstract class AbstractAction
     {
         $args = DAOActions::getActionPaused();
         return AbstractAction::getInstance($args);
-    }
-
-    /**
-     * @return AbstractAction[]
-     */
-    public function getChildren()
-    {
-        $childrenData = DAOActions::getChildren($this->ID);
-        if (!is_array($childrenData)) {
-            return [];
-        }
-        $children = [];
-        foreach ($childrenData as $childData) {
-            $children[] = AbstractAction::getInstance($childData);
-        }
-        return $children;
     }
 
     public function isFromQueue()
@@ -437,11 +472,6 @@ abstract class AbstractAction
     {
         $this->setState(DAOActions::$STATE["DONE"]);
         return $this;
-    }
-
-    public function willBeProcessing()
-    {
-        return in_array($this->getState(), [DAOActions::$STATE["PROCESSING"], DAOActions::$STATE["PAUSE"], DAOActions::$STATE["PENDING"]]);
     }
 
     public function isQuotaIssue()
@@ -491,9 +521,20 @@ abstract class AbstractAction
 
     public function save()
     {
+        if (!$this->ID) {
+            $alreadyExists = self::loadByObjectId($this->objectId, $this->slugTo, $this->actionType);
+            if ($alreadyExists !== null && $alreadyExists->willBeProcessing()) {
+                return $this;
+            }
+        }
+
         if ($this->ID) {
             $args = $this->getUpdatedData();
             DAOActions::updateAction($this->ID, $args);
+            $this->saveChildren();
+            if (isset($args["state"])) {
+                DAOActions::updateStateClonedActionsPending($args["state"], $this->objectId, $this->slugTo);
+            }
             if (isset($args["state"]) && in_array($this->getState(), [DAOActions::$STATE["DONE"], DAOActions::$STATE["ERROR"], DAOActions::$STATE["ARCHIVED"]])) {
                 Queue::getInstance()->startNextProcess();
             } else if (isset($args["state"]) && $args["state"] === DAOActions::$STATE["PENDING"] && empty($args["lock"])) {
@@ -504,12 +545,28 @@ abstract class AbstractAction
                 Queue::getInstance()->setAsArchived();
             }
             $this->retrieveEstimatedQuota();
-            $this->ID = DAOActions::createAction($this->objectId, $this->slugTo, $this->origin, $this->estimatedQuota, $this->actionType);
+            $this->ID = DAOActions::createAction($this->objectId, $this->slugTo, $this->origin, $this->estimatedQuota, $this->actionType, $this->actionParent);
+            $this->saveChildren();
             Queue::getInstance()->startNextProcess();
         }
         $this->originalAction = AbstractAction::getInstance($this->toArray(), true);
 
+
         return $this;
+    }
+
+    public static function loadByObjectId($objectId, $slugTo, $actionType = null)
+    {
+        if ($actionType === null) {
+            $actionType = DAOActions::$ACTION_TYPE["POST_PAGE"];
+        }
+        $args = DAOActions::getActionByObjectId($objectId, $slugTo, $actionType);
+        return AbstractAction::getInstance($args);
+    }
+
+    public function willBeProcessing()
+    {
+        return in_array($this->getState(), [DAOActions::$STATE["PROCESSING"], DAOActions::$STATE["PAUSE"], DAOActions::$STATE["PENDING"]]);
     }
 
     protected function getUpdatedData()
@@ -524,6 +581,9 @@ abstract class AbstractAction
         if ($this->getTokenId() !== $this->getOriginalAction()->getTokenId()) {
             $data["tokenId"] = $this->getTokenId();
         }
+        if ($this->getObjectIdTranslated() !== $this->getOriginalAction()->getObjectIdTranslated()) {
+            $data["objectIdTranslated"] = $this->getObjectIdTranslated();
+        }
         if ($this->getLock() !== $this->getOriginalAction()->getLock()) {
             $data["lock"] = $this->getLock();
         }
@@ -535,9 +595,28 @@ abstract class AbstractAction
         return $this->originalAction;
     }
 
+    public function getObjectIdTranslated()
+    {
+        return $this->objectIdTranslated;
+    }
+
+    public function setObjectIdTranslated($objectIdTranslated)
+    {
+        $this->objectIdTranslated = $objectIdTranslated;
+        return $this;
+    }
+
     public function getLock()
     {
         return $this->lock;
+    }
+
+    private function saveChildren()
+    {
+        foreach ($this->getChildren() as $child) {
+            $child->setActionParent($this->ID);
+            $child->save();
+        }
     }
 
     public function setAsArchived()
@@ -633,15 +712,4 @@ abstract class AbstractAction
      * @return Translatable\Posts\ApplyTranslation|Translatable\ElementorModel\ApplyTranslation|Translatable\Emails\ApplyTranslation|Translatable\Terms\ApplyTranslation
      */
     abstract protected function getApplyTranslationInstance($data);
-
-    public function getObjectIdTranslated()
-    {
-        return $this->objectIdTranslated;
-    }
-
-    public function setObjectIdTranslated($objectIdTranslated)
-    {
-        $this->objectIdTranslated = $objectIdTranslated;
-        return $this;
-    }
 }

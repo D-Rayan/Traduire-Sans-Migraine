@@ -204,7 +204,7 @@ class TranslateBulk
          ", $defaultLanguage["id"], '%s:' . strlen($this->language["code"]) . ':"' . $this->language["code"] . '";%');
         $products = $wpdb->get_results($query);
         foreach ($products as $product) {
-            $this->addAction($product->id, DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]);
+            $this->addAction($product->id, DAOActions::$ACTION_TYPE["PRODUCT"]);
         }
     }
 
@@ -220,7 +220,7 @@ class TranslateBulk
         if (!empty($pageIdTranslated)) {
             return;
         }
-        $this->addAction($pageId, DAOActions::$ACTION_TYPE["POST_PAGE_PRODUCT"]);
+        $this->addAction($pageId, DAOActions::$ACTION_TYPE["POST_PAGE"]);
     }
 
 }

@@ -1,68 +1,54 @@
 <?php
 
-namespace TraduireSansMigraine\Woocommerce\Product\Admin;
+namespace TraduireSansMigraine\Wordpress\Translatable\Products;
 
+use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationAttribute;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
+use TraduireSansMigraine\Wordpress\Translatable;
 
-class Prepare
+if (!defined("ABSPATH")) {
+    exit;
+}
+
+class PrepareTranslation extends Translatable\Posts\PrepareTranslation
 {
-    private $dataToTranslate;
-    private $postId;
-    private $codeTo;
-
-    public function __construct()
+    public function prepareDataToTranslate()
     {
-
-    }
-
-    public function init()
-    {
-        add_filter("tsm-prepare-data-to-translate", [$this, "prepareDataToTranslate"], 10, 3);
-    }
-
-    public function prepareDataToTranslate($dataToTranslate, $postId, $codeTo)
-    {
-        if (get_post_type($postId) !== "product") {
-            return $dataToTranslate;
-        }
-        $this->dataToTranslate = $dataToTranslate;
-        $this->postId = $postId;
-        $this->codeTo = $codeTo;
-
+        parent::prepareDataToTranslate();
         $this->addCategories();
         $this->addTermsLookup();
         $this->addChildren();
         $this->addTags();
-
-        return $this->dataToTranslate;
     }
 
     private function addCategories()
     {
-        $categories = get_the_terms($this->postId, "product_cat");
+        $categories = get_the_terms($this->object->ID, "product_cat");
         if (!is_array($categories)) {
             return;
         }
+        $handleCategories = [];
         foreach ($categories as $category) {
+            if (in_array($category->term_id, $handleCategories)) {
+                continue;
+            }
             $this->addCategory($category);
+            $handleCategories[] = $category->term_id;
+            $handleCategories = array_merge($handleCategories, get_ancestors($category->term_id, "product_cat"));
         }
     }
 
     private function addCategory($category)
     {
         $translations = TranslationTerms::findTranslationFor($category->term_id);
-        if (empty($translations->getTranslation($this->codeTo))) {
-            $this->dataToTranslate["categories_" . $category->term_id . "_name"] = $category->name;
-            $this->dataToTranslate["categories_" . $category->term_id . "_description"] = $category->description;
+        if (!empty($translations->getTranslation($this->codeTo))) {
+            return;
         }
-        if (is_numeric($category->parent) && $category->parent > 0) {
-            if (isset($this->dataToTranslate["categories_" . $category->parent . "_name"])) {
-                return;
-            }
-            $term = get_term($category->parent, "product_cat");
-            $this->addCategory($term);
-        }
+        $this->action->addChild([
+            "objectId" => $category->term_id,
+            "actionType" => DAOActions::$ACTION_TYPE["TERMS"]
+        ]);
     }
 
     private function addTermsLookup()
@@ -70,7 +56,10 @@ class Prepare
         global $wpdb;
 
         $productAttributesLookup = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wc_product_attributes_lookup WHERE product_id = %d OR product_or_parent_id = %d", $this->postId, $this->postId)
+            $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wc_product_attributes_lookup 
+                WHERE product_id = %d 
+                   OR product_or_parent_id = %d",
+                $this->object->ID, $this->object->ID)
         );
 
         $attributesName = [];
@@ -85,7 +74,10 @@ class Prepare
             if (!empty($translations->getTranslation($this->codeTo))) {
                 continue;
             }
-            $this->dataToTranslate["term_" . $productAttributeLookup->term_id] = $term->name;
+            $this->action->addChild([
+                "objectId" => $term->term_id,
+                "actionType" => DAOActions::$ACTION_TYPE["TERMS"]
+            ]);
         }
 
         foreach ($attributesName as $attributeName => $value) {
@@ -97,7 +89,7 @@ class Prepare
     {
         global $wpdb;
 
-        $attribute = $wpdb->get_row($wpdb->prepare("SELECT attribute_id, attribute_label FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name='%s'", $attributeName));
+        $attribute = $wpdb->get_row($wpdb->prepare("SELECT attribute_id FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_name='%s'", $attributeName));
         if (!$attribute) {
             return;
         }
@@ -105,13 +97,16 @@ class Prepare
         if (!empty($translations->getTranslation($this->codeTo))) {
             return;
         }
-        $this->dataToTranslate["attribute_" . $attribute->attribute_id] = $attribute->attribute_label;
+        $this->action->addChild([
+            "objectId" => $attribute->attribute_id,
+            "actionType" => DAOActions::$ACTION_TYPE["ATTRIBUTES"]
+        ]);
     }
 
     private function addChildren()
     {
         global $wpdb;
-        $postsChildren = $wpdb->get_results($wpdb->prepare("SELECT * FROM $wpdb->posts WHERE post_parent = %d AND post_type NOT IN ('revision', 'attachment', 'auto-draft')", $this->postId));
+        $postsChildren = $wpdb->get_results($wpdb->prepare("SELECT * FROM $wpdb->posts WHERE post_parent = %d AND post_type NOT IN ('revision', 'attachment', 'auto-draft')", $this->object->ID));
         foreach ($postsChildren as $postChild) {
             if (!empty($postChild->post_title)) {
                 $this->dataToTranslate["child_post_title_" . $postChild->ID] = $postChild->post_title;
@@ -124,19 +119,19 @@ class Prepare
 
     private function addTags()
     {
-        $tags = get_the_terms($this->postId, "product_tag");
+        $tags = get_the_terms($this->object->ID, "product_tag");
         if (!is_array($tags)) {
             return;
         }
         foreach ($tags as $tag) {
             $translations = TranslationTerms::findTranslationFor($tag->term_id);
-            if (empty($translations->getTranslation($this->codeTo))) {
-                $this->dataToTranslate["tags_" . $tag->term_id . "_name"] = $tag->name;
-                $this->dataToTranslate["tags_" . $tag->term_id . "_description"] = $tag->description;
+            if (!empty($translations->getTranslation($this->codeTo))) {
+                continue;
             }
+            $this->action->addChild([
+                "objectId" => $tag->term_id,
+                "actionType" => DAOActions::$ACTION_TYPE["TERMS"]
+            ]);
         }
     }
 }
-
-$Prepare = new Prepare();
-$Prepare->init();
