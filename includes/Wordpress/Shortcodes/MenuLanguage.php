@@ -21,6 +21,11 @@ class MenuLanguage
     private $redirectHome;
     private $hideCurrent;
 
+    /**
+     * @var TranslationPost $translations
+     */
+    private $translations;
+
     public function __construct()
     {
     }
@@ -33,7 +38,6 @@ class MenuLanguage
 
     public function init()
     {
-        -
         add_action("wp_enqueue_scripts", [$this, "registerCss"]);
         add_shortcode("menu_language", [$this, "displayMenuLanguage"]);
     }
@@ -52,13 +56,14 @@ class MenuLanguage
                 return -1;
             }
             if ($b["default"]) {
-                return -1;
+                return 1;
             }
             return strcmp($a["name"], $b["name"]);
         });
         $id = get_the_ID();
         if ($id) {
-            $translations = TranslationPost::findTranslationFor($id);
+            $this->translations = TranslationPost::findTranslationFor($id);
+            $translations = $this->translations;
             array_filter($languages, function ($language) use ($translations) {
                 return !empty($translations->getTranslation($language["code"]));
             });
@@ -73,10 +78,11 @@ class MenuLanguage
             if ($isCurrent) {
                 continue;
             }
-            $this->displayLanguage($language);
+            $this->displayLanguage($language, $id);
         }
         $this->displaySubContainerEnd();
         $this->displayContainerEnd();
+        $this->injectJavascript();
         return ob_get_clean();
     }
 
@@ -142,9 +148,9 @@ class MenuLanguage
         echo "<div class='sub-menu-language'>";
     }
 
-    private function displayLanguage($language)
+    private function displayLanguage($language, $id)
     {
-        if (!$this->redirectHome && empty($language["postId"])) {
+        if (!$this->redirectHome && empty($id)) {
             return;
         }
         global $tsm;
@@ -152,7 +158,7 @@ class MenuLanguage
         if ($this->redirectHome) {
             $url = $Polylang->getHomeUrl($language["code"]);
         } else {
-            $url = get_permalink($language["postId"]);
+            $url = get_permalink($this->translations->getTranslation($language["code"]));
         }
         echo '<a href="' . $url . '">';
         if ($this->flag) {
@@ -174,6 +180,18 @@ class MenuLanguage
     private function displayContainerEnd()
     {
         echo "</div>";
+    }
+
+    private function injectJavascript()
+    {
+        ?>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function () {
+                const width = document.querySelector(".menu-language").offsetWidth;
+                document.querySelector(".sub-menu-language").style.width = width + "px";
+            });
+        </script>
+        <?php
     }
 }
 
