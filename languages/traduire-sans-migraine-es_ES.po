@@ -1,0 +1,133 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Traduire Sans Migraine 2.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-"
+"Migraine\n"
+"POT-Creation-Date: 2024-10-23T12:59:340\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: EN\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+"X-Domain: traduire-sans-migraine\n"
+
+# EditorPage.php
+msgid "Translate 💊"
+msgstr "Traducir 💊"
+
+msgid "Settings"
+msgstr "Configuración"
+
+msgid "By "
+msgstr "Por "
+
+# OnDeletionPosts.php
+msgid "including %s translation"
+msgstr "incluida la traducción %s"
+
+# OnDeletionPosts.php
+msgid "including %s translations"
+msgstr "incluidas las traducciones %s"
+
+msgid "⚙️ Settings"
+msgstr "⚙️ Configuración"
+
+msgid "💊 Bulk Translation"
+msgstr "💊 Traducción masiva"
+
+msgid "See the tutorial"
+msgstr "Ver el tutorial"
+
+msgid "tutorialLink"
+msgstr "https://www.seo-sans-migraine.fr/premiere-traduction"
+
+# Text Domain
+msgid "Traduire Sans Migraine"
+msgstr "Traducir sin migraña"
+
+msgid ""
+"Traduire Sans Migraine needs polylang to works. We found it on your website "
+"and enabled it automatically. If you really want to disable Polylang first "
+"disable Traduire Sans Migraine."
+msgstr ""
+"Traduire Sans Migraine necesita polylang para funcionar. Lo hemos encontrado "
+"en su sitio web y lo hemos activado automáticamente. Si realmente desea "
+"desactivar Polylang primero desactivar Traduire Sans Migraine."
+
+msgid ""
+"Traduire Sans Migraine needs polylang to works. Don't worry you can install "
+"it simply by clicking on the button below."
+msgstr ""
+"Traduire Sans Migraine necesita polylang para funcionar. No se preocupe, "
+"puede instalarlo simplemente haciendo clic en el botón de abajo."
+
+msgid "Install Polylang"
+msgstr "Instalar Polylang"
+
+# Domain Path
+msgid "Change language"
+msgstr "Cambiar la lengua"
+
+# Text Domain
+msgid "Traduire Sans Migraine is enabled!"
+msgstr "¡Traduire Sans Migraine está activado!"
+
+msgid ""
+"You don't know where to start? Just click <a href='%s'>here</a> and follow "
+"the instructions"
+msgstr ""
+"¿No sabe por dónde empezar? Solo tienes que hacer clic <a href='%s'>aquí</a> "
+"y seguir las instrucciones"
+
+# Plugin Name
+msgid "PLACEHOLDER_NAME"
+msgstr ""
+
+# Plugin URI
+msgid "https://www.seo-sans-migraine.com/translate-without-headache"
+msgstr "https://www.seo-sans-migraine.com/traduire-sans-migraine"
+
+# Description
+msgid ""
+"Translate Without Headache will help you translate your content within "
+"keeping good SEO practices."
+msgstr ""
+"Translate Without Headache le ayudará a traducir sus contenidos manteniendo "
+"las buenas prácticas de SEO."
+
+# Author
+msgid "Otter Corp"
+msgstr "Otter Corp"
+
+# Author URI
+msgid "https://www.seo-sans-migraine.com"
+msgstr "https://www.seo-sans-migraine.com"
+
+# Text Domain
+msgid "traduire-sans-migraine"
+msgstr "traduire-sans-migraine"
+
+# Domain Path
+msgid "/languages"
+msgstr "/languages"
+
+# License
+msgid "GPL2"
+msgstr "GPL2"
+
+# shelved.patch
+#~ msgid "An error occurred"
+#~ msgstr "Une erreur est survenue"
+
+# shelved.patch
+#, fuzzy
+#~| msgid "An error occurred"
+#~ msgid "An error occurred. Please try again."
+#~ msgstr "Une erreur est survenue"
+
+# Menu.php
+#~ msgid "Our Products"
+#~ msgstr "Nos produits"
