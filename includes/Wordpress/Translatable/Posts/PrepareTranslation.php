@@ -3,11 +3,9 @@
 namespace TraduireSansMigraine\Wordpress\Translatable\Posts;
 
 use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractPrepareTranslation;
-use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguagePost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
-use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractPrepareTranslation;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -42,7 +40,6 @@ class PrepareTranslation extends AbstractPrepareTranslation
         $this->handleSeoPress($postMetas, $willBeAnUpdate);
         $this->handleElementor($postMetas);
         $this->handleACF($postMetas);
-        $this->handleCategories($post->post_category, $this->codeTo);
     }
 
     private function handleYoast($postMetas, $willBeAnUpdate)
@@ -153,24 +150,6 @@ class PrepareTranslation extends AbstractPrepareTranslation
                     $this->dataToTranslate["acf_" . $key] = $value[0];
                 }
             }
-        }
-    }
-
-    public function handleCategories($categories, $codeTo)
-    {
-        global $tsm;
-        if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["translateCategories"])) {
-            return;
-        }
-        foreach ($categories as $categoryId) {
-            $translations = TranslationTerms::findTranslationFor($categoryId);
-            if (!empty($translations->getTranslation($codeTo))) {
-                continue;
-            }
-            $this->action->addChild([
-                "objectId" => $categoryId,
-                "actionType" => DAOActions::$ACTION_TYPE["TERMS"]
-            ]);
         }
     }
 

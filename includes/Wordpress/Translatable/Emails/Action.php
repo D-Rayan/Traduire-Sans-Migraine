@@ -3,8 +3,8 @@
 namespace TraduireSansMigraine\Wordpress\Translatable\Emails;
 
 use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 class Action extends AbstractAction
 {

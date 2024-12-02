@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Translatable\Attributes;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractPrepareTranslation;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\Language;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractPrepareTranslation;
 
 if (!defined("ABSPATH")) {
     exit;

@@ -2,13 +2,13 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Woocommerce;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\Language;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationAttribute;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
 use TraduireSansMigraine\Wordpress\Translatable;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 if (!defined("ABSPATH")) {
     exit;

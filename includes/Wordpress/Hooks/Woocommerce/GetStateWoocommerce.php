@@ -2,13 +2,13 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Woocommerce;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\Language;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationAttribute;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
 use TraduireSansMigraine\Wordpress\Translatable;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 if (!defined("ABSPATH")) {
     exit;
@@ -22,31 +22,37 @@ class GetStateWoocommerce
             "estimatedQuota" => 0,
             "translating" => 0,
             "draft" => 0,
+            "ids" => [],
         ],
         "categories" => [
             "missing" => 0,
             "estimatedQuota" => 0,
             "translating" => 0,
+            "ids" => [],
         ],
         "attributes" => [
             "missing" => 0,
             "estimatedQuota" => 0,
             "translating" => 0,
+            "ids" => [],
         ],
         "emails" => [
             "missing" => 0,
             "estimatedQuota" => 0,
             "translating" => 0,
+            "ids" => [],
         ],
         "tags" => [
             "missing" => 0,
             "estimatedQuota" => 0,
             "translating" => 0,
+            "ids" => [],
         ],
         "products" => [
             "missing" => 0,
             "estimatedQuota" => 0,
             "translating" => 0,
+            "ids" => [],
         ]
     ];
     private $language;
@@ -82,12 +88,24 @@ class GetStateWoocommerce
             wp_die();
         }
         $this->language = $languages[$_GET["languageSlug"]];
+        $startingTime = microtime(true);
         $this->setPagesStates();
+        $this->addTime("pages", $startingTime);
+        $startingTime = microtime(true);
         $this->setCategoriesStates();
+        $this->addTime("categories", $startingTime);
+        $startingTime = microtime(true);
         $this->setAttributesStates();
+        $this->addTime("attributes", $startingTime);
+        $startingTime = microtime(true);
         $this->setEmailsStates();
+        $this->addTime("emails", $startingTime);
+        $startingTime = microtime(true);
         $this->setTagsStates();
+        $this->addTime("tags", $startingTime);
+        $startingTime = microtime(true);
         $this->setProductsStates();
+        $this->addTime("products", $startingTime);
 
         wp_send_json_success($this->state);
         wp_die();
@@ -102,6 +120,11 @@ class GetStateWoocommerce
             "woocommerce_myaccount_page_id",
             "woocommerce_terms_page_id",
         ]);
+    }
+
+    private function addTime($key, $startingTime)
+    {
+        $this->state[$key]["time"] = microtime(true) - $startingTime;
     }
 
     private function setCategoriesStates()
@@ -232,7 +255,7 @@ class GetStateWoocommerce
                      AND (SELECT COUNT(*) FROM $wpdb->term_taxonomy tt3 WHERE tt3.taxonomy='post_translations' AND tt3.description LIKE CONCAT('%%i:', p.ID, ';%%') AND tt3.description LIKE %s)=0
                 GROUP BY p.ID
          ", $defaultLanguage["id"], '%s:' . strlen($this->language["code"]) . ':"' . $this->language["code"] . '";%');
-        $this->state["products"]["query"] = $query;
+
         $products = $wpdb->get_results($query);
         foreach ($products as $product) {
             if ($this->actionIsInQueue($product->id, DAOActions::$ACTION_TYPE["PRODUCT"])) {
@@ -240,12 +263,7 @@ class GetStateWoocommerce
                 continue;
             }
             $this->state["products"]["missing"]++;
-            $temporaryAction = new Translatable\Products\Action([
-                "objectId" => $product->id,
-                "slugTo" => $this->language["code"],
-                "origin" => "HOOK"
-            ]);
-            $this->state["products"]["estimatedQuota"] += $temporaryAction->getEstimatedQuota();
+            $this->state["products"]["ids"][] = $product->id;
         }
     }
 
@@ -268,12 +286,7 @@ class GetStateWoocommerce
             return;
         }
         $this->state["pages"]["missing"]++;
-        $temporaryAction = new Translatable\Posts\Action([
-            "objectId" => $pageId,
-            "slugTo" => $this->language["code"],
-            "origin" => "HOOK"
-        ]);
-        $this->state["pages"]["estimatedQuota"] += $temporaryAction->getEstimatedQuota();
+        $this->state["pages"]["ids"][] = $pageId;
     }
 
 }

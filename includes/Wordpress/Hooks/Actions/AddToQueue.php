@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Actions;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 
 if (!defined("ABSPATH")) {
@@ -64,14 +64,6 @@ class AddToQueue
         $actionType = $_POST["objectType"];
         if (!in_array($actionType, DAOActions::$ACTION_TYPE)) {
             wp_send_json_error(seoSansMigraine_returnErrorIsset(), 400);
-            wp_die();
-        }
-        $existingAction = AbstractAction::loadByObjectId($objectId, $languageTo, $actionType);
-        if ($existingAction && $existingAction->willBeProcessing()) {
-            $existingAction->setOrigin(isset($_POST["havePriority"]) ? DAOActions::$ORIGINS["EDITOR"] : DAOActions::$ORIGINS["QUEUE"]);
-            $existingAction->save();
-            $enrichedAction = apply_filters("tsm-enrich-actions", $existingAction);
-            wp_send_json_success($enrichedAction);
             wp_die();
         }
         $action = AbstractAction::getInstance([

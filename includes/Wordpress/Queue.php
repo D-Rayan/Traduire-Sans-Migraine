@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 class Queue
 {
@@ -18,9 +18,6 @@ class Queue
         $instance = self::getInstance();
         if (wp_doing_ajax()) {
             add_action("startNextProcess", [$instance, "startNextProcess"]);
-        } else {
-            add_action("admin_init", [$instance, "startNextProcess"]);
-
         }
     }
 

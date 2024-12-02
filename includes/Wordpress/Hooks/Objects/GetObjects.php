@@ -3,12 +3,12 @@
 namespace TraduireSansMigraine\Wordpress\Hooks\Objects;
 
 use TraduireSansMigraine\Settings;
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguageTerm;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationAttribute;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 if (!defined("ABSPATH")) {
     exit;

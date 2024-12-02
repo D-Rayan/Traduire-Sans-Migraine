@@ -6,11 +6,11 @@ namespace TraduireSansMigraine\Wordpress\Translatable\Posts;
 use Elementor\Core\Files\CSS\Post as Post_CSS;
 use Elementor\Plugin;
 use Exception;
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractApplyTranslation;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\LanguagePost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationPost;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationTerms;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractApplyTranslation;
 use WP_Error;
 
 if (!defined("ABSPATH")) {
@@ -31,11 +31,6 @@ class ApplyTranslation extends AbstractApplyTranslation
     {
         global $tsm;
         $countAssetsCreated = 0;
-        $language = LanguagePost::getLanguage($this->originalObject->ID);
-        if (empty($language)) {
-            throw new Exception("Language not found");
-        }
-        $this->codeFrom = $language["code"];
         if (isset($this->dataToTranslate["content"])) {
             $this->dataToTranslate["content"] = $tsm->getLinkManager()->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);
             $countAssetsCreated = $this->handleAssetsTranslations();
@@ -266,7 +261,7 @@ class ApplyTranslation extends AbstractApplyTranslation
         wp_update_post($updatePostData);
     }
 
-    private function handleDefaultMetaPosts()
+    protected function handleDefaultMetaPosts()
     {
         foreach ($this->postMetas as $key => $value) {
             try {
@@ -437,6 +432,15 @@ class ApplyTranslation extends AbstractApplyTranslation
                 }
             }
         }
+    }
+
+    protected function getCodeFrom()
+    {
+        $language = LanguagePost::getLanguage($this->originalObject->ID);
+        if (empty($language)) {
+            throw new Exception("Language not found");
+        }
+        return $language["code"];
     }
 
     protected function getTranslatedId()

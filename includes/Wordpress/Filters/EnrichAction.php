@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Filters;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractAction;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
 
 
 if (!defined("ABSPATH")) {

@@ -2,8 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Translatable\Emails;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractPrepareTranslation;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\Language;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractPrepareTranslation;
 use WC_Email;
 
 if (!defined("ABSPATH")) {

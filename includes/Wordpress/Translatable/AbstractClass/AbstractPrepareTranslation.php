@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\AbstractClass;
+namespace TraduireSansMigraine\Wordpress\Translatable\AbstractClass;
 
 use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
@@ -57,8 +57,7 @@ abstract class AbstractPrepareTranslation
             return seoSansMigraine_returnLoginError();
         }
         $codeFrom = $this->getSlugOrigin();
-        $this->prepareDataToTranslate();
-        $this->addChildrenDataToTranslate();
+        $this->loadDataToTranslate();
 
         $result = $tsm->getClient()->startTranslation($this->dataToTranslate, $codeFrom, $this->codeTo, [
             "translateAssets" => $tsm->getSettings()->settingIsEnabled(Settings::$KEYS["translateAssets"])
@@ -91,9 +90,15 @@ abstract class AbstractPrepareTranslation
 
     abstract protected function getSlugOrigin();
 
+    protected function loadDataToTranslate()
+    {
+        $this->prepareDataToTranslate();
+        $this->addChildrenDataToTranslate();
+    }
+
     abstract protected function prepareDataToTranslate();
 
-    protected function addChildrenDataToTranslate()
+    private function addChildrenDataToTranslate()
     {
         $children = $this->action->getChildren();
         if (!is_array($children)) {
@@ -107,7 +112,7 @@ abstract class AbstractPrepareTranslation
     public function getDataToTranslate()
     {
         if (empty($this->dataToTranslate)) {
-            $this->prepareDataToTranslate();
+            $this->loadDataToTranslate();
         }
         return $this->dataToTranslate;
     }

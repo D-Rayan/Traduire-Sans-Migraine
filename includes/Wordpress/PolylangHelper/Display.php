@@ -88,7 +88,6 @@ class Display
 
         foreach ($languages as $language) {
             $translationId = $translations->getTranslation($language["code"]);
-
             $matchObjectLanguage = $objectLanguage && $objectLanguage["id"] === $language["id"];
             $matchCurrentLanguage = !$objectLanguage && $currentLanguage === $language["code"];
             $matchDefaultLanguage = !$objectLanguage && !$currentLanguage && $language["default"];

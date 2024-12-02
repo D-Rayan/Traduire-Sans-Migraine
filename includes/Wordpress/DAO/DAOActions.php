@@ -7,6 +7,7 @@ class DAOActions
 
     public static $ORIGINS = ['QUEUE' => 0, 'EDITOR' => 1000];
     public static $STATE = [
+        'CREATING' => 'CREATING',
         'PENDING' => 'PENDING',
         'PROCESSING' => 'PROCESSING',
         'DONE' => 'DONE',
@@ -70,7 +71,12 @@ class DAOActions
         }
         global $wpdb;
         $stateEnum = "";
-        foreach (self::$STATE as $state) {
+        foreach (['PENDING' => 'PENDING',
+                     'PROCESSING' => 'PROCESSING',
+                     'DONE' => 'DONE',
+                     'ERROR' => 'ERROR',
+                     'PAUSE' => 'PAUSE',
+                     'ARCHIVED' => 'ARCHIVED'] as $state) {
             if ($stateEnum !== "") {
                 $stateEnum .= ",";
             }
@@ -113,6 +119,19 @@ class DAOActions
             return;
         }
         global $wpdb;
+        $stateEnum = "";
+        foreach (['CREATING' => 'CREATING',
+                     'PENDING' => 'PENDING',
+                     'PROCESSING' => 'PROCESSING',
+                     'DONE' => 'DONE',
+                     'ERROR' => 'ERROR',
+                     'PAUSE' => 'PAUSE',
+                     'ARCHIVED' => 'ARCHIVED'] as $state) {
+            if ($stateEnum !== "") {
+                $stateEnum .= ",";
+            }
+            $stateEnum .= "'$state'";
+        }
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $sql = "ALTER TABLE $tableName ADD COLUMN `actionType` VARCHAR(255) NOT NULL DEFAULT '" . self::$ACTION_TYPE["POST_PAGE"] . "'";
         $wpdb->query($sql);
@@ -121,6 +140,8 @@ class DAOActions
         $sql = "ALTER TABLE $tableName CHANGE `postId` `objectId` VARCHAR(255) NOT NULL";
         $wpdb->query($sql);
         $sql = "ALTER TABLE $tableName ADD COLUMN `objectIdTranslated` VARCHAR(255) NULL";
+        $wpdb->query($sql);
+        $sql = "ALTER TABLE $tableName MODIFY COLUMN `state` ENUM($stateEnum) NOT NULL";
         $wpdb->query($sql);
     }
 
@@ -138,7 +159,7 @@ class DAOActions
         $wpdb->insert($tableName, [
             'objectId' => $objectId,
             'slugTo' => $slugTo,
-            'state' => self::$STATE["PENDING"],
+            'state' => self::$STATE["CREATING"],
             'origin' => $origin,
             'createdAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
             'updatedAt' => date('Y-m-d') . 'T' . date('H:i:s') . 'Z',
@@ -166,6 +187,13 @@ class DAOActions
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, ["updatedAt" => date('Y-m-d') . 'T' . date('H:i:s') . 'Z', 'state' => $state], ['objectId' => $objectId, 'slugTo' => $slugTo, 'state' => DAOActions::$STATE["PENDING"]]);
+    }
+
+    public static function updateStateChildrenActions($state, $actionParent)
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $wpdb->update($tableName, ["updatedAt" => date('Y-m-d') . 'T' . date('H:i:s') . 'Z', 'state' => $state], ['actionParent' => $actionParent]);
     }
 
 
@@ -229,8 +257,8 @@ class DAOActions
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $preparedQuery = $wpdb->prepare(
-            "SELECT * FROM $tableName WHERE state != %s AND actionParent IS NULL ORDER BY origin DESC, ID",
-            self::$STATE["ARCHIVED"]
+            "SELECT * FROM $tableName WHERE state NOT IN (%s, %s) AND actionParent IS NULL ORDER BY origin DESC, ID",
+            self::$STATE["ARCHIVED"], self::$STATE["CREATING"]
         );
         return $wpdb->get_results($preparedQuery, ARRAY_A);
     }

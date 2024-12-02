@@ -15,7 +15,6 @@ class HandleNewDefaultLanguage
     public function init()
     {
         add_action("wp_ajax_traduire-sans-migraine_handle_new_default_language", [$this, "handleNewDefaultLanguage"]);
-
     }
 
     public function handleNewDefaultLanguage()

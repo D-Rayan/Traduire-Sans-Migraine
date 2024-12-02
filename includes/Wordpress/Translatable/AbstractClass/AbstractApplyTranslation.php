@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\AbstractClass;
+namespace TraduireSansMigraine\Wordpress\Translatable\AbstractClass;
 
 use Exception;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
@@ -22,12 +22,20 @@ abstract class AbstractApplyTranslation
      */
     protected $action;
 
+
+    /**
+     * @var $action AbstractAction
+     */
     public function __construct($action, $translationData)
     {
         $this->dataToTranslate = $translationData;
         $this->codeTo = $action->getSlugTo();
         $this->action = $action;
+        $this->originalObject = $action->getObject();
+        $this->codeFrom = $this->getCodeFrom();
     }
+
+    protected abstract function getCodeFrom();
 
     public static function getInstance($tokenId, $translationData)
     {
@@ -35,6 +43,11 @@ abstract class AbstractApplyTranslation
         if (!$action) {
             return null;
         }
+        return self::getInstanceByAction($action, $translationData);
+    }
+
+    private static function getInstanceByAction($action, $translationData)
+    {
         if ($action->getActionType() === DAOActions::$ACTION_TYPE["EMAIL"]) {
             return new Translatable\Emails\ApplyTranslation($action, $translationData);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
@@ -59,16 +72,31 @@ abstract class AbstractApplyTranslation
         if ($this->action->getState() !== DAOActions::$STATE["PROCESSING"]) {
             return false;
         }
+        if (empty($this->action->getActionParent()) && !$this->action->isValidLock()) {
+            return false;
+        }
         try {
             $childrenActions = $this->action->getChildren();
             foreach ($childrenActions as $childAction) {
-                $childAction->setAsProcessing()->applyTranslation($this->dataToTranslate);
+                $data = [];
+                foreach ($this->dataToTranslate as $key => $value) {
+                    if (strpos($key, $childAction->getPrefixKey()) === 0) {
+                        $key = str_replace($childAction->getPrefixKey(), "", $key);
+                        $data[$key] = $value;
+                    }
+                }
+                $childAction->setAsProcessing()->save();
+                $instance = self::getInstanceByAction($childAction, $data);
+                $instance->applyTranslation();
             }
             $this->processTranslation();
             if ($this->action->isFromQueue()) {
                 $this->action->setAsDone();
             } else {
                 $this->action->setAsArchived();
+            }
+            if (empty($this->action->getActionParent())) {
+                $this->action->releaseLock();
             }
             $this->action->setObjectIdTranslated($this->getTranslatedId())->save();
         } catch (Exception $e) {
@@ -78,7 +106,7 @@ abstract class AbstractApplyTranslation
         return $this->isSuccess();
     }
 
-    protected function checkRequirements()
+    private function checkRequirements()
     {
         if (!$this->action) {
             return;
@@ -92,12 +120,15 @@ abstract class AbstractApplyTranslation
             $this->action->setAsError()->setResponse(["error" => "Object not found"])->save();
             return;
         }
+        if (empty($this->action->getActionParent())) {
+            $this->action->addLock();
+        }
         $this->action->setResponse(["percentage" => 75])->save();
     }
 
     protected abstract function processTranslation();
 
-    abstract protected function getTranslatedId();
+    protected abstract function getTranslatedId();
 
     public function isSuccess()
     {

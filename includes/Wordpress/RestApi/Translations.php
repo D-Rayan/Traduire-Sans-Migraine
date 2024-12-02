@@ -2,7 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\RestApi;
 
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractApplyTranslation;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractApplyTranslation;
 use WP_REST_Response;
 
 if (!defined("ABSPATH")) {

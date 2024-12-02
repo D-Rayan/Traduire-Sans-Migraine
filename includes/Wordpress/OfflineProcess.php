@@ -3,8 +3,8 @@
 namespace TraduireSansMigraine\Wordpress;
 
 use TraduireSansMigraine\SeoSansMigraine\Client;
-use TraduireSansMigraine\Wordpress\AbstractClass\AbstractApplyTranslation;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
+use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractApplyTranslation;
 
 class OfflineProcess
 {
