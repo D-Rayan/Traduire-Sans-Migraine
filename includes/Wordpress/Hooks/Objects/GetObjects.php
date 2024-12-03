@@ -59,10 +59,13 @@ class GetObjects
             DAOActions::$ACTION_TYPE["TERMS"],
             DAOActions::$ACTION_TYPE["POST_PAGE"]
         ];
+        $taxonomies = ["category", "post_tag"];
         if ($tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["EMAIL"];
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["PRODUCT"];
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["ATTRIBUTES"];
+
+            $taxonomies = array_merge($taxonomies, ["product_cat", "product_tag", "attribute"]);
         }
         if (is_plugin_active("elementor/elementor.php")) {
             $allowedObjectTypes[] = DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"];
@@ -94,7 +97,6 @@ class GetObjects
                 "not_updated",
             ];
         }
-        $taxonomies = ["category", "post_tag", "product_cat", "product_tag", "attribute"];
         if (isset($_POST["filters"]) && is_array($_POST["filters"])) {
             foreach ($_POST["filters"] as $filterName => $filterValue) {
                 if (!$filterValue) {
@@ -163,6 +165,10 @@ class GetObjects
             case DAOActions::$ACTION_TYPE["ATTRIBUTES"]:
                 $objects = $this->getAttributes($fromTermId, $languagesTranslated, $offset, $pageSize);
                 $totalObjects = count(wc_get_attribute_taxonomies());
+                break;
+            default:
+                $objects = [];
+                $totalObjects = 0;
                 break;
         }
         wp_send_json_success([

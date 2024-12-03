@@ -2,6 +2,7 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Woocommerce;
 
+use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Languages\Language;
 use TraduireSansMigraine\Wordpress\PolylangHelper\Translations\TranslationAttribute;
@@ -73,6 +74,11 @@ class GetStateWoocommerce
 
     public function getState()
     {
+        global $tsm;
+        if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
+            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
+            wp_die();
+        }
         if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();

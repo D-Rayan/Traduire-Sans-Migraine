@@ -2,6 +2,8 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks\Woocommerce;
 
+use TraduireSansMigraine\Settings;
+
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -19,6 +21,11 @@ class HandleNewDefaultLanguage
 
     public function handleNewDefaultLanguage()
     {
+        global $tsm;
+        if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
+            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
+            wp_die();
+        }
         if (!isset($_GET["wpNonce"]) || !wp_verify_nonce($_GET["wpNonce"], "traduire-sans-migraine")) {
             wp_send_json_error(seoSansMigraine_returnNonceError(), 400);
             wp_die();
