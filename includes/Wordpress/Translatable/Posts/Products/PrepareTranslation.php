@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Translatable\Products;
+namespace TraduireSansMigraine\Wordpress\Translatable\Posts\Products;
 
 use TraduireSansMigraine\Wordpress\Translatable;
 

@@ -6,6 +6,7 @@ use TraduireSansMigraine\Settings;
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\Queue;
 use TraduireSansMigraine\Wordpress\Translatable;
+use TraduireSansMigraine\Wordpress\Translatable\Posts\ElementorModel\ApplyTranslation;
 
 abstract class AbstractAction
 {
@@ -126,7 +127,7 @@ abstract class AbstractAction
             return new Translatable\Posts\Action($args, $isCopy);
         }
         if ($args["actionType"] === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
-            return new Translatable\ElementorModel\Action($args, $isCopy);
+            return new Translatable\Posts\ElementorModel\Action($args, $isCopy);
         }
         if ($args["actionType"] === DAOActions::$ACTION_TYPE["EMAIL"]) {
             return new Translatable\Emails\Action($args, $isCopy);
@@ -138,7 +139,7 @@ abstract class AbstractAction
             return new Translatable\Attributes\Action($args, $isCopy);
         }
         if ($args["actionType"] === DAOActions::$ACTION_TYPE["PRODUCT"]) {
-            return new Translatable\Products\Action($args, $isCopy);
+            return new Translatable\Posts\Products\Action($args, $isCopy);
         }
         return new Translatable\Posts\Action($args, $isCopy);
     }
@@ -716,7 +717,7 @@ abstract class AbstractAction
 
     /**
      * @param $data
-     * @return Translatable\Posts\ApplyTranslation|Translatable\ElementorModel\ApplyTranslation|Translatable\Emails\ApplyTranslation|Translatable\Terms\ApplyTranslation
+     * @return Translatable\Posts\ApplyTranslation|ApplyTranslation|Translatable\Emails\ApplyTranslation|Translatable\Terms\ApplyTranslation
      */
     abstract protected function getApplyTranslationInstance($data);
 }

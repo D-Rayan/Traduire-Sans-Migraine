@@ -107,6 +107,11 @@ class Requirements
                 }
                 if (!in_array('wizard', $dismiss)) {
                     $dismiss[] = 'wizard';
+                }
+                if (!in_array('pllwc', $dismiss)) {
+                    $dismiss[] = 'pllwc';
+                }
+                if (!empty($dismiss)) {
                     update_option("pll_dismissed_notices", $dismiss);
                 }
                 return true;

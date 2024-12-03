@@ -39,12 +39,8 @@ class GetPost
             wp_die();
         }
         $language = LanguagePost::getLanguage($post["ID"]);
-        if (empty($language)) {
-            wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 404);
-            wp_die();
-        }
         $post["translations"] = [];
-        $post["currentSlug"] = $language["code"];
+        $post["currentSlug"] = empty($language) ? null : $language["code"];
         $translations = TranslationPost::findTranslationFor($post["ID"]);
         foreach ($translations->getTranslations() as $slug => $translatedPostId) {
             $post["translations"][$slug] = $this->getTranslationPostData($post, $translatedPostId, $slug);

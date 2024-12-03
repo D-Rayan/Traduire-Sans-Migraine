@@ -36,13 +36,13 @@ abstract class AbstractPrepareTranslation
         if ($actionType === DAOActions::$ACTION_TYPE["EMAIL"]) {
             return new Translatable\Emails\PrepareTranslation($action);
         } else if ($actionType === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
-            return new Translatable\ElementorModel\PrepareTranslation($action);
+            return new Translatable\Posts\ElementorModel\PrepareTranslation($action);
         } else if ($actionType === DAOActions::$ACTION_TYPE["TERMS"]) {
             return new Translatable\Terms\PrepareTranslation($action);
         } else if ($actionType === DAOActions::$ACTION_TYPE["ATTRIBUTES"]) {
             return new Translatable\Attributes\PrepareTranslation($action);
         } else if ($actionType === DAOActions::$ACTION_TYPE["PRODUCT"]) {
-            return new Translatable\Products\PrepareTranslation($action);
+            return new Translatable\Posts\Products\PrepareTranslation($action);
         }
 
         return new Translatable\Posts\PrepareTranslation($action);

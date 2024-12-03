@@ -57,7 +57,19 @@ class Page
         }
         if (isset($postId)) {
             self::$mainData['objectId'] = $postId;
-            self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["POST_PAGE"];
+            $postType = get_post_type($postId);
+            switch ($postType) {
+                case "elementor_library":
+                    self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"];
+                    break;
+                case "product":
+                case "product_variation":
+                    self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["PRODUCT"];
+                    break;
+                default:
+                    self::$mainData['objectType'] = DAOActions::$ACTION_TYPE["POST_PAGE"];
+                    break;
+            }
         }
     }
 }

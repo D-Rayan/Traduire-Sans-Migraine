@@ -57,14 +57,12 @@ class GetVariables
             wp_send_json_error(seoSansMigraine_returnErrorForImpossibleReasons(), 400);
             wp_die();
         }
-        if ($objectType === DAOActions::$ACTION_TYPE["POST_PAGE"] || $objectType === DAOActions::$ACTION_TYPE["PRODUCT"]) {
+        if ($objectType === DAOActions::$ACTION_TYPE["POST_PAGE"] || $objectType === DAOActions::$ACTION_TYPE["PRODUCT"] || $objectType === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
             $data = $this->getPostData($objectId);
             delete_post_meta($objectId, '_tsm_first_visit_after_translation');
         } else if ($objectType === DAOActions::$ACTION_TYPE["EMAIL"]) {
             $data = $this->getEmailData($objectId);
             delete_option('_tsm_first_visit_after_translation_emails');
-        } else if ($objectType === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
-            $data = $this->getModelElementorData($objectId);
         }
         wp_send_json_success($data);
         wp_die();
@@ -124,11 +122,6 @@ class GetVariables
         }
         do_action("tsm-enable-emails-query-filter");
         return $data;
-    }
-
-    private function getModelElementorData($modelId)
-    {
-        return [];
     }
 }
 

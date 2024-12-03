@@ -1,6 +1,6 @@
 <?php
 
-namespace TraduireSansMigraine\Wordpress\Translatable\ElementorModel;
+namespace TraduireSansMigraine\Wordpress\Translatable\Posts\ElementorModel;
 
 use TraduireSansMigraine\Wordpress\DAO\DAOActions;
 use TraduireSansMigraine\Wordpress\Translatable\AbstractClass\AbstractAction;
@@ -15,7 +15,7 @@ class Action extends AbstractAction
 
     public function loadObject()
     {
-        // TODO: Implement getObject() method.
+        $this->object = get_post($this->getObjectId());
     }
 
     protected function getApplyTranslationInstance($data)

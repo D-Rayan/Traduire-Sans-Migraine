@@ -15,7 +15,12 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 12 Novembre 2024</h4><ul>
+        "changelog" => "<h4>Mise à jour du 04 Décembre 2024</h4><ul>
+        <li>(Béta) New : Woocommerce est dorénavant compatible.</li>
+        <li>Update : Changement complet en interne du foncitonnement des traductions pour avoir un meilleur contrôle</li>
+        <li>New : L'outil a été traduit en anglais et en espagnol</li>
+        <li>Update : Amélioration de performances sur certaines requêtes</li>
+        </ul><h4>Mise à jour du 12 Novembre 2024</h4><ul>
         <li>New : Les modèles elementors n'étaient pas traduisible. Ils le sont dorénavant.</li>
         </ul><h4>Mise à jour du 29 Octobre 2024</h4><ul>
         <li>Fix : Correction d'un problème d'affichage et de filtres dans la recherche des traductions groupés</li>

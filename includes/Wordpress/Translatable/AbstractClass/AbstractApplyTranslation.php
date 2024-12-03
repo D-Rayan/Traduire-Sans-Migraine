@@ -51,13 +51,13 @@ abstract class AbstractApplyTranslation
         if ($action->getActionType() === DAOActions::$ACTION_TYPE["EMAIL"]) {
             return new Translatable\Emails\ApplyTranslation($action, $translationData);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
-            return new Translatable\ElementorModel\ApplyTranslation($action, $translationData);
+            return new Translatable\Posts\ElementorModel\ApplyTranslation($action, $translationData);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["TERMS"]) {
             return new Translatable\Terms\ApplyTranslation($action, $translationData);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["ATTRIBUTES"]) {
             return new Translatable\Attributes\ApplyTranslation($action, $translationData);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["PRODUCT"]) {
-            return new Translatable\Products\ApplyTranslation($action, $translationData);
+            return new Translatable\Posts\Products\ApplyTranslation($action, $translationData);
         }
 
         return new Translatable\Posts\ApplyTranslation($action, $translationData);

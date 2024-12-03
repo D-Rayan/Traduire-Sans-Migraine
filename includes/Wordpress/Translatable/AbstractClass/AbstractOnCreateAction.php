@@ -28,13 +28,13 @@ abstract class AbstractOnCreateAction
         if ($action->getActionType() === DAOActions::$ACTION_TYPE["EMAIL"]) {
             return new Translatable\Emails\OnCreateAction($action);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["MODEL_ELEMENTOR"]) {
-            return new Translatable\ElementorModel\OnCreateAction($action);
+            return new Translatable\Posts\ElementorModel\OnCreateAction($action);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["TERMS"]) {
             return new Translatable\Terms\OnCreateAction($action);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["ATTRIBUTES"]) {
             return new Translatable\Attributes\OnCreateAction($action);
         } else if ($action->getActionType() === DAOActions::$ACTION_TYPE["PRODUCT"]) {
-            return new Translatable\Products\OnCreateAction($action);
+            return new Translatable\Posts\Products\OnCreateAction($action);
         }
 
         return new Translatable\Posts\OnCreateAction($action);
