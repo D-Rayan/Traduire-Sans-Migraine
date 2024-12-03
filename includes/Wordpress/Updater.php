@@ -28,8 +28,8 @@ class Updater
     public static function init()
     {
         $instance = self::getInstance();
-        add_filter('plugins_api', [$instance, 'info'], 10, 3);
-        add_filter('site_transient_update_plugins', [$instance, 'update']);
+        add_filter('plugins_api', [$instance, 'info'], 20, 3);
+        add_filter('site_transient_update_plugins', [$instance, 'checkForUpdate']);
         add_action('upgrader_process_complete', [$instance, 'purge'], 10, 2);
     }
 
@@ -130,9 +130,8 @@ class Updater
 
     }
 
-    public function update($transient)
+    public function checkForUpdate($transient)
     {
-
         if (empty($transient->checked)) {
             return $transient;
         }
@@ -157,21 +156,23 @@ class Updater
         }
 
         return $transient;
-
     }
 
     public function purge($upgrader, $options)
     {
 
-        if (
-            $this->cache_allowed
-            && 'update' === $options['action']
+        if ('update' === $options['action']
             && 'plugin' === $options['type']
         ) {
-            // just clean the cache when new plugin version is installed
-            delete_transient($this->cache_key);
+            foreach ($options['plugins'] as $each_plugin) {
+                if ($each_plugin == plugin_basename(__FILE__)) {
+                    if ($this->cache_allowed) {
+                        delete_transient($this->cache_key);
+                    }
+                    DAOActions::updateDatabaseIfNeeded();
+                }
+            }
         }
-        DAOActions::updateDatabaseIfNeeded();
 
     }
 }
