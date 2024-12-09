@@ -53,7 +53,7 @@ class Queue
         if (!$this->nextAction) {
             $data = DAOActions::getNextOrCurrentAction();
             $this->nextAction = AbstractAction::getInstance($data);
-            if ($this->nextAction->getState() === DAOActions::$STATE["PROCESSING"] && $this->nextAction->getUpdatedAt() < date("Y-m-d H:i:s", strtotime("-2 minutes"))) {
+            if ($this->nextAction && $this->nextAction->getState() === DAOActions::$STATE["PROCESSING"] && $this->nextAction->getUpdatedAt() < date("Y-m-d H:i:s", strtotime("-2 minutes"))) {
                 $this->nextAction->releaseLock()->setAsPending()->save();
                 $this->nextAction = null;
                 return $this->getNextAction();
