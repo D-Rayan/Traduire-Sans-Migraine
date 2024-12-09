@@ -122,6 +122,13 @@ class DAOInternalsLinks
         $wpdb->delete($tableName, ['ID' => $id]);
     }
 
+    public static function reset()
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $wpdb->query("TRUNCATE TABLE $tableName");
+    }
+
     public static function create($args)
     {
         global $wpdb;
@@ -170,5 +177,3 @@ class DAOInternalsLinks
         return $wpdb->get_results("SELECT * FROM $tableName WHERE canBeFixed = 1 AND hasBeenFixed = 0", ARRAY_A);
     }
 }
-
-

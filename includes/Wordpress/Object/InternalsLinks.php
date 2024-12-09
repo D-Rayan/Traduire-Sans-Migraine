@@ -100,6 +100,11 @@ class InternalsLinks
         return new InternalsLinks($data);
     }
 
+    public static function reset()
+    {
+        DAOInternalsLinks::reset();
+    }
+
     public function save()
     {
         if (empty($this->ID)) {
@@ -225,5 +230,4 @@ class InternalsLinks
         $this->slugPost = $slugPost;
         return $this;
     }
-
 }
