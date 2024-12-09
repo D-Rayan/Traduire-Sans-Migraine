@@ -30,6 +30,9 @@ class ApplyTranslation extends AbstractApplyTranslation
     public function processTranslation()
     {
         global $tsm;
+        if (!is_object($this->action)) {
+            return;
+        }
         $countAssetsCreated = 0;
         if (isset($this->dataToTranslate["content"])) {
             $this->dataToTranslate["content"] = $tsm->getLinkManager()->translateInternalLinks($this->dataToTranslate["content"], $this->codeFrom, $this->codeTo);

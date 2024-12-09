@@ -9,9 +9,7 @@ class LinkManager
 
     private $linksTranslatedCount = 0;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function translateInternalLinks($postContent, $translateFrom, $translateTo)
     {
@@ -26,7 +24,7 @@ class LinkManager
 
     public function extractAndRetrieveInternalLinks($postContent, $translateFrom, $translateTo, $getErrors = false)
     {
-        if (!is_string($translateFrom) || !is_array($translateTo)) {
+        if (!is_string($translateFrom) || !is_string($translateTo)) {
             return [];
         }
         $homeUrl = str_replace("/", "\/", home_url());

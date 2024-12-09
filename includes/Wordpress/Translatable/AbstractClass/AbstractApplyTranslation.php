@@ -23,9 +23,7 @@ abstract class AbstractApplyTranslation
     protected $action;
 
 
-    /**
-     * @var $action AbstractAction
-     */
+
     public function __construct($action, $translationData)
     {
         $this->dataToTranslate = $translationData;
@@ -69,7 +67,7 @@ abstract class AbstractApplyTranslation
             return false;
         }
         $this->checkRequirements();
-        if ($this->action->getState() !== DAOActions::$STATE["PROCESSING"]) {
+        if (!is_object($this->action) || $this->action->getState() !== DAOActions::$STATE["PROCESSING"]) {
             return false;
         }
         if (empty($this->action->getActionParent()) && !$this->action->isValidLock()) {
@@ -108,7 +106,7 @@ abstract class AbstractApplyTranslation
 
     private function checkRequirements()
     {
-        if (!$this->action) {
+        if (!$this->action || !is_object($this->action)) {
             return;
         }
         if ($this->dataToTranslate === false) {
@@ -132,12 +130,12 @@ abstract class AbstractApplyTranslation
 
     public function isSuccess()
     {
-        return $this->action->getState() === DAOActions::$STATE["DONE"] || $this->action->getState() === DAOActions::$STATE["ARCHIVED"];
+        return is_object($this->action) && ($this->action->getState() === DAOActions::$STATE["DONE"] || $this->action->getState() === DAOActions::$STATE["ARCHIVED"]);
     }
 
     public function getResponse()
     {
-        return $this->action->getResponse();
+        return is_object($this->action) ? $this->action->getResponse() : null;
     }
 
     protected function is_json($string)
