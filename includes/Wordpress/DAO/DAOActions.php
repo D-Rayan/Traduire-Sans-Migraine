@@ -61,6 +61,7 @@ class DAOActions
         $this->installDatabaseVersion200();
         $this->updateDatabaseVersion220();
         $this->updateDatabaseVersion230();
+        $this->updateDatabaseVersion235();
         update_option($this->optionVersion, TSM__VERSION, true);
     }
 
@@ -71,12 +72,16 @@ class DAOActions
         }
         global $wpdb;
         $stateEnum = "";
-        foreach (['PENDING' => 'PENDING',
-                     'PROCESSING' => 'PROCESSING',
-                     'DONE' => 'DONE',
-                     'ERROR' => 'ERROR',
-                     'PAUSE' => 'PAUSE',
-                     'ARCHIVED' => 'ARCHIVED'] as $state) {
+        foreach (
+            [
+                'PENDING' => 'PENDING',
+                'PROCESSING' => 'PROCESSING',
+                'DONE' => 'DONE',
+                'ERROR' => 'ERROR',
+                'PAUSE' => 'PAUSE',
+                'ARCHIVED' => 'ARCHIVED'
+            ] as $state
+        ) {
             if ($stateEnum !== "") {
                 $stateEnum .= ",";
             }
@@ -120,13 +125,18 @@ class DAOActions
         }
         global $wpdb;
         $stateEnum = "";
-        foreach (['CREATING' => 'CREATING',
-                     'PENDING' => 'PENDING',
-                     'PROCESSING' => 'PROCESSING',
-                     'DONE' => 'DONE',
-                     'ERROR' => 'ERROR',
-                     'PAUSE' => 'PAUSE',
-                     'ARCHIVED' => 'ARCHIVED'] as $state) {
+        foreach (
+            [
+                'CREATING' => 'CREATING',
+                'PENDING' => 'PENDING',
+                'PROCESSING' => 'PROCESSING',
+                'DONE' => 'DONE',
+                'ERROR' => 'ERROR',
+                'PAUSE' => 'PAUSE',
+                'ARCHIVED' => 'ARCHIVED',
+                'ARCHIVED_ERROR' => 'ARCHIVED_ERROR'
+            ] as $state
+        ) {
             if ($stateEnum !== "") {
                 $stateEnum .= ",";
             }
@@ -141,6 +151,35 @@ class DAOActions
         $wpdb->query($sql);
         $sql = "ALTER TABLE $tableName ADD COLUMN `objectIdTranslated` VARCHAR(255) NULL";
         $wpdb->query($sql);
+        $sql = "ALTER TABLE $tableName MODIFY COLUMN `state` ENUM($stateEnum) NOT NULL";
+        $wpdb->query($sql);
+    }
+
+    private function updateDatabaseVersion235()
+    {
+        if (version_compare($this->currentVersion, '2.3.5') >= 0) {
+            return;
+        }
+        global $wpdb;
+        $stateEnum = "";
+        foreach (
+            [
+                'CREATING' => 'CREATING',
+                'PENDING' => 'PENDING',
+                'PROCESSING' => 'PROCESSING',
+                'DONE' => 'DONE',
+                'ERROR' => 'ERROR',
+                'PAUSE' => 'PAUSE',
+                'ARCHIVED' => 'ARCHIVED',
+                'ARCHIVED_ERROR' => 'ARCHIVED_ERROR'
+            ] as $state
+        ) {
+            if ($stateEnum !== "") {
+                $stateEnum .= ",";
+            }
+            $stateEnum .= "'$state'";
+        }
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $sql = "ALTER TABLE $tableName MODIFY COLUMN `state` ENUM($stateEnum) NOT NULL";
         $wpdb->query($sql);
     }
@@ -214,7 +253,10 @@ class DAOActions
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $preparedQuery = $wpdb->prepare(
             "SELECT * FROM $tableName WHERE actionType = %s AND objectId = %s AND slugTo = %s AND state != %s ORDER BY ID DESC LIMIT 1",
-            $actionType, $objectId, $slugTo, self::$STATE["ARCHIVED"]
+            $actionType,
+            $objectId,
+            $slugTo,
+            self::$STATE["ARCHIVED"]
         );
         return $wpdb->get_row($preparedQuery, ARRAY_A);
     }
@@ -225,7 +267,8 @@ class DAOActions
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $preparedQuery = $wpdb->prepare(
             "SELECT * FROM $tableName WHERE ID IN (SELECT MAX(ID) FROM $tableName WHERE objectId = %s AND actionType = %s GROUP BY slugTo)",
-            $objectId, $actionType
+            $objectId,
+            $actionType
         );
         return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
@@ -258,7 +301,8 @@ class DAOActions
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $preparedQuery = $wpdb->prepare(
             "SELECT * FROM $tableName WHERE state NOT IN (%s, %s) AND actionParent IS NULL ORDER BY origin DESC, ID",
-            self::$STATE["ARCHIVED"], self::$STATE["CREATING"]
+            self::$STATE["ARCHIVED"],
+            self::$STATE["CREATING"]
         );
         return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
@@ -269,7 +313,9 @@ class DAOActions
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $preparedQuery = $wpdb->prepare(
             "SELECT * FROM $tableName WHERE state IN (%s, %s, %s) AND actionParent IS NULL ORDER BY origin DESC, ID LIMIT 1",
-            self::$STATE["PENDING"], self::$STATE["PAUSE"], self::$STATE["PROCESSING"]
+            self::$STATE["PENDING"],
+            self::$STATE["PAUSE"],
+            self::$STATE["PROCESSING"]
         );
         return $wpdb->get_row($preparedQuery, ARRAY_A);
     }
@@ -301,6 +347,7 @@ class DAOActions
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
         $wpdb->update($tableName, ['state' => self::$STATE["ARCHIVED"]], ['state' => self::$STATE["DONE"]]);
+        $wpdb->update($tableName, ['state' => self::$STATE["ARCHIVED_ERROR"]], ['state' => self::$STATE["ERROR"]]);
     }
 
     public static function getChildren($id)
@@ -314,5 +361,3 @@ class DAOActions
         return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
 }
-
-

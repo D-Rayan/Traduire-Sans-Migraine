@@ -98,6 +98,9 @@ abstract class AbstractApplyTranslation
             }
             $this->action->setObjectIdTranslated($this->getTranslatedId())->save();
         } catch (Exception $e) {
+            if (empty($this->action->getActionParent())) {
+                $this->action->releaseLock();
+            }
             $this->action->setAsError()->setResponse(["error" => $e->getMessage() ?? $e->getCode()])->save();
         }
 
