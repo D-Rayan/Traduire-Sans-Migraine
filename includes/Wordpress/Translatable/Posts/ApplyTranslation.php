@@ -214,8 +214,8 @@ class ApplyTranslation extends AbstractApplyTranslation
     {
         global $wpdb;
 
-        $postName = isset($this->dataToTranslate["slug"]) ? $this->dataToTranslate["slug"] : $this->originalObject->post_name . "-" . $this->codeTo;
-        $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name = %s', $postName);
+        $postName = isset($this->dataToTranslate["slug"]) ? str_replace(" ", "-", $this->dataToTranslate["slug"]) : $this->originalObject->post_name . "-" . $this->codeTo;
+        $query = $wpdb->prepare('SELECT ID FROM ' . $wpdb->posts . ' WHERE post_name LIKE %s', $postName);
         $exists = $wpdb->get_var($query);
         if (!empty($exists)) {
             $postName .= "-" . time();
