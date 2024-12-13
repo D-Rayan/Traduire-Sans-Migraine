@@ -15,7 +15,9 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 11 Décembre 2024</h4><ul>
+        "changelog" => "<h4>Mise à jour du 13 Décembre 2024</h4><ul>
+        <li>Fix : Prise en compte de Yoast SEO en version gratuite</li>
+        </ul><h4>Mise à jour du 11 Décembre 2024</h4><ul>
         <li>Fix : Correction d'un problème qui pouvait dupliquer les slugs d'un article</li>
         </ul><h4>Mise à jour du 10 Décembre 2024</h4><ul>
         <li>(Béta) New : Woocommerce est dorénavant compatible.</li>

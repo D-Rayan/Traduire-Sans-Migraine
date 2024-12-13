@@ -122,7 +122,7 @@ class Settings
         $this->settings = [
             self::$KEYS["yoastSEO"] => [
                 "enabled" => true,
-                "available" => (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")),
+                "available" => (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || is_plugin_active("wordpress-seo/wp-seo.php") || defined("WPSEO_FILE")),
             ],
             self::$KEYS["rankMath"] => [
                 "enabled" => true,
