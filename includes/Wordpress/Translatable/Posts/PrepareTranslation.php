@@ -45,7 +45,7 @@ class PrepareTranslation extends AbstractPrepareTranslation
     private function handleYoast($postMetas, $willBeAnUpdate)
     {
         global $tsm;
-        if (is_plugin_active("yoast-seo-premium/yoast-seo-premium.php") || defined("WPSEO_FILE")) {
+        if ($tsm->getSettings()->settingIsEnabled(Settings::$KEYS["yoastSEO"])) {
             $metaTitle = $postMetas["_yoast_wpseo_title"][0] ?? "";
             if (!empty($metaTitle) && (!$willBeAnUpdate || $tsm->getSettings()->settingIsEnabled(Settings::$KEYS["yoastSEO"]))) {
                 $this->dataToTranslate["metaTitle"] = $metaTitle;
@@ -68,7 +68,7 @@ class PrepareTranslation extends AbstractPrepareTranslation
     private function handleRankMath($postMetas, $willBeAnUpdate)
     {
         global $tsm;
-        if (is_plugin_active("seo-by-rank-math/rank-math.php") || function_exists("rank_math")) {
+        if ($tsm->getSettings()->settingIsEnabled(Settings::$KEYS["rankMath"])) {
             $rankMathDescription = $postMetas["rank_math_description"][0] ?? "";
             if (!empty($rankMathDescription) && (!$willBeAnUpdate || $tsm->getSettings()->settingIsEnabled(Settings::$KEYS["rankMath"]))) {
                 $this->dataToTranslate["rankMathDescription"] = $rankMathDescription;
@@ -87,7 +87,7 @@ class PrepareTranslation extends AbstractPrepareTranslation
     private function handleSeoPress($postMetas, $willBeAnUpdate)
     {
         global $tsm;
-        if (is_plugin_active("wp-seopress/seopress.php")) {
+        if ($tsm->getSettings()->settingIsEnabled(Settings::$KEYS["SEOPress"])) {
             $seopress_titles_desc = $postMetas["seopress_titles_desc"][0] ?? "";
             if (!empty($seopress_titles_desc) && (!$willBeAnUpdate || $tsm->getSettings()->settingIsEnabled(Settings::$KEYS["SEOPress"]))) {
                 $this->dataToTranslate["seopress_titles_desc"] = $seopress_titles_desc;
