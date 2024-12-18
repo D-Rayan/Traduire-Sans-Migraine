@@ -128,7 +128,11 @@ class PrepareTranslation extends AbstractPrepareTranslation
                 "_elementor_version" => true,
                 "elementor_font_face" => true,
                 "elementor_font_files" => true,
+                "_elementor_element_cache" => true
             ];
+            if (!isset($postMetas["_elementor_edit_mode"])) {
+                return;
+            }
             foreach ($postMetas as $key => $value) {
                 if (strstr($key, "elementor_") && !isset($noTranslateElementor[$key])) {
                     if (isset($value[0])) {
