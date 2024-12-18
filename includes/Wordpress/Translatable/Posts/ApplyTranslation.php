@@ -407,6 +407,10 @@ class ApplyTranslation extends AbstractApplyTranslation
                     }
                 } catch (Exception $e) {
                 }
+                try {
+                    Plugin::$instance->posts->save_post($this->translatedPostId);
+                } catch (Exception $e) {
+                }
             }
         }
     }
