@@ -94,7 +94,11 @@ function render_seoSansMigraine_alert($title, $message, $type)
 function tsm_log($message)
 {
     global $tsm;
-    $lineCaller = debug_backtrace()[0]["line"];
-    $fileCaller = debug_backtrace()[0]["file"];
-    $tsm->getClient()->sendLog($message, $lineCaller, $fileCaller);
+    try {
+        $lineCaller = debug_backtrace()[0]["line"];
+        $fileCaller = debug_backtrace()[0]["file"];
+        $tsm->getClient()->sendLog($message, $lineCaller, $fileCaller);
+    } catch (Exception $e) {
+     
+    }
 }
