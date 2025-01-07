@@ -247,6 +247,13 @@ class Client
         return true;
     }
 
+    public function sendLog($message, $line, $file)
+    {
+        global $tsm;
+
+        return $this->client->post("/logs", ["message" => $message, "version" => TSM__VERSION, "token" => $tsm->getSettings()->getToken(), "line" => $line, "file" => $file]);
+    }
+
     public function getAccount()
     {
         if (!$this->account) {

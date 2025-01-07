@@ -124,6 +124,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                 $content = str_replace("-" . $mediaId, "-" . $newMediaId, $content);
                 $countAssetsCreated++;
             } catch (Exception $e) {
+                tsm_log($e->getMessage());
                 continue;
             }
         }
@@ -178,6 +179,7 @@ class ApplyTranslation extends AbstractApplyTranslation
             wp_update_attachment_metadata($newMediaId, $attachmentData);
             return $newMediaId;
         } catch (Exception $e) {
+            tsm_log($e->getMessage());
             return false;
         }
     }
@@ -206,6 +208,7 @@ class ApplyTranslation extends AbstractApplyTranslation
 
             return wp_get_attachment_image_src($newMediaId, $size)[0];
         } catch (Exception $e) {
+            tsm_log($e->getMessage());
             return false;
         }
     }
@@ -277,6 +280,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                 $valueKey = $this->replaceInternalLinksAndIds($valueKey);
                 update_post_meta($this->translatedPostId, $key, $valueKey);
             } catch (Exception $e) {
+                tsm_log($e->getMessage());
                 continue;
             }
         }
@@ -296,6 +300,7 @@ class ApplyTranslation extends AbstractApplyTranslation
             }
             return $value;
         } catch (Exception $e) {
+            tsm_log($e->getMessage());
             return $value;
         }
     }
@@ -322,6 +327,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                     update_post_meta($this->translatedPostId, "_yoast_wpseo_focuskw", $this->dataToTranslate["yoastFocusKeyword"]);
                 }
             } catch (Exception $e) {
+                tsm_log($e->getMessage());
                 return false;
             }
         }
@@ -346,6 +352,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                     update_post_meta($this->translatedPostId, "rank_math_focus_keyword", $this->dataToTranslate["rankMathFocusKeyword"]);
                 }
             } catch (Exception $e) {
+                tsm_log($e->getMessage());
                 return false;
             }
         }
@@ -366,6 +373,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                     update_post_meta($this->translatedPostId, "seopress_analysis_target_kw", $this->dataToTranslate["seopress_analysis_target_kw"]);
                 }
             } catch (Exception $e) {
+                tsm_log($e->getMessage());
                 return false;
             }
         }
@@ -391,6 +399,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                         update_post_meta($this->translatedPostId, $key, $valueKey);
                     }
                 } catch (Exception $e) {
+                    tsm_log($e->getMessage());
                     continue;
                 }
             }
@@ -406,10 +415,12 @@ class ApplyTranslation extends AbstractApplyTranslation
                         $document->save($document->get_elements_data());
                     }
                 } catch (Exception $e) {
+                    tsm_log($e->getMessage());
                 }
                 try {
                     Plugin::$instance->posts->save_post($this->translatedPostId);
                 } catch (Exception $e) {
+                    tsm_log($e->getMessage());
                 }
             }
         }
@@ -435,6 +446,7 @@ class ApplyTranslation extends AbstractApplyTranslation
                         }
                     }
                 } catch (Exception $e) {
+                    tsm_log($e->getMessage());
                     continue;
                 }
             }

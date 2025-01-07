@@ -74,7 +74,7 @@ class AddNewLanguage
                 wp_die();
             }
         } catch (Exception $e) {
-
+            tsm_log($e->getMessage());
         }
         if ($polylangManager->addLanguage($locale)) {
             $client->enableLanguage($slug);

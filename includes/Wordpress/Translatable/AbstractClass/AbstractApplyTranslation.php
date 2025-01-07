@@ -23,7 +23,6 @@ abstract class AbstractApplyTranslation
     protected $action;
 
 
-
     public function __construct($action, $translationData)
     {
         $this->dataToTranslate = $translationData;
@@ -93,14 +92,11 @@ abstract class AbstractApplyTranslation
             } else {
                 $this->action->setAsArchived();
             }
-            if (empty($this->action->getActionParent())) {
-                $this->action->releaseLock();
-            }
+            $this->action->releaseLock();
             $this->action->setObjectIdTranslated($this->getTranslatedId())->save();
         } catch (Exception $e) {
-            if (empty($this->action->getActionParent())) {
-                $this->action->releaseLock();
-            }
+            tsm_log($e->getMessage());
+            $this->action->releaseLock();
             $this->action->setAsError()->setResponse(["error" => $e->getMessage() ?? $e->getCode()])->save();
         }
 

@@ -244,6 +244,7 @@ class PolylangManager
         try {
             $enabledLanguages = $this->getLanguagesActives();
         } catch (Exception $e) {
+            tsm_log($e->getMessage());
             $enabledLanguages = [];
         }
 
@@ -255,6 +256,7 @@ class PolylangManager
                 $languagesEnabledOnTSM = [];
             }
         } catch (Exception $e) {
+            tsm_log($e->getMessage());
             $languagesEnabledOnTSM = [];
             $account = null;
         }
