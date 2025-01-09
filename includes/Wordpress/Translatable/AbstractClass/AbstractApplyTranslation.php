@@ -94,6 +94,7 @@ abstract class AbstractApplyTranslation
             }
             $this->action->releaseLock();
             $this->action->setObjectIdTranslated($this->getTranslatedId())->save();
+            wp_cache_flush();
         } catch (Exception $e) {
             tsm_log($e->getMessage());
             $this->action->releaseLock();
