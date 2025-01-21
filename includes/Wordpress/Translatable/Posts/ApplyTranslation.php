@@ -141,7 +141,9 @@ class ApplyTranslation extends AbstractApplyTranslation
             if (!function_exists('wp_get_current_user')) {
                 include(ABSPATH . 'wp-includes/pluggable.php');
             }
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            if (!function_exists('get_file_description')) {
+                include(ABSPATH . 'wp-admin/includes/file.php');
+            }
             $media = get_post($mediaId);
             if (!$media) {
                 return false;
@@ -384,6 +386,13 @@ class ApplyTranslation extends AbstractApplyTranslation
         global $tsm;
         if (is_plugin_active("elementor/elementor.php")) {
             $hasMetaElementor = false;
+            $hasDataTranslatedElementor = false;
+            foreach ($this->dataToTranslate as $key => $value) {
+                $hasDataTranslatedElementor = $hasMetaElementor || strstr($key, "elementor");
+            }
+            if (!$hasDataTranslatedElementor) {
+                return;
+            }
             foreach ($this->postMetas as $key => $value) {
                 try {
                     if (strstr($key, "elementor")) {
