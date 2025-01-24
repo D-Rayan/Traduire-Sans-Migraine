@@ -110,7 +110,7 @@ class Settings
         return $this->settings;
     }
 
-    private function loadSettings()
+    private function loadSettings($fromInit = false)
     {
         global $tsm;
 
@@ -118,7 +118,7 @@ class Settings
             include_once(ABSPATH . "wp-admin/includes/plugin.php");
         }
 
-        $account = $tsm->getClient()->getAccount();
+        $account = $fromInit ? null : $tsm->getClient()->getAccount();
         $this->settings = [
             self::$KEYS["yoastSEO"] => [
                 "enabled" => true,
@@ -142,7 +142,7 @@ class Settings
             ],
             self::$KEYS["autoTranslateLinks"] => [
                 "enabled" => false,
-                "available" => isset($account["canUseBackgroundLinksTranslation"]) && $account["canUseBackgroundLinksTranslation"]
+                "available" => $fromInit || isset($account["canUseBackgroundLinksTranslation"]) && $account["canUseBackgroundLinksTranslation"]
             ],
             self::$KEYS["autoDeletionTranslations"] => [
                 "enabled" => false,
@@ -157,10 +157,10 @@ class Settings
         $this->setSettings($settings);
     }
 
-    public function settingIsEnabled($name)
+    public function settingIsEnabled($name, $fromInit = false)
     {
         if (empty($this->settings)) {
-            $this->loadSettings();
+            $this->loadSettings($fromInit);
         }
         return isset($this->settings[$name]) && $this->settings[$name]["enabled"] == true && $this->settings[$name]["available"] == true;
     }

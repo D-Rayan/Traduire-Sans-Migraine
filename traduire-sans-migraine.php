@@ -85,7 +85,6 @@ class TraduireSansMigraine
         Hooks::init();
         Shortcodes::init();
         Woocommerce::init();
-
         EditorPage::init();
         PluginsPage::init();
         NotificationsPage::init();

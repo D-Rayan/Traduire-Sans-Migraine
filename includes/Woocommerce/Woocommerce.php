@@ -20,7 +20,7 @@ class Woocommerce
     public static function init()
     {
         global $tsm;
-        if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"])) {
+        if (!$tsm->getSettings()->settingIsEnabled(Settings::$KEYS["enabledWoocommerce"], true)) {
             return;
         }
         $instance = self::getInstance();

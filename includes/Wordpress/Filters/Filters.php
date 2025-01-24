@@ -2,8 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\Filters;
 
-use RuntimeException;
-
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -32,19 +30,7 @@ class Filters
 
     public function loadFilters()
     {
-        // maybe load just the hooks that will be used thanks to action variable
-        $files = $this->rglob(__DIR__ . '/*.php');
-        if ($files === false) {
-            throw new RuntimeException("Failed to glob for function files");
-        }
-        foreach ($files as $file) {
-            if ($file === __FILE__) {
-                continue;
-            }
-            require_once $file;
-        }
-        unset($file);
-        unset($files);
+        require_once __DIR__ . "/../../Wordpress/Filters/EnrichAction.php";
     }
 
     private function rglob($pattern, $flags = 0)

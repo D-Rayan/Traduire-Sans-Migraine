@@ -27,11 +27,14 @@ class EditorPage extends Page
     public function loadAdminHooks()
     {
         global $pagenow;
+        if (!is_admin()) {
+            return;
+        }
         $this->allowedTypes = apply_filters("tsm-post-type-translatable", ["post", "page", "elementor_library"]);
         $this->currentPostType = (isset($_GET["post"])) ? get_post_type($_GET["post"]) : null;
         $editingPostPageProduct = (isset($_GET["post"]) && $pagenow === "post.php" && in_array($this->currentPostType, $this->allowedTypes));
         $editingMail = (isset($_GET["page"]) && $_GET["page"] === "wc-settings" && isset($_GET["tab"]) && $_GET["tab"] === "email");
-        if (!is_admin() || !($editingPostPageProduct || $editingMail)) {
+        if (!($editingPostPageProduct || $editingMail)) {
             return;
         }
         add_action('admin_enqueue_scripts', [$this, 'loadJSReact']);

@@ -2,8 +2,6 @@
 
 namespace TraduireSansMigraine\Wordpress\Hooks;
 
-use RuntimeException;
-
 if (!defined("ABSPATH")) {
     exit;
 }
@@ -32,19 +30,40 @@ class Hooks
 
     public function loadHooks()
     {
-        // maybe load just the hooks that will be used thanks to action variable
-        $files = $this->rglob(__DIR__ . '/*.php');
-        if ($files === false) {
-            throw new RuntimeException("Failed to glob for function files");
-        }
-        foreach ($files as $file) {
-            if ($file === __FILE__) {
-                continue;
-            }
-            require_once $file;
-        }
-        unset($file);
-        unset($files);
+        $base = __DIR__ . "/";
+        require_once $base . "CronInitializeInternalLinks.php";
+        require_once $base . "GetAccount.php";
+        require_once $base . "ResetInternalsLinksState.php";
+        require_once $base . "GetInternalsLinksState.php";
+        require_once $base . "UpdateSettings.php";
+        require_once $base . "GetVariables.php";
+        require_once $base . "CronFixedInternalLinks.php";
+        require_once $base . "GetSettings.php";
+        require_once $base . "GetProducts.php";
+        require_once $base . "SendReasonsDeactivate.php";
+        require_once $base . "DebugHelper.php";
+        require_once $base . "Actions/RemoveFromQueue.php";
+        require_once $base . "Actions/GetActionsByObject.php";
+        require_once $base . "Actions/AddToQueue.php";
+        require_once $base . "Actions/GetQueue.php";
+        require_once $base . "Languages/DeleteWordToDictionary.php";
+        require_once $base . "Languages/UpdateLanguageSettings.php";
+        require_once $base . "Languages/GetLanguages.php";
+        require_once $base . "Languages/UpdateWordToDictionary.php";
+        require_once $base . "Languages/SetLanguage.php";
+        require_once $base . "Languages/GetDictionary.php";
+        require_once $base . "Languages/AddWordToDictionary.php";
+        require_once $base . "Languages/AddNewLanguage.php";
+        require_once $base . "Objects/GetObjectEstimatedQuota.php";
+        require_once $base . "Objects/GetObjects.php";
+        require_once $base . "Objects/GetObjectsType.php";
+        require_once $base . "Posts/GetPost.php";
+        require_once $base . "Posts/OnDeletionPosts.php";
+        require_once $base . "Posts/OnPublishedPosts.php";
+        require_once $base . "Posts/GetAuthors.php";
+        require_once $base . "Woocommerce/GetStateWoocommerce.php";
+        require_once $base . "Woocommerce/HandleNewDefaultLanguage.php";
+        require_once $base . "Woocommerce/TranslateBulk.php";
     }
 
     private function rglob($pattern, $flags = 0)

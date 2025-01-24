@@ -93,7 +93,7 @@ class Requirements
     private function canUseCURL()
     {
         global $tsm;
-
+        
         return (function_exists("curl_version") && ($tsm->getClient()->fetchAccount() || $tsm->getClient()->getRedirect()));
     }
 

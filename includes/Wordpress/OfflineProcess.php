@@ -27,10 +27,18 @@ class OfflineProcess
 
     public static function init()
     {
+        if (!is_admin() && !wp_doing_ajax()) {
+            return;
+        }
         $key = "_seo_sans_migraine_backgroundProcess";
         $instance = self::getInstance();
         if (get_option($key) === "offline") {
-            add_action(wp_doing_ajax() ? "fetchTranslationsBackground" : "admin_init", [$instance, "addBackgroundProcess"]);
+            $page = $_GET["page"] ?? "";
+            if (strpos($page, "traduire-sans-migraine") !== false && !wp_doing_ajax()) {
+                add_action("admin_init", [$instance, "addBackgroundProcess"]);
+            } else {
+                add_action("fetchTranslationsBackground", [$instance, "addBackgroundProcess"]);
+            }
         } else {
             $action = DAOActions::getNextOrCurrentAction();
             if (!$action || strtotime($action["updatedAt"]) < time() - 60) {
