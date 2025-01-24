@@ -45,6 +45,7 @@ class BaseClient
         }
 
         $curl = curl_init($fullUrl);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         if (self::$Authorization) {

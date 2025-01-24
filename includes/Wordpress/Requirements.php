@@ -26,6 +26,10 @@ class Requirements
             add_action("admin_notices", [$this, "noticePhp"]);
             return false;
         }
+        if (!$this->canUseCURL()) {
+            add_action("admin_notices", [$this, "noticeServerConfiguration"]);
+            return false;
+        }
         if (!$this->havePolylang()) {
             if ($this->activatePolylangIfAvailable()) {
                 add_action('admin_notices', function () {
@@ -86,6 +90,13 @@ class Requirements
         return $phpIsValid;
     }
 
+    private function canUseCURL()
+    {
+        global $tsm;
+
+        return (function_exists("curl_version") && ($tsm->getClient()->fetchAccount() || $tsm->getClient()->getRedirect()));
+    }
+
     public function havePolylang()
     {
         return function_exists("pll_the_languages") || defined('POLYLANG_VERSION');
@@ -138,5 +149,10 @@ class Requirements
     public function noticePhp()
     {
         render_seoSansMigraine_alert("PHP version is too low", sprintf("%s required at least PHP %s", TSM__NAME, TSM__PHP_REQUIREMENT), "error");
+    }
+
+    public function noticeServerConfiguration()
+    {
+        render_seoSansMigraine_alert("Server configuration issue", sprintf("%s can't work because of a server configuration issue. Please contact your hosting provider to enable cURL", TSM__NAME), "error");
     }
 }
