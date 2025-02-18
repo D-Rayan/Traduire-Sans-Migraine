@@ -360,4 +360,13 @@ class DAOActions
         );
         return $wpdb->get_results($preparedQuery, ARRAY_A);
     }
+
+    public static function cleanQueue()
+    {
+        global $wpdb;
+        $tableName = $wpdb->prefix . self::$TABLE_NAME;
+        $wpdb->delete($tableName, ['state' => self::$STATE["ARCHIVED"]]);
+        $wpdb->delete($tableName, ['state' => self::$STATE["DONE"]]);
+        $wpdb->delete($tableName, ['state' => self::$STATE["ARCHIVED_ERROR"]]);
+    }
 }

@@ -388,9 +388,11 @@ class ApplyTranslation extends AbstractApplyTranslation
             $hasMetaElementor = false;
             $hasDataTranslatedElementor = false;
             foreach ($this->dataToTranslate as $key => $value) {
-                $hasDataTranslatedElementor = $hasMetaElementor || strstr($key, "elementor");
+                if (!$hasDataTranslatedElementor) {
+                    $hasDataTranslatedElementor = strstr($key, "elementor");
+                }
             }
-            if (!$hasDataTranslatedElementor) {
+            if ($hasDataTranslatedElementor === false) {
                 return;
             }
             foreach ($this->postMetas as $key => $value) {
@@ -427,7 +429,9 @@ class ApplyTranslation extends AbstractApplyTranslation
                     tsm_log($e->getMessage());
                 }
                 try {
-                    Plugin::$instance->posts->save_post($this->translatedPostId);
+                    if (Plugin::$instance && Plugin::$instance->posts) {
+                        Plugin::$instance->posts->save_post($this->translatedPostId);
+                    }
                 } catch (Exception $e) {
                     tsm_log($e->getMessage());
                 }
