@@ -30,6 +30,22 @@ class Requirements
             add_action("admin_notices", [$this, "noticeServerConfiguration"]);
             return false;
         }
+        if ($this->haveWPML()) {
+            add_action("admin_notices", [$this, "noticeWrongPluginWPML"]);
+            return false;
+        }
+        if ($this->haveGTranslate()) {
+            add_action("admin_notices", [$this, "noticeWrongPluginGTranslate"]);
+            return false;
+        }
+        if ($this->haveWeglot()) {
+            add_action("admin_notices", [$this, "noticeWrongPluginWeglot"]);
+            return false;
+        }
+        if ($this->haveMultilingual()) {
+            add_action("admin_notices", [$this, "noticeWrongPluginMultilingual"]);
+            return false;
+        }
         if (!$this->havePolylang()) {
             if ($this->activatePolylangIfAvailable()) {
                 add_action('admin_notices', function () {
@@ -93,8 +109,28 @@ class Requirements
     private function canUseCURL()
     {
         global $tsm;
-        
+
         return (function_exists("curl_version") && ($tsm->getClient()->fetchAccount() || $tsm->getClient()->getRedirect()));
+    }
+
+    public function haveWPML()
+    {
+        return class_exists('Weglot\Weglot') || is_plugin_active('sitepress-multilingual-cms/sitepress.php');
+    }
+
+    public function haveGTranslate()
+    {
+        return defined('GTRANSLATE_VERSION') || is_plugin_active('gtranslate/gtranslate.php');
+    }
+
+    public function haveWeglot()
+    {
+        return defined('ICL_SITEPRESS_VERSION') || is_plugin_active('weglot/weglot.php');
+    }
+
+    public function haveMultilingual()
+    {
+        return class_exists('Inpsyde\MultilingualPress\Framework\Api\Plugin') || is_plugin_active('multilingualpress/multilingualpress.php');
     }
 
     public function havePolylang()
@@ -154,5 +190,30 @@ class Requirements
     public function noticeServerConfiguration()
     {
         render_seoSansMigraine_alert("Server configuration issue", sprintf("%s can't work because of a server configuration issue. Please contact your hosting provider to enable cURL", TSM__NAME), "error");
+    }
+
+    public function noticeWrongPluginWPML()
+    {
+        $this->wrongPlugin("WPML");
+    }
+
+    public function wrongPlugin($pluginName)
+    {
+        render_seoSansMigraine_alert("Problème de conflit", sprintf("%s ne peut pas fonctionner à cause d'un conflit causé par %s, vous devez le désactiver pour continuer.", TSM__NAME, $pluginName), "error");
+    }
+
+    public function noticeWrongPluginGTranslate()
+    {
+        $this->wrongPlugin("GTranslate");
+    }
+
+    public function noticeWrongPluginWeglot()
+    {
+        $this->wrongPlugin("Weglot");
+    }
+
+    public function noticeWrongPluginMultilingual()
+    {
+        $this->wrongPlugin("MultilingualPress");
     }
 }
