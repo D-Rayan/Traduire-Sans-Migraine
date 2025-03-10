@@ -15,7 +15,9 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 18 Février 2025</h4><ul>
+        "changelog" => "<h4>Mise à jour du 10 Mars 2025</h4><ul>
+        <li>Ajout de sécurité lors de l'installation.</li>
+        </ul><h4>Mise à jour du 18 Février 2025</h4><ul>
         <li>Résolution d'un soucis empêchant la traduction elementor dans certains cas</li>
         <li>En fermant la file d'attente cela enlèvera les actions terminés</li>
         </ul><h4>Mise à jour du 28 Janvier 2025</h4><ul>
