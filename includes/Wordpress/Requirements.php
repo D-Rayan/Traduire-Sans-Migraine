@@ -30,6 +30,9 @@ class Requirements
             add_action("admin_notices", [$this, "noticeServerConfiguration"]);
             return false;
         }
+        if (!function_exists("is_plugin_active")) {
+            require_once(ABSPATH . "wp-admin/includes/plugin.php");
+        }
         if ($this->haveWPML()) {
             add_action("admin_notices", [$this, "noticeWrongPluginWPML"]);
             return false;
@@ -115,22 +118,22 @@ class Requirements
 
     public function haveWPML()
     {
-        return class_exists('Weglot\Weglot') || is_plugin_active('sitepress-multilingual-cms/sitepress.php');
+        return class_exists('Weglot\Weglot') || (function_exists("is_plugin_active") && is_plugin_active('sitepress-multilingual-cms/sitepress.php'));
     }
 
     public function haveGTranslate()
     {
-        return defined('GTRANSLATE_VERSION') || is_plugin_active('gtranslate/gtranslate.php');
+        return defined('GTRANSLATE_VERSION') || (function_exists("is_plugin_active") && is_plugin_active('gtranslate/gtranslate.php'));
     }
 
     public function haveWeglot()
     {
-        return defined('ICL_SITEPRESS_VERSION') || is_plugin_active('weglot/weglot.php');
+        return defined('ICL_SITEPRESS_VERSION') || (function_exists("is_plugin_active") && is_plugin_active('weglot/weglot.php'));
     }
 
     public function haveMultilingual()
     {
-        return class_exists('Inpsyde\MultilingualPress\Framework\Api\Plugin') || is_plugin_active('multilingualpress/multilingualpress.php');
+        return class_exists('Inpsyde\MultilingualPress\Framework\Api\Plugin') || (function_exists("is_plugin_active") && is_plugin_active('multilingualpress/multilingualpress.php'));
     }
 
     public function havePolylang()
