@@ -223,7 +223,7 @@ class PolylangManager
     private function getLanguagesDataFromAPI()
     {
         $cache = $this->cache->getCache(__FUNCTION__, []);
-        if (!empty($cache)) {
+        if (!empty($cache) && !empty($cache["languages"])) {
             return $cache;
         }
         global $tsm;
