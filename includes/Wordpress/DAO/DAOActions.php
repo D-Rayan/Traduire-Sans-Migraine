@@ -324,15 +324,7 @@ class DAOActions
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        $deletePending = $wpdb->delete($tableName, ['ID' => $id, 'state' => self::$STATE["PENDING"]]);
-        if ($deletePending) {
-            return $deletePending;
-        }
-        $deletePause = $wpdb->delete($tableName, ['ID' => $id, 'state' => self::$STATE["PAUSE"]]);
-        if ($deletePause) {
-            return $deletePause;
-        }
-        return $wpdb->delete($tableName, ['ID' => $id, 'state' => self::$STATE["PROCESSING"]]);
+        return $wpdb->delete($tableName, ['ID' => $id]);
     }
 
     public static function releaseLock($id, $lock)
@@ -365,8 +357,14 @@ class DAOActions
     {
         global $wpdb;
         $tableName = $wpdb->prefix . self::$TABLE_NAME;
-        $wpdb->delete($tableName, ['state' => self::$STATE["ARCHIVED"]]);
-        $wpdb->delete($tableName, ['state' => self::$STATE["DONE"]]);
-        $wpdb->delete($tableName, ['state' => self::$STATE["ARCHIVED_ERROR"]]);
+
+        $preparedQuery = $wpdb->prepare(
+            "DELETE FROM $tableName WHERE state NOT IN (%s, %s, %s)",
+            self::$STATE["PENDING"],
+            self::$STATE["PAUSE"],
+            self::$STATE["PROCESSING"]
+        );
+
+        $wpdb->query($preparedQuery);
     }
 }
