@@ -135,7 +135,7 @@ class PrepareTranslation extends AbstractPrepareTranslation
             }
             foreach ($postMetas as $key => $value) {
                 if (strstr($key, "elementor_") && !isset($noTranslateElementor[$key])) {
-                    if (isset($value[0])) {
+                    if (isset($value[0]) && !empty($value[0])) {
                         $this->dataToTranslate[$key] = $value[0];
                         if ($key === "_elementor_data") {
                             $this->dataToTranslate["content"] = "";
