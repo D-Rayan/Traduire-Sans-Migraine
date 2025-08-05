@@ -15,7 +15,9 @@ $update = array(
     "sections" => [
         "description" => "Traduire Sans Migraine va vous aider à traduire votre contenu tout en gardant les bonnes pratiques SEO.",
         "installation" => "On installe, on suit les instructions et en moins de 2 minutes c'est parti !",
-        "changelog" => "<h4>Mise à jour du 31 Juillet 2025</h4><ul>
+        "changelog" => "<h4>Mise à jour du 05 Août 2025</h4><ul>
+        <li>Amélioration : Meilleure détection des contenus Elementor</li>
+        </ul><h4>Mise à jour du 31 Juillet 2025</h4><ul>
         <li>Correctif : Mise à jour d'une fonction provoquant une erreur sur le navigateur</li>
         </ul><h4>Mise à jour du 2 Juin 2025</h4><ul>
         <li>Correctif : Correction d'un soucis lié à Elementor empêchant la traduction des articles fait via wordpress.</li>

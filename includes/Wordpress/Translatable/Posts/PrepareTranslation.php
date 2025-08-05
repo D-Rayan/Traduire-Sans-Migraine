@@ -130,7 +130,7 @@ class PrepareTranslation extends AbstractPrepareTranslation
                 "elementor_font_files" => true,
                 "_elementor_element_cache" => true
             ];
-            if (!isset($postMetas["_elementor_edit_mode"])) {
+            if (!isset($postMetas["_elementor_edit_mode"]) || $postMetas["_elementor_edit_mode"][0] !== "builder") {
                 return;
             }
             foreach ($postMetas as $key => $value) {
