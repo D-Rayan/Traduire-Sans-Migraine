@@ -19,7 +19,11 @@ class PolylangManager
     public function __construct()
     {
         if (defined("POLYLANG_DIR")) {
-            $this->languagesPolylang = include POLYLANG_DIR . '/settings/languages.php';
+            if (file_exists(POLYLANG_DIR . '/src/settings/languages.php')) {
+                $this->languagesPolylang = include POLYLANG_DIR . '/src/settings/languages.php';
+            } else {
+                $this->languagesPolylang = include POLYLANG_DIR . '/settings/languages.php';
+            }
         } else {
             $this->languagesPolylang = [];
         }
@@ -44,7 +48,12 @@ class PolylangManager
 
     public function addLanguage($locale)
     {
-        $all_languages = include POLYLANG_DIR . '/settings/languages.php';
+        $all_languages = [];
+        if (file_exists(POLYLANG_DIR . '/src/settings/languages.php')) {
+            $all_languages = include POLYLANG_DIR . '/src/settings/languages.php';
+        } else {
+            $all_languages = include POLYLANG_DIR . '/settings/languages.php';
+        }
         if (!isset($all_languages[$locale])) {
             return false;
         }
