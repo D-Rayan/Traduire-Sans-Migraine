@@ -9,7 +9,9 @@ class LinkManager
 
     private $linksTranslatedCount = 0;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function translateInternalLinks($postContent, $translateFrom, $translateTo)
     {
@@ -168,7 +170,10 @@ class LinkManager
             }
         } else if (is_string($value)) {
             if ($this->is_json($value)) {
-                return $this->replaceLink(wp_slash($value), $linkToReplace, $linkPostId, $slugTo);
+                $newValue = wp_slash($value);
+                if ($newValue !== $value) {
+                    return $this->replaceLink(wp_slash($value), $linkToReplace, $linkPostId, $slugTo);
+                }
             } else if ($this->is_serialized($value)) {
                 return $this->replaceLink(unserialize($value), $linkToReplace, $linkPostId, $slugTo);
             }

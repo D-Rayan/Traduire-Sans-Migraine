@@ -1,17 +1,38 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Traduire Sans Migraine 2.1.15\n"
+"Project-Id-Version: Traduire Sans Migraine 2.3.16\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Traduire-Sans-Migraine\n"
 "Last-Translator: Rayan <rayan@seo-sans-migraine.frfr>\n"
 "Language-Team: EN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-23T12:59:340\n"
+"POT-Creation-Date: 2025-03-10T07:05:300\n"
 "X-Generator: Seo Sans Migraine\n"
 "X-Domain: traduire-sans-migraine\n"
-# EditorPage.php
+# shelved.patch
+msgid "An error occurred"
+msgstr ""
+
+msgid "We could not authenticate you. Please check the plugin settings."
+msgstr ""
+
+msgid "You have reached your monthly quota."
+msgstr ""
+
+msgid "An error occurred. Please try again."
+msgstr ""
+
+# shelved.patch
+msgid "The otters are translating your post 🦦"
+msgstr ""
+
+# Blocks.php
 msgid "Translate 💊"
+msgstr ""
+
+# EditorPage.php
+msgid "Translate"
 msgstr ""
 
 # PluginsPage.php
@@ -19,6 +40,36 @@ msgid "Settings"
 msgstr ""
 
 msgid "By "
+msgstr ""
+
+# Table.php
+# Display.php
+msgid "L'état du stock ou la quantité seront reliés entre toutes les traductions."
+msgstr ""
+
+msgid "Partager l'inventaire avec les traductions"
+msgstr ""
+
+msgid "Oui"
+msgstr ""
+
+msgid "Non"
+msgstr ""
+
+msgid "Traduire Sans Migraine"
+msgstr ""
+
+msgid "Sélectionner la langue associé à ce produit"
+msgstr ""
+
+# Display.php
+msgid "Language"
+msgstr ""
+
+msgid "Translations"
+msgstr ""
+
+msgid "Sélectionner la langue associé à cette catégorie"
 msgstr ""
 
 # OnDeletionPosts.php
@@ -43,10 +94,10 @@ msgid "tutorialLink"
 msgstr ""
 
 # Requirements.php
-msgid "Traduire Sans Migraine"
+msgid "Traduire Sans Migraine needs polylang to works. We found it on your website and enabled it automatically. If you really want to disable Polylang first disable Traduire Sans Migraine."
 msgstr ""
 
-msgid "Traduire Sans Migraine needs polylang to works. We found it on your website and enabled it automatically. If you really want to disable Polylang first disable Traduire Sans Migraine."
+msgid "Traduire Sans Migraine needs polylang to works. Don't worry you can install it simply by clicking on the button below."
 msgstr ""
 
 msgid "Traduire Sans Migraine needs polylang to works. Don't worry you can install it simply by clicking on the button below."
@@ -57,13 +108,6 @@ msgstr ""
 
 # MenuLanguage.php
 msgid "Change language"
-msgstr ""
-
-# traduire-sans-migraine.php
-msgid "Traduire Sans Migraine is enabled!"
-msgstr ""
-
-msgid "You don't know where to start? Just click <a href='%s'>here</a> and follow the instructions"
 msgstr ""
 
 # Plugin Name
